@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,10 +37,37 @@ public class Advent6 {
 
         System.out.println(calculateDepth(root, 0));
 
-        List<Node> youOrbitMap = ancestors(getNodeFromTree(root, "YOU"));
-        List<Node> santaOrbitMap = ancestors(getNodeFromTree(root, "SAN"));
+        Node you = getNodeFromTree(root, "YOU");
+        Node santa = getNodeFromTree(root, "SAN");
 
-        return 0;
+        Node ancestor = lowestCommonAncestor(you, santa);
+        return distanceToParent(you, ancestor) + distanceToParent(santa, ancestor);
+    }
+
+    private static int distanceToParent(Node child, Node parent) {
+        int distance = -1;
+        while (child != parent) {
+            distance++;
+            child = child.root;
+        }
+        return distance;
+    }
+
+    private static Node lowestCommonAncestor(Node node1, Node node2) {
+        List<Node> node1OrbitMap = ancestors(node1).stream()
+                                                   .filter(Objects::nonNull)
+                                                   .collect(Collectors.toList());
+        List<Node> node2OrbitMap = ancestors(node2).stream()
+                                                   .filter(Objects::nonNull)
+                                                   .collect(Collectors.toList());
+        Collections.reverse(node1OrbitMap);
+        Collections.reverse(node2OrbitMap);
+
+        int i = 0;
+        while (node1OrbitMap.get(i).name.equals(node2OrbitMap.get(i).name)) {
+            i++;
+        }
+        return node1OrbitMap.get(i - 1);
     }
 
     private static List<Node> ancestors(Node node) {
@@ -49,17 +77,6 @@ public class Advent6 {
             node = node.root;
         }
         return ancestors;
-    }
-
-    private static Node lowestCommonAncestor(List<Node> list1, List<Node> list2) {
-        Collections.reverse(list1);
-        Collections.reverse(list2);
-
-        int i = 0;
-        while (list1.get(i).name.equals(list2.get(i).name)) {
-            i++;
-        }
-        return list1.get(i - 1);
     }
 
     private static int calculateDepth(Node root, int depth) {
