@@ -6,13 +6,12 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
-
-// 21840 too high
 
 public class Advent3 {
     public static void main(String[] args) {
@@ -44,17 +43,12 @@ public class Advent3 {
             }
         }
 
-        return intersections.stream()
-                            //.map(point -> manhattanDist(point, new Point(0, 0, 0)))
-                            .map(point -> point.steps)
-                            .filter(value -> value != 0)
-                            .mapToInt(value -> value)
-                            .min()
-                            .getAsInt();
-    }
-
-    private static int manhattanDist(Point a, Point b) {
-        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+        OptionalInt min = intersections.stream()
+                                       .map(point -> point.steps)
+                                       .filter(value -> value != 0)
+                                       .mapToInt(value -> value)
+                                       .min();
+        return min.isPresent() ? min.getAsInt() : 0;
     }
 
     private static Point intersect(Point a, Point b, Point c, Point d) {
