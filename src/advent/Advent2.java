@@ -10,8 +10,8 @@ import static com.google.common.collect.Lists.newArrayList;
 public class Advent2 {
     public static void main(String[] args) {
         for (int i = 0; i < 100; i++) {
-            for (int j= 0; j < 100; j++) {
-                if (solve(i,j) == 19690720) {
+            for (int j = 0; j < 100; j++) {
+                if (solve(i, j) == 19690720) {
                     System.out.println(100 * i + j);
                 }
             }
@@ -19,12 +19,10 @@ public class Advent2 {
     }
 
     private static int solve(int value1, int value2) {
-        Stream<String> advent2 = Util.fileStream("advent2");
-        ArrayList<Integer> strings = newArrayList(splitLine(advent2).stream()
-                                                                    .map(Integer::parseInt)
-                                                                    .collect(Collectors.toList()));
-
-        replace(strings,value1, value2);
+        ArrayList<Integer> strings = newArrayList(splitLine(Util.fileStream("advent2")).stream()
+                                                                                       .map(Integer::parseInt)
+                                                                                       .collect(Collectors.toList()));
+        replace(strings, value1, value2);
 
         for (int i = 0; i < strings.size() && strings.get(i) != 99; i += 4) {
             if (strings.get(i) == 1) {
