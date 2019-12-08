@@ -1,9 +1,7 @@
 package advent;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -19,9 +17,9 @@ public class Advent2 {
     }
 
     private static int solve(int value1, int value2) {
-        ArrayList<Integer> strings = newArrayList(splitLine(Util.fileStream("advent2")).stream()
-                                                                                       .map(Integer::parseInt)
-                                                                                       .collect(Collectors.toList()));
+        ArrayList<Integer> strings = newArrayList(Util.splitLine(Util.fileStream("advent2")).stream()
+                .map(Integer::parseInt)
+                .collect(Collectors.toList()));
         replace(strings, value1, value2);
 
         for (int i = 0; i < strings.size() && strings.get(i) != 99; i += 4) {
@@ -54,15 +52,5 @@ public class Advent2 {
         int index = strings.get(i + 3);
         strings.add(index, element);
         strings.remove(index + 1);
-    }
-
-
-    private static ArrayList<String> splitLine(Stream<String> stream) {
-        Optional<String> first = stream.findFirst();
-        if (first.isEmpty()) {
-            return newArrayList();
-        }
-        return newArrayList(first.get()
-                                 .split(","));
     }
 }

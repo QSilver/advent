@@ -3,9 +3,7 @@ package advent;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -20,7 +18,7 @@ public class Advent5 {
     }
 
     private static void solve() {
-        memory = newArrayList(splitLine(Util.fileStream("advent5")).stream()
+        memory = newArrayList(Util.splitLine(Util.fileStream("advent5")).stream()
                                                                    .map(Integer::parseInt)
                                                                    .collect(Collectors.toList()));
 
@@ -106,15 +104,6 @@ public class Advent5 {
 
     private static Integer getValueOrReference(boolean value, int offset) {
         return value ? memory.get(pointer + offset) : memory.get(memory.get(pointer + offset));
-    }
-
-    private static ArrayList<String> splitLine(Stream<String> stream) {
-        Optional<String> first = stream.findFirst();
-        if (first.isEmpty()) {
-            return newArrayList();
-        }
-        return newArrayList(first.get()
-                                 .split(","));
     }
 }
 
