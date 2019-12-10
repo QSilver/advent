@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 @Slf4j
 public class Advent9 {
     public static void main(String[] args) {
@@ -33,10 +35,13 @@ class Computer {
     private int saveState = 0;
 
     @Getter
+    private boolean isRunning = true;
+
+    @Getter
     private long output;
 
     public Computer(ArrayList<Long> memory) {
-        this.memory = memory;
+        this.memory = newArrayList(memory);
     }
 
     public void addInput(long input) {
@@ -60,17 +65,12 @@ class Computer {
                 processOpCode2(param1, param2, param3);
                 i += 4;
             } else if (opCode == 3) {
-                Long poll = inputBuffer.poll();
-                if (poll == null) {
-                    saveState = i;
-                    return;
-                }
-
-                processOpCode3(param1, poll);
+                processOpCode3(param1, inputBuffer.poll());
                 i += 2;
             } else if (opCode == 4) {
                 output = processOpCode4(param1);
-                i += 2;
+                saveState = i + 2;
+                return;
             } else if (opCode == 5) {
                 i = processOpCode5(param1, param2);
             } else if (opCode == 6) {
@@ -86,7 +86,8 @@ class Computer {
                 i += 2;
             }
         }
-        log.info("======================================================");
+        isRunning = false;
+//        log.info("======================================================");
     }
 
     private void processOpCode1(ParameterType param1, ParameterType param2, ParameterType param3) {
@@ -95,7 +96,7 @@ class Computer {
         int index = getIndex(param3, pointer + 3);
         long element = value1 + value2;
         write(index, element);
-        log.info("OPCODE 1 : value1={}, value2={}, element={}, index={}", value1, value2, element, index);
+//        log.info("OPCODE 1 : value1={}, value2={}, element={}, index={}", value1, value2, element, index);
     }
 
     private void processOpCode2(ParameterType param1, ParameterType param2, ParameterType param3) {
@@ -104,25 +105,25 @@ class Computer {
         int index = getIndex(param3, pointer + 3);
         long element = value1 * value2;
         write(index, element);
-        log.info("OPCODE 2 : value1={}, value2={}, element={}, index={}", value1, value2, element, index);
+//        log.info("OPCODE 2 : value1={}, value2={}, element={}, index={}", value1, value2, element, index);
     }
 
     private void processOpCode3(ParameterType param1, long input) {
         int index = getIndex(param1, pointer + 1);
         write(index, input);
-        log.info("OPCODE 3 : input={}, index={}", input, index);
+//        log.info("OPCODE 3 : input={}, index={}", input, index);
     }
 
     private long processOpCode4(ParameterType param1) {
         long element = getValueOrReference(param1, 1);
-        log.info("OPCODE 4 : output={}", element);
+//        log.info("OPCODE 4 : output={}", element);
         return element;
     }
 
     private int processOpCode5(ParameterType param1, ParameterType param2) {
         long value1 = getValueOrReference(param1, 1);
         long value2 = getValueOrReference(param2, 2);
-        log.info("OPCODE 5 : value1={} value2={}", value1, value2);
+//        log.info("OPCODE 5 : value1={} value2={}", value1, value2);
         if (value1 != 0) {
             return (int) value2;
         }
@@ -132,7 +133,7 @@ class Computer {
     private int processOpCode6(ParameterType param1, ParameterType param2) {
         long value1 = getValueOrReference(param1, 1);
         long value2 = getValueOrReference(param2, 2);
-        log.info("OPCODE 6 : value1={} value2={}", value1, value2);
+//        log.info("OPCODE 6 : value1={} value2={}", value1, value2);
         if (value1 == 0) {
             return (int) value2;
         }
@@ -145,7 +146,7 @@ class Computer {
         int index = getIndex(param3, pointer + 3);
         int element = value1 < value2 ? 1 : 0;
         write(index, element);
-        log.info("OPCODE 7: value1={}, value2={}, element={}, index={}", value1, value2, element, index);
+//        log.info("OPCODE 7: value1={}, value2={}, element={}, index={}", value1, value2, element, index);
     }
 
     private void processOpCode8(ParameterType param1, ParameterType param2, ParameterType param3) {
@@ -154,13 +155,13 @@ class Computer {
         int index = getIndex(param3, pointer + 3);
         int element = value1 == value2 ? 1 : 0;
         write(index, element);
-        log.info("OPCODE 8: value1={}, value2={}, element={}, index={}", value1, value2, element, index);
+//        log.info("OPCODE 8: value1={}, value2={}, element={}, index={}", value1, value2, element, index);
     }
 
     private void processOpCode9(ParameterType param1) {
         long value1 = getValueOrReference(param1, 1);
         relativeBase += value1;
-        log.info("OPCODE 9 : value1={}, relativeBase={}", value1, relativeBase);
+//        log.info("OPCODE 9 : value1={}, relativeBase={}", value1, relativeBase);
     }
 
     private long getValueOrReference(ParameterType parameterType, int offset) {
