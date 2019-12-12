@@ -39,33 +39,40 @@ public class Advent10 {
 
         List<Fraction> walkingOrder = getSweep(save);
 
-        for (boolean[] line : asteroidMap) {
-            for (boolean b : line) {
-                System.out.print(b ? "#" : ".");
-            }
-            System.out.println();
+        List<Asteroid> purged = newArrayList();
+        while (!isMapCLear()) {
+            List<Asteroid> toRemove = newArrayList();
+            final Asteroid laser = save;
+            walkingOrder.forEach(fraction -> {
+                Asteroid potential = new Asteroid(' ', fraction.x, fraction.y);
+                if (areAsteroidsInLos(laser, potential)) {
+                    toRemove.add(potential);
+                }
+            });
+            toRemove.forEach(asteroid -> {
+                boolean isAsteroid = asteroidMap[asteroid.y][asteroid.x];
+                if (isAsteroid) {
+                    purged.add(asteroid);
+                    asteroidMap[asteroid.y][asteroid.x] = false;
+                }
+            });
         }
-        System.out.println();
 
-        List<Asteroid> toRemove = newArrayList();
-        final Asteroid laser = save;
-        walkingOrder.forEach(fraction -> {
-            Asteroid potential = new Asteroid(' ', fraction.x, fraction.y);
-            if (areAsteroidsInLos(laser, potential)) {
-                toRemove.add(potential);
-            }
-        });
-        toRemove.forEach(asteroid -> asteroidMap[asteroid.y][asteroid.x] = false);
-
-        for (boolean[] line : asteroidMap) {
-            for (boolean b : line) {
-                System.out.print(b ? "#" : ".");
-            }
-            System.out.println();
-        }
-        System.out.println();
+        log.info("200th Asteroid: {}", purged.get(199));
 
         return max;
+    }
+
+    private static boolean isMapCLear() {
+        int count = 0;
+        for (boolean[] line : asteroidMap) {
+            for (boolean pos : line) {
+                if (pos) {
+                    count++;
+                }
+            }
+        }
+        return count == 1;
     }
 
     private static List<Fraction> getSweep(Asteroid save) {
@@ -79,7 +86,7 @@ public class Advent10 {
 
         List<Fraction> fractions2 = newArrayList();
         for (int i = 1; i < asteroidMap[0].length - save.x; i++) {
-            for (int j = save.y; j < asteroidMap.length; j++) {
+            for (int j = 0; j < asteroidMap.length - save.y; j++) {
                 fractions2.add(new Fraction(i, j, save.x + i, save.y + j)); // x + i, y + j
             }
         }
@@ -87,7 +94,7 @@ public class Advent10 {
 
         List<Fraction> fractions3 = newArrayList();
         for (int i = save.x; i >= 0; i--) {
-            for (int j = save.y + 1; j < asteroidMap.length; j++) {
+            for (int j = 1; j < asteroidMap.length - save.y; j++) {
                 fractions3.add(new Fraction(i, j, save.x - i, save.y + j)); // x + i, y + j
             }
         }
