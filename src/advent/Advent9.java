@@ -65,12 +65,16 @@ class Computer {
                 processOpCode2(param1, param2, param3);
                 i += 4;
             } else if (opCode == 3) {
-                processOpCode3(param1, inputBuffer.poll());
+                Long poll = inputBuffer.poll();
+                if (poll == null) {
+                    saveState = i;
+                    return;
+                }
+                processOpCode3(param1, poll);
                 i += 2;
             } else if (opCode == 4) {
                 output = processOpCode4(param1);
-                saveState = i + 2;
-                return;
+                i += 2;
             } else if (opCode == 5) {
                 i = processOpCode5(param1, param2);
             } else if (opCode == 6) {
@@ -96,7 +100,7 @@ class Computer {
         int index = getIndex(param3, pointer + 3);
         long element = value1 + value2;
         write(index, element);
-//        log.info("OPCODE 1 : value1={}, value2={}, element={}, index={}", value1, value2, element, index);
+        log.info("OPCODE 1 : value1={}, value2={}, element={}, index={}", value1, value2, element, index);
     }
 
     private void processOpCode2(ParameterType param1, ParameterType param2, ParameterType param3) {
@@ -115,9 +119,8 @@ class Computer {
     }
 
     private long processOpCode4(ParameterType param1) {
-        long element = getValueOrReference(param1, 1);
-//        log.info("OPCODE 4 : output={}", element);
-        return element;
+//        log.info("OPCODE 4 : output={}", getValueOrReference(param1, 1));
+        return getValueOrReference(param1, 1);
     }
 
     private int processOpCode5(ParameterType param1, ParameterType param2) {
