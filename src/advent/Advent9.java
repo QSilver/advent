@@ -32,13 +32,12 @@ class Computer {
     private int pointer = -1;
     private int relativeBase = 0;
     private Queue<Long> inputBuffer = new LinkedList<>();
+    private Queue<Long> outputBuffer = new LinkedList<>();
     private int saveState = 0;
 
     @Getter
     private boolean isRunning = true;
 
-    @Getter
-    private long output;
 
     public Computer(ArrayList<Long> memory) {
         this.memory = newArrayList(memory);
@@ -46,6 +45,11 @@ class Computer {
 
     public void addInput(long input) {
         inputBuffer.add(input);
+    }
+
+    public long getOutput() {
+        Long poll = outputBuffer.poll();
+        return poll != null ? poll : 0L;
     }
 
     void solve() {
@@ -73,7 +77,7 @@ class Computer {
                 processOpCode3(param1, poll);
                 i += 2;
             } else if (opCode == 4) {
-                output = processOpCode4(param1);
+                outputBuffer.add(processOpCode4(param1));
                 i += 2;
             } else if (opCode == 5) {
                 i = processOpCode5(param1, param2);
@@ -100,7 +104,7 @@ class Computer {
         int index = getIndex(param3, pointer + 3);
         long element = value1 + value2;
         write(index, element);
-        log.info("OPCODE 1 : value1={}, value2={}, element={}, index={}", value1, value2, element, index);
+//        log.info("OPCODE 1 : value1={}, value2={}, element={}, index={}", value1, value2, element, index);
     }
 
     private void processOpCode2(ParameterType param1, ParameterType param2, ParameterType param3) {
