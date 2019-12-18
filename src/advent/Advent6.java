@@ -89,7 +89,7 @@ public class Advent6 {
                                     .sum();
     }
 
-    private static void processNode(Set<Node> danglingRoots, Node root, Node child, Set<Node> toRemove) {
+    public static void processNode(Set<Node> danglingRoots, Node root, Node child, Set<Node> toRemove) {
         Node parent = getNodeFromTree(root, child.rootName);
         if (parent != null) {
             parent.addChild(child);
