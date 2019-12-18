@@ -38,7 +38,6 @@ class Computer {
     @Getter
     private boolean isRunning = true;
 
-
     public Computer(ArrayList<Long> memory) {
         this.memory = newArrayList(memory);
     }
