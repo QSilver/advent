@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static advent.Advent6.processNode;
@@ -17,29 +17,105 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
-// 574594 - too high
-
 @Slf4j
 public class Advent14 {
+    private static final long ONE_TRILLION = 1000000000000L;
     private static final String FUEL = "FUEL";
     private static final String ORE = "ORE";
 
     public static Map<String, ElementPair> globalElements = newHashMap();
+    public static Map<String, Reaction> reactionLookup = newHashMap();
+    public static Map<String, Long> waste = newHashMap();
 
     public static void main(String[] args) {
-        log.info(ORE + " required {}", solve());
+        setUp();
+        long oreFor1Fuel = oreForFuel(1);
+        log.info(ORE + " required {}", oreFor1Fuel);
+
+        long baseFuel = ONE_TRILLION / oreFor1Fuel;
+
+        long prevFuel = 0;
+        while (baseFuel != prevFuel) {
+            long ore = oreForFuel(baseFuel);
+            log.info("Iterating {} ORE {}", baseFuel, ore);
+            if (ore < ONE_TRILLION) {
+                prevFuel = baseFuel;
+                baseFuel *= 2;
+            } else {
+                baseFuel = (prevFuel + baseFuel) / 2;
+            }
+        }
+
+        log.info("prevFuel {} ORE {}", prevFuel, oreForFuel(prevFuel));
+        log.info("baseFuel {} ORE {}", baseFuel, oreForFuel(baseFuel));
     }
 
-    private static int solve() {
+    private static long oreForFuel(long fuelRequired) {
+        waste = newHashMap();
+        List<ElementPair> required = newArrayList();
+        required.add(new ElementPair(fuelRequired, FUEL, 0));
+
+        do {
+            List<ElementPair> toAdd = newArrayList();
+            List<ElementPair> toRemove = newArrayList();
+            List<ElementPair> finalRequired = required;
+            required.stream()
+                    .filter(elementPair -> isMostComplexElement(finalRequired, elementPair))
+                    .forEach(elementPair -> {
+                        Reaction reaction = reactionLookup.get(elementPair.element);
+                        long multiplier = getMultiplierAndTrackWaste(elementPair, reaction);
+                        toAdd.addAll(reaction.getInput(multiplier));
+                        toRemove.add(elementPair);
+                    });
+            required.removeAll(toRemove);
+            required.addAll(toAdd);
+            required.removeIf(elementPair -> elementPair.element.equals(ORE));
+
+            required = collapseList(required);
+        } while (!containsOnlyPrimitives(required));
+
+        AtomicLong requiredOre = new AtomicLong();
+        required.forEach(elementPair -> {
+            Reaction reaction = reactionLookup.get(elementPair.element);
+            long multiplier = getMultiplierAndTrackWaste(elementPair, reaction);
+            requiredOre.getAndAdd(reaction.getInput(multiplier)
+                                          .get(0).number);
+        });
+
+        return requiredOre.get();
+    }
+
+    private static boolean isMostComplexElement(List<ElementPair> finalRequired, ElementPair elementPair) {
+        OptionalLong maxDepth = finalRequired.stream()
+                                             .mapToLong(elements -> elements.depth)
+                                             .max();
+        return elementPair.depth == (maxDepth.isPresent() ? maxDepth.getAsLong() : 0);
+    }
+
+    private static long getMultiplierAndTrackWaste(ElementPair elementPair, Reaction reaction) {
+        long wasteForElement = waste.getOrDefault(reaction.output.element, 0L);
+        long multiplier = (long) Math.ceil((elementPair.number - wasteForElement) / (1.0 * reaction.output.number));
+        long multiplierWithoutWaste = (long) Math.ceil(elementPair.number / (1.0 * reaction.output.number));
+        long remainder = reaction.output.number * multiplier - elementPair.number;
+
+        if (multiplierWithoutWaste < multiplier) {
+            long diff = multiplier - multiplierWithoutWaste;
+            waste.put(reaction.output.element, wasteForElement - diff * reaction.output.number);
+        } else {
+            waste.put(reaction.output.element, remainder + wasteForElement);
+        }
+        return multiplier;
+    }
+
+    private static void setUp() {
         List<Reaction> reactions = Util.fileStream("advent14")
                                        .map(Reaction::new)
                                        .collect(Collectors.toList());
 
         Set<Node> danglingRoots = newHashSet();
         Node root = new Node(ORE, null);
-        Map<String, Reaction> inverse = newHashMap();
         reactions.forEach(reaction -> {
-            inverse.put(reaction.output.element, reaction);
+            reactionLookup.put(reaction.output.element, reaction);
             globalElements.put(reaction.output.element, reaction.output);
 
             reaction.getInput(1)
@@ -54,52 +130,17 @@ public class Advent14 {
 
         globalElements.values()
                       .forEach(elementPair -> elementPair.depth = getMaxDepth(root, elementPair.element, 0));
-
-        List<ElementPair> required = newArrayList();
-        required.add(new ElementPair(1, FUEL, 0));
-
-        do {
-            List<ElementPair> toAdd = newArrayList();
-            List<ElementPair> toRemove = newArrayList();
-            List<ElementPair> finalRequired = required;
-            required.stream()
-                    .filter(elementPair -> elementPair.depth == finalRequired.stream()
-                                                                             .mapToInt(elements -> elements.depth)
-                                                                             .max()
-                                                                             .getAsInt())
-                    .forEach(elementPair -> {
-                        Reaction reaction = inverse.get(elementPair.element);
-                        int multiplier = (int) Math.ceil(elementPair.number / (1.0 * reaction.output.number));
-                        toAdd.addAll(reaction.getInput(multiplier));
-                        toRemove.add(elementPair);
-                    });
-            required.removeAll(toRemove);
-            required.addAll(toAdd);
-            required.removeIf(elementPair -> elementPair.element.equals(ORE));
-
-            required = collapseList(required);
-        } while (!containsOnlyPrimitives(required));
-
-        AtomicInteger requiredOre = new AtomicInteger();
-        required.forEach(elementPair -> {
-            Reaction reaction = inverse.get(elementPair.element);
-            int multiplier = (int) Math.ceil(elementPair.number / (1.0 * reaction.output.number));
-            requiredOre.getAndAdd(reaction.getInput(multiplier)
-                                          .get(0).number);
-        });
-
-        return requiredOre.get();
     }
 
-    private static int getMaxDepth(Node root, String toFind, int depth) {
+    private static long getMaxDepth(Node root, String toFind, long depth) {
         if (root.name.equals(toFind)) {
             return depth;
         } else {
-            OptionalInt max = root.children.stream()
-                                           .map(child -> getMaxDepth(child, toFind, depth + 1))
-                                           .mapToInt(value -> value)
-                                           .max();
-            return max.isPresent() ? max.getAsInt() : 0;
+            OptionalLong max = root.children.stream()
+                                            .map(child -> getMaxDepth(child, toFind, depth + 1))
+                                            .mapToLong(value -> value)
+                                            .max();
+            return max.isPresent() ? max.getAsLong() : 0;
         }
     }
 
@@ -113,8 +154,8 @@ public class Advent14 {
     }
 
     private static List<ElementPair> collapseList(List<ElementPair> inList) {
-        Map<String, Integer> collapsingMap = newHashMap();
-        inList.forEach(elementPair -> collapsingMap.put(elementPair.element, collapsingMap.getOrDefault(elementPair.element, 0) + elementPair.number));
+        Map<String, Long> collapsingMap = newHashMap();
+        inList.forEach(elementPair -> collapsingMap.put(elementPair.element, collapsingMap.getOrDefault(elementPair.element, 0L) + elementPair.number));
         return collapsingMap.entrySet()
                             .stream()
                             .map(stringIntegerEntry -> new ElementPair(stringIntegerEntry.getValue(), stringIntegerEntry.getKey(), globalElements.get(stringIntegerEntry.getKey()).depth))
@@ -136,7 +177,7 @@ class Reaction {
         this.output = new ElementPair(lineElements[1], 0);
     }
 
-    public List<ElementPair> getInput(int multiplier) {
+    public List<ElementPair> getInput(long multiplier) {
         return input.stream()
                     .map(elementPair -> new ElementPair(elementPair.number * multiplier, elementPair.element, elementPair.depth))
                     .collect(Collectors.toList());
@@ -151,19 +192,19 @@ class Reaction {
 }
 
 class ElementPair {
-    int number;
+    long number;
     String element;
-    int depth;
+    long depth;
 
-    public ElementPair(int number, String element, int depth) {
+    public ElementPair(long number, String element, long depth) {
         this.number = number;
         this.element = element;
         this.depth = depth;
     }
 
-    public ElementPair(String input, int depth) {
+    public ElementPair(String input, long depth) {
         String[] elementPair = input.split(" ");
-        this.number = Integer.parseInt(elementPair[0]);
+        this.number = Long.parseLong(elementPair[0]);
         this.element = elementPair[1];
         this.depth = depth;
     }
