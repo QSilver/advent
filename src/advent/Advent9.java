@@ -47,8 +47,11 @@ class Computer {
     }
 
     public long getOutput() {
-        Long poll = outputBuffer.poll();
-        return poll != null ? poll : 0L;
+        return outputBuffer.peek() != null ? outputBuffer.poll() : 0L;
+    }
+
+    public boolean hasOutput() {
+        return outputBuffer.peek() != null;
     }
 
     void solve() {

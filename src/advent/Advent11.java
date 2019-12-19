@@ -1,7 +1,6 @@
 package advent;
 
 import com.google.common.collect.Lists;
-import lombok.SneakyThrows;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -68,7 +67,6 @@ public class Advent11 {
         }
     }
 
-    @SneakyThrows
     private static void draw() {
         for (int y = robot.y - DELTA; y < robot.y + DELTA; y++) {
             for (int x = robot.x - DELTA; x < robot.x + DELTA; x++) {
