@@ -4,12 +4,11 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.stream.Collectors;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 @Slf4j
 public class Advent9 {
@@ -28,7 +27,7 @@ public class Advent9 {
 
 @Slf4j
 class Computer {
-    private ArrayList<Long> memory;
+    private long[] memory;
     private int pointer = -1;
     private int relativeBase = 0;
     private Queue<Long> inputBuffer = new LinkedList<>();
@@ -39,7 +38,15 @@ class Computer {
     private boolean isRunning = true;
 
     public Computer(ArrayList<Long> memory) {
-        this.memory = newArrayList(memory);
+        this.memory = memory.stream()
+                            .mapToLong(value -> value)
+                            .toArray();
+    }
+
+    public Computer(long[] memory) {
+        long[] temp = new long[memory.length];
+        System.arraycopy(memory, 0, temp, 0, memory.length);
+        this.memory = temp;
     }
 
     public void addInput(long input) {
@@ -47,7 +54,16 @@ class Computer {
     }
 
     public long getOutput() {
-        return outputBuffer.peek() != null ? outputBuffer.poll() : 0L;
+        if (outputBuffer.peek() != null) {
+            return outputBuffer.poll();
+        }
+        throw new BufferUnderflowException();
+    }
+
+    public long[] getMemory() {
+        long[] temp = new long[memory.length];
+        System.arraycopy(memory, 0, temp, 0, memory.length);
+        return temp;
     }
 
     public boolean hasOutput() {
@@ -55,10 +71,10 @@ class Computer {
     }
 
     void solve() {
-        for (int i = saveState; i < memory.size() && memory.get(i) != 99; ) {
+        for (int i = saveState; i < memory.length && memory[i] != 99; ) {
             pointer = i;
-            int opCode = (int) (memory.get(pointer) % 100);
-            int params = (int) (memory.get(pointer) / 100);
+            int opCode = (int) (memory[pointer] % 100);
+            int params = (int) (memory[pointer] / 100);
 
             ParameterType param1 = ParameterType.values()[params % 100 % 10];
             ParameterType param2 = ParameterType.values()[params / 10 % 10];
@@ -189,13 +205,11 @@ class Computer {
     private int getIndex(ParameterType param3, int i) {
         switch (param3) {
             case POSITION:
-                return memory.get(i)
-                             .intValue();
+                return (int) memory[i];
             case IMMEDIATE:
                 return i;
             case RELATIVE:
-                return relativeBase + memory.get(i)
-                                            .intValue();
+                return relativeBase + (int) memory[i];
             default:
                 throw new UnsupportedOperationException();
         }
@@ -203,20 +217,19 @@ class Computer {
 
     private void write(int index, long element) {
         expandMemoryIfNeeded(index);
-        memory.add(index, element);
-        memory.remove(index + 1);
+        memory[index] = element;
     }
 
     private long read(int index) {
         expandMemoryIfNeeded(index);
-        return memory.get(index);
+        return memory[index];
     }
 
     private void expandMemoryIfNeeded(int index) {
-        if (index >= memory.size()) {
-            for (long i = memory.size(); i <= index; i++) {
-                memory.add(0L);
-            }
+        if (index >= memory.length) {
+            long[] temp = new long[index + 1];
+            System.arraycopy(memory, 0, temp, 0, memory.length);
+            memory = temp;
         }
     }
 }
