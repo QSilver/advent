@@ -13,11 +13,12 @@ import static com.google.common.collect.Sets.newHashSet;
 
 public class Advent11 {
     private static final int SIZE = 10000;
-    private static final int DELTA = 10;
+    private static final int DELTA_X = 50;
+    private static final int DELTA_Y = 6;
 
     private static int[][] ship = new int[SIZE][SIZE];
     private static Point robot = new Point(SIZE / 2, SIZE / 2, 0);
-    private static Facing facing = Facing.UP;
+    static Facing facing = Facing.UP;
     private static final String FACE_PAINT = "<^>v";
 
     private static Set<Point> visited = newHashSet();
@@ -32,6 +33,7 @@ public class Advent11 {
                                                   .map(Long::parseLong)
                                                   .collect(Collectors.toCollection(Lists::newArrayList)));
 
+        ship[robot.y][robot.x] = 1;
         while (paintingRobot.isRunning()) {
             paintingRobot.addInput(ship[robot.y][robot.x]);
             paintingRobot.solve();
@@ -45,8 +47,11 @@ public class Advent11 {
         return visited.size();
     }
 
-    private static Facing getFacing(long newFacing) {
-        return Facing.values()[(facing.ordinal() + (newFacing == 0 ? -1 : 1) < 0 ? Facing.values().length : facing.ordinal() + (newFacing == 0 ? -1 : 1)) % Facing.values().length];
+    static Facing getFacing(long newFacing) {
+        int i = facing.ordinal() + (newFacing == 0 ? -1 : 1);
+        int i1 = i < 0 ? Facing.values().length - 1 : i;
+        int i2 = i1 % Facing.values().length;
+        return Facing.values()[i2];
     }
 
     private static void move(Facing newFacing) {
@@ -68,8 +73,8 @@ public class Advent11 {
     }
 
     private static void draw() {
-        for (int y = robot.y - DELTA; y < robot.y + DELTA; y++) {
-            for (int x = robot.x - DELTA; x < robot.x + DELTA; x++) {
+        for (int y = robot.y - DELTA_Y; y < robot.y + DELTA_Y; y++) {
+            for (int x = robot.x - DELTA_X; x < robot.x + DELTA_X; x++) {
                 if (robot.y == y && robot.x == x) {
                     System.out.print(FACE_PAINT.charAt(facing.ordinal()));
                 } else {
@@ -78,7 +83,7 @@ public class Advent11 {
             }
             System.out.println();
         }
-        System.out.println(IntStream.range(0, 2 * DELTA)
+        System.out.println(IntStream.range(0, 2 * DELTA_X)
                                     .mapToObj(i -> "=")
                                     .collect(Collectors.joining()));
     }
