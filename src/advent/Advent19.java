@@ -1,15 +1,16 @@
 package advent;
 
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class Advent19 {
-    private static final int LOWER_BOUND = 1700;
-    private static final int UPPER_BOUND = 1850;
-    private static char[][] map = new char[UPPER_BOUND][UPPER_BOUND];
+    private static final int SIZE = 2000;
+    private static char[][] map = new char[SIZE][SIZE];
 
     public static void main(String[] args) {
         solve();
@@ -21,7 +22,7 @@ public class Advent19 {
                 .map(Long::parseLong)
                 .collect(Collectors.toCollection(Lists::newArrayList));
 
-        for (int row1 = LOWER_BOUND; row1 < UPPER_BOUND; row1++) {
+        for (int row1 = 0; row1 < SIZE; row1++) {
             for (int col = 117 * row1 / 200; col <= 137 * row1 / 200 + 1; col++) {
                 Computer drone = new Computer(program);
                 drone.addInput(col);
@@ -35,9 +36,10 @@ public class Advent19 {
                     map[row1][col] = '.';
                 }
             }
+            log.info("Generating {}", row1);
         }
 
-        int line = LOWER_BOUND;
+        int line = 0;
         while (true) {
             int lastHash = Arrays.toString(map[line])
                     .replace(" ", "")
@@ -45,12 +47,12 @@ public class Advent19 {
                     .replace(".,", ".")
                     .replace("#,", "#").lastIndexOf('#');
 
-            if (map[line][lastHash - 100] == '#' && map[line + 99][lastHash - 100] == '#') {
-                System.out.println("SOLUTION: " + line + " hash: " + (lastHash - 100));
-                break;
-            } else {
-                line++;
+            if (lastHash > 100 && map[line][lastHash - 100] == '#' && map[line + 99][lastHash - 100] == '#') {
+                log.info("Solution {}", (lastHash - 100) * 10000 + line);
+                return;
             }
+            line++;
+
         }
     }
 }
