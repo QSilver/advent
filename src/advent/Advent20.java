@@ -5,23 +5,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-// 578
-
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
 public class Advent20 {
     private static final int ROWS = 121; //121
-    public static final int OUTER_BOTTOM = ROWS - 3;
     private static final int COLS = 123; //123
-    public static final int OUTER_RIGHT = COLS - 3;
-    public static final int INNER_BOTTOM = 88; //88
     public static final int INNER_TOP = 32; //32
-    public static final int INNER_RIGHT = 90; //90
+    public static final int INNER_BOTTOM = 88; //88
     public static final int INNER_LEFT = 32; //32
+    public static final int INNER_RIGHT = 90; //90
     public static final int OUTER_TOP = 2;
+    public static final int OUTER_BOTTOM = ROWS - 3;
     public static final int OUTER_LEFT = 2;
+    public static final int OUTER_RIGHT = COLS - 3;
     static char[][] map = new char[ROWS][COLS];
     static int[][] mapCopy = new int[ROWS][COLS];
 
