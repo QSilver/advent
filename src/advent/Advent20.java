@@ -6,11 +6,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+// 578
+
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 
 public class Advent20 {
     private static final int ROWS = 121; //121
-    private static final int COLS = 123; //124
+    public static final int OUTER_BOTTOM = ROWS - 3;
+    private static final int COLS = 123; //123
+    public static final int OUTER_RIGHT = COLS - 3;
+    public static final int INNER_BOTTOM = 88; //88
+    public static final int INNER_TOP = 32; //32
+    public static final int INNER_RIGHT = 90; //90
+    public static final int INNER_LEFT = 32; //32
+    public static final int OUTER_TOP = 2;
+    public static final int OUTER_LEFT = 2;
     static char[][] map = new char[ROWS][COLS];
     static int[][] mapCopy = new int[ROWS][COLS];
 
@@ -30,7 +41,7 @@ public class Advent20 {
         processMap(strings);
         encodePortals(strings);
 
-        fill(tempPortals.get("AA"), 0);
+        fill();
 
         draw();
 
@@ -68,16 +79,16 @@ public class Advent20 {
     private static void encodePortals(List<String> strings) {
         for (int row = 0; row < strings.size(); row++) {
             for (int col = 0; col < strings.get(row).length(); col++) {
-                if ((row == 2 || row == 88) && map[row][col] == '.' && map[row - 1][col] > 64) { //88
+                if ((row == OUTER_TOP || row == INNER_BOTTOM) && map[row][col] == '.' && map[row - 1][col] > 64) { //88
                     matchPortal(new Point(col, row, 0), map[row - 2][col] + "" + map[row - 1][col]);
                 }
-                if ((row == 32 || row == ROWS - 3) && map[row][col] == '.' && map[row + 1][col] > 64) { //32
+                if ((row == INNER_TOP || row == OUTER_BOTTOM) && map[row][col] == '.' && map[row + 1][col] > 64) { //32
                     matchPortal(new Point(col, row, 0), map[row + 1][col] + "" + map[row + 2][col]);
                 }
-                if ((col == 2 || col == 90) && map[row][col] == '.' && map[row][col - 1] > 64) { //90
+                if ((col == OUTER_LEFT || col == INNER_RIGHT) && map[row][col] == '.' && map[row][col - 1] > 64) { //90
                     matchPortal(new Point(col, row, 0), map[row][col - 2] + "" + map[row][col - 1]);
                 }
-                if ((col == 32 || col == COLS - 3) && map[row][col] == '.' && map[row][col + 1] > 64) { //32
+                if ((col == INNER_LEFT || col == OUTER_RIGHT) && map[row][col] == '.' && map[row][col + 1] > 64) { //32
                     matchPortal(new Point(col, row, 0), map[row][col + 1] + "" + map[row][col + 2]);
                 }
             }
@@ -91,29 +102,49 @@ public class Advent20 {
         tempPortals.put(key, value);
     }
 
-    private static void fill(Point toFill, int number) {
-        mapCopy[toFill.y][toFill.x] = number;
-        if (mapCopy[toFill.y][toFill.x - 1] > number) {
-            fillWithPortal(number + 1, new Point(toFill.x - 1, toFill.y, 0));
-        }
-        if (mapCopy[toFill.y][toFill.x + 1] > number) {
-            fillWithPortal(number + 1, new Point(toFill.x + 1, toFill.y, 0));
-        }
-        if (mapCopy[toFill.y - 1][toFill.x] > number) {
-            fillWithPortal(number + 1, new Point(toFill.x, toFill.y - 1, 0));
-        }
-        if (mapCopy[toFill.y + 1][toFill.x] > number) {
-            fillWithPortal(number + 1, new Point(toFill.x, toFill.y + 1, 0));
+    private static void fill() {
+        List<Point> nextPoints = newArrayList();
+        List<Point> toAdd = newArrayList();
+        List<Point> toRemove = newArrayList();
+
+        Point start = tempPortals.get("AA");
+        start.steps = 0;
+        nextPoints.add(start);
+        mapCopy[start.y][start.x] = start.steps;
+
+        while (!nextPoints.isEmpty()) {
+            nextPoints.forEach(point -> {
+                toRemove.add(point);
+                mapCopy[point.y][point.x] = point.steps;
+
+                if (mapCopy[point.y][point.x - 1] > point.steps) {
+                    addWithPortal(toAdd, new Point(point.x - 1, point.y, point.steps + 1));
+                }
+                if (mapCopy[point.y][point.x + 1] > point.steps) {
+                    addWithPortal(toAdd, new Point(point.x + 1, point.y, point.steps + 1));
+                }
+                if (mapCopy[point.y - 1][point.x] > point.steps) {
+                    addWithPortal(toAdd, new Point(point.x, point.y - 1, point.steps + 1));
+                }
+                if (mapCopy[point.y + 1][point.x] > point.steps) {
+                    addWithPortal(toAdd, new Point(point.x, point.y + 1, point.steps + 1));
+                }
+            });
+
+            nextPoints.addAll(toAdd);
+            nextPoints.removeAll(toRemove);
         }
     }
 
-    private static void fillWithPortal(int number, Point newPoint) {
+    private static void addWithPortal(List<Point> toAdd, Point newPoint) {
         Optional<Map.Entry<String, Portal>> optionalEntry = portals.entrySet().stream().filter(entry -> entry.getValue().contains(newPoint)).findFirst();
         if (optionalEntry.isPresent()) {
-            fill(portals.get(optionalEntry.get().getKey()).getOpposite(newPoint), number + 1);
+            Point opposite = portals.get(optionalEntry.get().getKey()).getOpposite(newPoint);
+            opposite.steps = newPoint.steps + 1;
+            toAdd.add(opposite);
         } else {
             if (!newPoint.equals(tempPortals.get("AA"))) {
-                fill(newPoint, number);
+                toAdd.add(newPoint);
             }
         }
     }
