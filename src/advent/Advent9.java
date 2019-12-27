@@ -37,6 +37,9 @@ class Computer {
     @Getter
     private boolean isRunning = true;
 
+    @Getter
+    private boolean isPaused = false;
+
     public Computer(ArrayList<Long> memory) {
         this.memory = memory.stream()
                             .mapToLong(value -> value)
@@ -71,6 +74,7 @@ class Computer {
     }
 
     void solve() {
+        isPaused = false;
         for (int i = saveState; i < memory.length && memory[i] != 99; ) {
             pointer = i;
             int opCode = (int) (memory[pointer] % 100);
@@ -90,6 +94,7 @@ class Computer {
                 Long poll = inputBuffer.poll();
                 if (poll == null) {
                     saveState = i;
+                    isPaused = true;
                     return;
                 }
                 processOpCode3(param1, poll);
