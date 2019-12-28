@@ -28,14 +28,6 @@ public class Advent16 {
                                              .mapToInt(Integer::parseInt)
                                              .collect(ArrayList::new, List::add, List::addAll);
 
-//        double[] input = new double[fileInput.size() * MULTIPLIER];
-//        for (int i = 0; i < MULTIPLIER; i++) {
-//            for (int j = 0; j < fileInput.size(); j++) {
-//                input[fileInput.size() * i + j] = fileInput.get(j);
-//            }
-//            System.out.println(i);
-//        }
-
         ArrayList<Integer> input = newArrayList(fileInput);
         for (int phase = 1; phase <= 100; phase++) {
             input = fft(input);
