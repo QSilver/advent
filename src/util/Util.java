@@ -25,7 +25,7 @@ class Util {
         return newArrayList("").stream();
     }
 
-    static ArrayList<String> splitLine(Stream<String> stream) {
+    public static ArrayList<String> splitLine(Stream<String> stream) {
         Optional<String> first = stream.findFirst();
         return first.map(s -> newArrayList(s.split(",")))
                     .orElseGet(Lists::newArrayList);
