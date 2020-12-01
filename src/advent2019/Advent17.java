@@ -14,14 +14,14 @@ public class Advent17 {
     private static final int HEIGHT = 107;
     private static final int WIDTH = 43;
 
-    private static char[][] map = new char[HEIGHT][WIDTH];
+    private static final char[][] map = new char[HEIGHT][WIDTH];
 
     public static void main(String[] args) {
         solve();
     }
 
     private static void solve() {
-        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent17"))
+        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent2019/advent17"))
                                       .stream()
                                       .map(Long::parseLong)
                                       .collect(Collectors.toCollection(Lists::newArrayList));

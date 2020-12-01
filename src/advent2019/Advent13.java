@@ -13,8 +13,8 @@ public class Advent13 {
     private static final int SIZE_X = 37;
     private static final int SIZE_Y = 24;
 
-    private static int[][] board = new int[SIZE_Y][SIZE_X];
-    private static Point paddle = new Point(18, 22, 0);
+    private static final int[][] board = new int[SIZE_Y][SIZE_X];
+    private static final Point paddle = new Point(18, 22, 0);
     private static int score = 0;
 
     public static void main(String[] args) {
@@ -22,7 +22,7 @@ public class Advent13 {
     }
 
     private static void solve() {
-        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent13"))
+        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent2019/advent13"))
                                       .stream()
                                       .map(Long::parseLong)
                                       .collect(Collectors.toCollection(Lists::newArrayList));

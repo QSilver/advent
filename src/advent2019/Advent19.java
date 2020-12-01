@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Advent19 {
     private static final int SIZE = 2000;
-    private static char[][] map = new char[SIZE][SIZE];
+    private static final char[][] map = new char[SIZE][SIZE];
 
     public static void main(String[] args) {
         solve();
     }
 
     private static void solve() {
-        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent19"))
+        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent2019/advent19"))
                                       .stream()
                                       .map(Long::parseLong)
                                       .collect(Collectors.toCollection(Lists::newArrayList));

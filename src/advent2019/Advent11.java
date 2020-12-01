@@ -17,19 +17,19 @@ public class Advent11 {
     private static final int DELTA_X = 50;
     private static final int DELTA_Y = 6;
 
-    private static int[][] ship = new int[SIZE][SIZE];
-    private static Point robot = new Point(SIZE / 2, SIZE / 2, 0);
+    private static final int[][] ship = new int[SIZE][SIZE];
+    private static final Point robot = new Point(SIZE / 2, SIZE / 2, 0);
     static Facing facing = Facing.UP;
     private static final String FACE_PAINT = "<^>v";
 
-    private static Set<Point> visited = newHashSet();
+    private static final Set<Point> visited = newHashSet();
 
     public static void main(String[] args) {
         System.out.println(solve());
     }
 
     private static int solve() {
-        Computer paintingRobot = new Computer(Util.splitLine(Util.fileStream("advent11"))
+        Computer paintingRobot = new Computer(Util.splitLine(Util.fileStream("advent2019/advent11"))
                                                   .stream()
                                                   .map(Long::parseLong)
                                                   .collect(Collectors.toCollection(Lists::newArrayList)));

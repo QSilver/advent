@@ -109,7 +109,7 @@ public class Advent14 {
     }
 
     private static void setUp() {
-        List<Reaction> reactions = Util.fileStream("advent14")
+        List<Reaction> reactions = Util.fileStream("advent2019/advent14")
                                        .map(Reaction::new)
                                        .collect(Collectors.toList());
 
@@ -165,7 +165,7 @@ public class Advent14 {
 }
 
 class Reaction {
-    private List<ElementPair> input;
+    private final List<ElementPair> input;
     ElementPair output;
 
     public Reaction(String line) {

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Advent9 {
     public static void main(String[] args) {
-        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent9"))
+        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent2019/advent9"))
                                       .stream()
                                       .map(Long::parseLong)
                                       .collect(Collectors.toCollection(Lists::newArrayList));
@@ -31,8 +31,8 @@ class Computer {
     private long[] memory;
     private int pointer = -1;
     private int relativeBase = 0;
-    private Queue<Long> inputBuffer = new LinkedList<>();
-    private Queue<Long> outputBuffer = new LinkedList<>();
+    private final Queue<Long> inputBuffer = new LinkedList<>();
+    private final Queue<Long> outputBuffer = new LinkedList<>();
     private int saveState = 0;
 
     @Getter

@@ -15,7 +15,9 @@ public class Advent8 {
     }
 
     private static String solve() {
-        String input = Util.fileStream("advent8").findFirst().get();
+        String input = Util.fileStream("advent2019/advent8")
+                           .findFirst()
+                           .get();
 
         Image image = new Image();
         for (int i = 0; i < input.length(); i++) {
@@ -45,7 +47,7 @@ class Image {
         return layers;
     }
 
-    private List<Layer> layers = newArrayList();
+    private final List<Layer> layers = newArrayList();
 
     void addPixel(String pixel, int index) {
         int layerIndex = index / 25 / 6;
@@ -73,7 +75,7 @@ class Layer {
         return lines;
     }
 
-    private List<Line> lines = newArrayList();
+    private final List<Line> lines = newArrayList();
 
     void addPixel(String pixel, int index) {
         int lineIndex = index / 25;
@@ -97,7 +99,8 @@ class Line {
     List<String> getPixels() {
         return pixels;
     }
-    private List<String> pixels = newArrayList();
+
+    private final List<String> pixels = newArrayList();
 
     void addPixel(String pixel) {
         pixels.add(pixel);
@@ -109,6 +112,6 @@ class Line {
 
     @Override
     public String toString() {
-        return pixels.stream().collect(Collectors.joining());
+        return String.join("", pixels);
     }
 }

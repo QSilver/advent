@@ -20,7 +20,7 @@ public class Advent6 {
     }
 
     private static int solve() {
-        List<String> strings = Util.fileStream("advent6")
+        List<String> strings = Util.fileStream("advent2019/advent6")
                                    .collect(Collectors.toList());
 
         Set<Node> danglingRoots = newHashSet();

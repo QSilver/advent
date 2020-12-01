@@ -17,9 +17,9 @@ import static com.google.common.collect.Lists.newLinkedList;
 
 @Slf4j
 public class Advent23 {
-    private static Computer[] network = new Computer[50];
-    private static boolean[] networkIdle = new boolean[50];
-    private static ArrayList<Queue<Packet>> inputQueue = newArrayList();
+    private static final Computer[] network = new Computer[50];
+    private static final boolean[] networkIdle = new boolean[50];
+    private static final ArrayList<Queue<Packet>> inputQueue = newArrayList();
 
     private static Packet NAT;
 
@@ -28,7 +28,7 @@ public class Advent23 {
     }
 
     private static void solve() {
-        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent23"))
+        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent2019/advent23"))
                                       .stream()
                                       .map(Long::parseLong)
                                       .collect(Collectors.toCollection(Lists::newArrayList));

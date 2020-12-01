@@ -8,7 +8,7 @@ public class Advent1 {
     }
 
     private static int solve() {
-        return Util.fileStream("advent1")
+        return Util.fileStream("advent2019/advent1")
                    .map(Integer::parseInt)
                    .map(Advent1::getAddedFuel)
                    .mapToInt(Integer::intValue)

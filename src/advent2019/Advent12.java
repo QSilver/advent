@@ -13,7 +13,7 @@ public class Advent12 {
     }
 
     private static void solve() {
-        List<Moon> starting = Util.fileStream("advent12")
+        List<Moon> starting = Util.fileStream("advent2019/advent12")
                                   .map(s -> s.substring(1, s.length() - 1))
                                   .map(s -> s.split(","))
                                   .collect(Collectors.toList())

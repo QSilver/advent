@@ -16,7 +16,7 @@ import static com.google.common.collect.Lists.newArrayList;
 @Slf4j
 public class Advent15 {
     public static final int SIZE = 41;
-    private static int[][] map = new int[SIZE][SIZE];
+    private static final int[][] map = new int[SIZE][SIZE];
 
     static List<Computer> robots = newArrayList();
     static List<Point> robotPositions = newArrayList();
@@ -24,7 +24,7 @@ public class Advent15 {
     static List<Computer> robotsToRemove = newArrayList();
     static Point start = new Point(SIZE / 2 + 1, SIZE / 2 + 1, 0);
     static Point oxygen;
-    static final ArrayList<Long> program = Util.splitLine(Util.fileStream("advent15"))
+    static final ArrayList<Long> program = Util.splitLine(Util.fileStream("advent2019/advent15"))
                                                .stream()
                                                .map(Long::parseLong)
                                                .collect(Collectors.toCollection(Lists::newArrayList));
@@ -151,7 +151,7 @@ public class Advent15 {
 
 @Slf4j
 class BFSSolver {
-    private static int[][] mapCopy = new int[Advent15.SIZE][Advent15.SIZE];
+    private static final int[][] mapCopy = new int[Advent15.SIZE][Advent15.SIZE];
 
     public static void BFS(int[][] map, Point start, Point end) {
         for (int i = 0; i < Advent15.SIZE; i++) {
@@ -174,7 +174,7 @@ class BFSSolver {
                                 .mapToInt(OptionalInt::getAsInt)
                                 .max();
 
-        log.info("Max Value = {}", max.isPresent() ? max.getAsInt() : -1);
+        log.info("Max Value = {}", max.getAsInt());
         Advent15.draw();
     }
 

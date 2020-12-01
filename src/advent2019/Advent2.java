@@ -1,11 +1,10 @@
 package advent2019;
 
+import com.google.common.collect.Lists;
 import util.Util;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 public class Advent2 {
     public static void main(String[] args) {
@@ -19,10 +18,10 @@ public class Advent2 {
     }
 
     private static int solve(int value1, int value2) {
-        ArrayList<Integer> strings = newArrayList(Util.splitLine(Util.fileStream("advent2"))
-                                                      .stream()
-                                                      .map(Integer::parseInt)
-                                                      .collect(Collectors.toList()));
+        ArrayList<Integer> strings = Util.splitLine(Util.fileStream("advent2019/advent2"))
+                                         .stream()
+                                         .map(Integer::parseInt)
+                                         .collect(Collectors.toCollection(Lists::newArrayList));
         replace(strings, value1, value2);
 
         for (int i = 0; i < strings.size() && strings.get(i) != 99; i += 4) {

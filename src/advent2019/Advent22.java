@@ -1,8 +1,8 @@
 package advent2019;
 
 import lombok.AllArgsConstructor;
-import util.Util;
 import lombok.extern.slf4j.Slf4j;
+import util.Util;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -118,12 +118,12 @@ class Advent22Helper {
 
         Stream<String> stringStream = shuffleInstructions.stream()
                                                          .map(ShuffleInstruction::toString);
-        Files.write(Paths.get(".\\resources", "advent22"), (Iterable<String>) stringStream::iterator);
+        Files.write(Paths.get(".\\resources", "advent2019/advent22"), (Iterable<String>) stringStream::iterator);
     }
 
     private static ArrayList<ShuffleInstruction> getShuffleInstructions() {
         ArrayList<ShuffleInstruction> shuffleInstructions = newArrayList();
-        Util.fileStream("advent22")
+        Util.fileStream("advent2019/advent22")
             .forEach(s -> {
                 String[] splitLine = s.split(" ");
                 try {

@@ -13,13 +13,13 @@ import static com.google.common.collect.Maps.newHashMap;
 @Slf4j
 public class Advent18 {
     private static Point player;
-    private static Map<Character, Point> keys = newHashMap();
-    private static Map<Character, Point> doors = newHashMap();
+    private static final Map<Character, Point> keys = newHashMap();
+    private static final Map<Character, Point> doors = newHashMap();
 
-    private static int[][] adjacencyMatrix = new int[123][123];
+    private static final int[][] adjacencyMatrix = new int[123][123];
 
-    private static List<String> strings = Util.fileStream("advent18")
-                                              .collect(Collectors.toList());
+    private static final List<String> strings = Util.fileStream("advent2019/advent18")
+                                                    .collect(Collectors.toList());
 
     public static void main(String[] args) {
         solve();

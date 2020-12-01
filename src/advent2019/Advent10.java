@@ -17,7 +17,7 @@ public class Advent10 {
     static boolean[][] asteroidMap;
 
     private static int solve() {
-        List<String> advent10 = Util.fileStream("advent10")
+        List<String> advent10 = Util.fileStream("advent2019/advent10")
                                     .collect(Collectors.toList());
         asteroidMap = new boolean[advent10.size()][advent10.get(0)
                                                            .length()];

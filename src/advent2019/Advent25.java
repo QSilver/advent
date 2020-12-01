@@ -16,7 +16,7 @@ public class Advent25 {
     }
 
     private static void solve() {
-        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent25"))
+        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent2019/advent25"))
                                       .stream()
                                       .map(Long::parseLong)
                                       .collect(Collectors.toCollection(Lists::newArrayList));

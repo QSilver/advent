@@ -17,7 +17,7 @@ public class Advent16 {
     }
 
     private static void solve() {
-        ArrayList<Integer> fileInput = Arrays.stream(Util.splitLine(Util.fileStream("advent16"))
+        ArrayList<Integer> fileInput = Arrays.stream(Util.splitLine(Util.fileStream("advent2019/advent16"))
                                                          .stream()
                                                          .findFirst()
                                                          .map(s -> s.split(""))

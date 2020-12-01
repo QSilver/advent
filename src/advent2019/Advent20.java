@@ -41,7 +41,8 @@ public class Advent20 {
     }
 
     private static void solve() {
-        List<String> strings = Util.fileStream("advent20").collect(Collectors.toList());
+        List<String> strings = Util.fileStream("advent2019/advent20")
+                                   .collect(Collectors.toList());
 
         Arrays.stream(map).forEach(chars -> Arrays.fill(chars, '#'));
         Arrays.stream(mapCopy).forEach(chars -> Arrays.stream(chars).forEach(chars1 -> Arrays.fill(chars1, -1)));
