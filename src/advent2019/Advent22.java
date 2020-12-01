@@ -2,104 +2,70 @@ package advent2019;
 
 import lombok.AllArgsConstructor;
 import util.Util;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+@Slf4j
 public class Advent22 {
-    private static final int DECK_SIZE = 10007;
+    public static final BigInteger DECK_SIZE = BigInteger.valueOf(119315717514047L);
+    public static final BigInteger STEPS = BigInteger.valueOf(101741582076661L);
+    public static final BigInteger CUT = BigInteger.valueOf(1841799366945L);
+    public static final BigInteger INCREMENT = BigInteger.valueOf(93922407988235L);
 
     public static void main(String[] args) {
-        solve();
-    }
+        BigInteger a = INCREMENT.modInverse(DECK_SIZE);
 
-    private static void solve() {
-        ArrayList<ShuffleInstruction> shuffleInstructions = newArrayList();
+        // a^n
+        BigInteger aToN = a.modPow(STEPS, DECK_SIZE);
 
-        Util.fileStream("advent22").forEach(s -> {
-            String[] splitLine = s.split(" ");
-            try {
-                shuffleInstructions.add(new ShuffleInstruction(Shuffle.CUT, Integer.parseInt(splitLine[1])));
-            } catch (Exception e) {
-                if (splitLine[1].equals("with")) {
-                    shuffleInstructions.add(new ShuffleInstruction(Shuffle.DEAL_INCREMENT, Integer.parseInt(splitLine[3])));
-                } else {
-                    shuffleInstructions.add(new ShuffleInstruction(Shuffle.DEAL_STACK, 0));
-                }
-            }
-        });
+        // 1 - a^n
+        BigInteger oneMinus_aToN = BigInteger.ONE.subtract(aToN)
+                                                 .mod(DECK_SIZE);
 
-        int[] cards = IntStream.range(0, DECK_SIZE).toArray();
-        print(cards, new ShuffleInstruction(Shuffle.DEAL_INCREMENT, 1));
+        // 1 - a
+        BigInteger oneMinusA = BigInteger.ONE.subtract(a)
+                                             .mod(DECK_SIZE);
 
-        shuffleInstructions.forEach(shuffleInstruction -> {
-            switch (shuffleInstruction.instruction) {
-                case DEAL_STACK:
-                    int i = 0;
-                    for (int j = cards.length - 1; j > i; ++i) {
-                        int tmp = cards[j];
-                        cards[j] = cards[i];
-                        cards[i] = tmp;
-                        --j;
-                    }
-                    break;
-                case CUT:
-                    int[] temp = new int[cards.length];
-                    if (shuffleInstruction.number > 0) {
-                        int rest = DECK_SIZE - shuffleInstruction.number;
-                        int cut = shuffleInstruction.number;
-                        System.arraycopy(cards, 0, temp, rest, cut);
-                        System.arraycopy(cards, shuffleInstruction.number, temp, 0, rest);
-                    } else {
-                        int rest = DECK_SIZE + shuffleInstruction.number;
-                        int cut = Math.abs(shuffleInstruction.number);
+        // (1 - a^n) / (1 - a)
+        BigInteger bFactor = oneMinus_aToN.multiply(oneMinusA.modInverse(DECK_SIZE));
 
-                        System.arraycopy(cards, 0, temp, cut, rest);
-                        System.arraycopy(cards, rest, temp, 0, cut);
-                    }
-                    System.arraycopy(temp, 0, cards, 0, cards.length);
-                    break;
-                case DEAL_INCREMENT:
-                    int[] temp2 = new int[cards.length];
-                    int current = 0;
-                    for (long mod = 0; mod < DECK_SIZE * shuffleInstruction.number; mod += shuffleInstruction.number) {
-                        temp2[(int) (mod % DECK_SIZE)] = cards[current++];
-                    }
-                    System.arraycopy(temp2, 0, cards, 0, cards.length);
-                    break;
-            }
-            print(cards, shuffleInstruction);
-        });
+        // a^n * 2020 + CUT * a * (1 - a^n) / (1 - a)
+        BigInteger card = aToN.multiply(BigInteger.valueOf(2020))
+                              .mod(DECK_SIZE)
+                              .add(bFactor.multiply(CUT.multiply(a)
+                                                       .mod(DECK_SIZE))
+                                          .mod(DECK_SIZE))
+                              .mod(DECK_SIZE);
 
-        for (int card = 0; card < DECK_SIZE; card++) {
-            if (cards[card] == 2019) {
-                System.out.println(card);
-                return;
-            }
-        }
-    }
-
-    private static void print(int[] cards, ShuffleInstruction shuffleInstruction) {
-        String collect = Arrays.stream(cards).boxed().map(String::valueOf).collect(Collectors.joining(","));
-        System.out.println(shuffleInstruction.instruction + " " + shuffleInstruction.number + ": " + collect);
+        log.info("Card: {}", card);
     }
 }
 
 @AllArgsConstructor
 class ShuffleInstruction {
     Shuffle instruction;
-    int number;
+    BigInteger number;
 
     @Override
     public String toString() {
-        return "ShuffleInstruction{" +
-                "instruction=" + instruction +
-                ", number=" + number +
-                '}';
+        switch (instruction) {
+            case DEAL_INCREMENT:
+                return "deal with increment " + number;
+            case CUT:
+                return "cut " + number;
+            case DEAL_STACK:
+                return "deal into new stack";
+            default:
+                return "";
+        }
     }
 }
 
@@ -107,4 +73,72 @@ enum Shuffle {
     DEAL_INCREMENT,
     CUT,
     DEAL_STACK
+}
+
+class Advent22Helper {
+
+    public static void main(String[] args) throws IOException {
+        ArrayList<ShuffleInstruction> shuffleInstructions = getShuffleInstructions();
+
+        while (shuffleInstructions.size() > 3) {
+            ArrayList<ShuffleInstruction> newInstructions = newArrayList();
+            int i;
+            for (i = 0; i < shuffleInstructions.size() - 1; i++) {
+                BigInteger x = shuffleInstructions.get(i).number;
+                BigInteger y = shuffleInstructions.get(i + 1).number;
+
+                Shuffle current = shuffleInstructions.get(i).instruction;
+                Shuffle next = shuffleInstructions.get(i + 1).instruction;
+
+                if (current == Shuffle.DEAL_STACK) {
+                    newInstructions.add(new ShuffleInstruction(Shuffle.DEAL_INCREMENT, Advent22.DECK_SIZE.subtract(BigInteger.ONE)));
+                    newInstructions.add(new ShuffleInstruction(Shuffle.CUT, BigInteger.ONE));
+                } else if (current == Shuffle.CUT && next == Shuffle.CUT) {
+                    newInstructions.add(new ShuffleInstruction(Shuffle.CUT, x.add(y)
+                                                                             .mod(Advent22.DECK_SIZE)));
+                    i++;
+                } else if (current == Shuffle.DEAL_INCREMENT && next == Shuffle.DEAL_INCREMENT) {
+                    newInstructions.add(new ShuffleInstruction(Shuffle.DEAL_INCREMENT, x.multiply(y)
+                                                                                        .mod(Advent22.DECK_SIZE)));
+                    i++;
+                } else if (current == Shuffle.CUT && next == Shuffle.DEAL_INCREMENT) {
+                    newInstructions.add(new ShuffleInstruction(Shuffle.DEAL_INCREMENT, y));
+                    newInstructions.add(new ShuffleInstruction(Shuffle.CUT, x.multiply(y)
+                                                                             .mod(Advent22.DECK_SIZE)));
+                    i++;
+                } else {
+                    newInstructions.add(shuffleInstructions.get(i));
+                }
+            }
+            if (i == shuffleInstructions.size() - 1) {
+                newInstructions.add(shuffleInstructions.get(i));
+            }
+            shuffleInstructions = newInstructions;
+        }
+
+        Stream<String> stringStream = shuffleInstructions.stream()
+                                                         .map(ShuffleInstruction::toString);
+        Files.write(Paths.get(".\\resources", "advent22"), (Iterable<String>) stringStream::iterator);
+    }
+
+    private static ArrayList<ShuffleInstruction> getShuffleInstructions() {
+        ArrayList<ShuffleInstruction> shuffleInstructions = newArrayList();
+        Util.fileStream("advent22")
+            .forEach(s -> {
+                String[] splitLine = s.split(" ");
+                try {
+                    BigInteger cutValue = BigInteger.valueOf(Long.parseLong(splitLine[1]));
+                    cutValue = cutValue.compareTo(BigInteger.ZERO) < 0 ? Advent22.DECK_SIZE.add(cutValue) : cutValue;
+                    shuffleInstructions.add(new ShuffleInstruction(Shuffle.CUT, cutValue));
+                } catch (Exception e) {
+                    if (splitLine[1].equals("with")) {
+                        BigInteger increment = BigInteger.valueOf(Long.parseLong(splitLine[3]));
+                        shuffleInstructions.add(new ShuffleInstruction(Shuffle.DEAL_INCREMENT, increment));
+                    } else {
+                        shuffleInstructions.add(new ShuffleInstruction(Shuffle.DEAL_STACK, BigInteger.ZERO));
+                    }
+                }
+            });
+        return shuffleInstructions;
+    }
 }
