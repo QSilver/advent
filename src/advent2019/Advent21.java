@@ -1,6 +1,7 @@
-package advent;
+package advent2019;
 
 import com.google.common.collect.Lists;
+import util.Util;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -12,9 +13,9 @@ public class Advent21 {
 
     private static void solve() {
         ArrayList<Long> program = Util.splitLine(Util.fileStream("advent21"))
-                .stream()
-                .map(Long::parseLong)
-                .collect(Collectors.toCollection(Lists::newArrayList));
+                                      .stream()
+                                      .map(Long::parseLong)
+                                      .collect(Collectors.toCollection(Lists::newArrayList));
 
         Computer springDroid = new Computer(program);
         generateInput(springDroid);

@@ -1,4 +1,4 @@
-package advent;
+package advent2019;
 
 import org.junit.jupiter.api.Test;
 

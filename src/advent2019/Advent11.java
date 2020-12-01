@@ -1,6 +1,7 @@
-package advent;
+package advent2019;
 
 import com.google.common.collect.Lists;
+import util.Util;
 
 import java.util.Set;
 import java.util.stream.Collectors;

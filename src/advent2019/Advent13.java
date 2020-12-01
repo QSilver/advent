@@ -1,8 +1,9 @@
-package advent;
+package advent2019;
 
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import util.Util;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;

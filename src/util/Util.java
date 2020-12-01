@@ -1,4 +1,4 @@
-package advent;
+package util;
 
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
@@ -14,8 +14,9 @@ import java.util.stream.Stream;
 import static com.google.common.collect.Lists.newArrayList;
 
 @Slf4j
+public
 class Util {
-    static Stream<String> fileStream(String fileName) {
+    public static Stream<String> fileStream(String fileName) {
         try {
             return Files.lines(Paths.get(".\\resources", fileName));
         } catch (IOException e) {

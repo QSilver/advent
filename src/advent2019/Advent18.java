@@ -1,6 +1,7 @@
-package advent;
+package advent2019;
 
 import lombok.extern.slf4j.Slf4j;
+import util.Util;
 
 import java.util.List;
 import java.util.Map;

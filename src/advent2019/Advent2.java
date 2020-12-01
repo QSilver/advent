@@ -1,4 +1,6 @@
-package advent;
+package advent2019;
+
+import util.Util;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -17,9 +19,10 @@ public class Advent2 {
     }
 
     private static int solve(int value1, int value2) {
-        ArrayList<Integer> strings = newArrayList(Util.splitLine(Util.fileStream("advent2")).stream()
-                .map(Integer::parseInt)
-                .collect(Collectors.toList()));
+        ArrayList<Integer> strings = newArrayList(Util.splitLine(Util.fileStream("advent2"))
+                                                      .stream()
+                                                      .map(Integer::parseInt)
+                                                      .collect(Collectors.toList()));
         replace(strings, value1, value2);
 
         for (int i = 0; i < strings.size() && strings.get(i) != 99; i += 4) {

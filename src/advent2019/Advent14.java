@@ -1,7 +1,8 @@
-package advent;
+package advent2019;
 
 import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
+import util.Util;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,7 +13,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static advent.Advent6.processNode;
+import static advent2019.Advent6.processNode;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;

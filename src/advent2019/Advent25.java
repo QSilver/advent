@@ -1,7 +1,8 @@
-package advent;
+package advent2019;
 
 import com.google.common.collect.Lists;
 import org.paukov.combinatorics3.Generator;
+import util.Util;
 
 import java.util.ArrayList;
 import java.util.List;

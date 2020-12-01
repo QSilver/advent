@@ -1,6 +1,7 @@
-package advent;
+package advent2019;
 
 import lombok.AllArgsConstructor;
+import util.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;

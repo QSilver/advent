@@ -1,8 +1,9 @@
-package advent;
+package advent2019;
 
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import util.Util;
 
 import java.util.Arrays;
 import java.util.List;

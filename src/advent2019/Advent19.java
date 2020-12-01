@@ -1,7 +1,8 @@
-package advent;
+package advent2019;
 
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import util.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,9 +19,9 @@ public class Advent19 {
 
     private static void solve() {
         ArrayList<Long> program = Util.splitLine(Util.fileStream("advent19"))
-                .stream()
-                .map(Long::parseLong)
-                .collect(Collectors.toCollection(Lists::newArrayList));
+                                      .stream()
+                                      .map(Long::parseLong)
+                                      .collect(Collectors.toCollection(Lists::newArrayList));
 
         for (int row1 = 0; row1 < SIZE; row1++) {
             for (int col = 117 * row1 / 200; col <= 137 * row1 / 200 + 1; col++) {

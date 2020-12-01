@@ -1,4 +1,6 @@
-package advent;
+package advent2019;
+
+import util.Util;
 
 import java.util.List;
 import java.util.stream.Collectors;

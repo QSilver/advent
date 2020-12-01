@@ -1,4 +1,6 @@
-package advent;
+package advent2019;
+
+import util.Util;
 
 public class Advent1 {
     public static void main(String[] args) {

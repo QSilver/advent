@@ -1,6 +1,7 @@
-package advent;
+package advent2019;
 
 import lombok.extern.slf4j.Slf4j;
+import util.Util;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -18,9 +19,10 @@ public class Advent5 {
     }
 
     private static void solve() {
-        memory = newArrayList(Util.splitLine(Util.fileStream("advent5")).stream()
-                                                                   .map(Integer::parseInt)
-                                                                   .collect(Collectors.toList()));
+        memory = newArrayList(Util.splitLine(Util.fileStream("advent5"))
+                                  .stream()
+                                  .map(Integer::parseInt)
+                                  .collect(Collectors.toList()));
 
         for (int i = 0; i < memory.size() && memory.get(i) != 99; ) {
             pointer = i;

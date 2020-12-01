@@ -1,4 +1,6 @@
-package advent;
+package advent2019;
+
+import util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
