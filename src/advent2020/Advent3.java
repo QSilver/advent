@@ -13,7 +13,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 @Slf4j
 public class Advent3 {
-    private static final List<List<Boolean>> map = newArrayList();
+    private static final List<List<Boolean>> forest = newArrayList();
 
     private static final List<Integer> steps = newArrayList(1, 3, 5, 7, 1);
     private static final List<Integer> rowSkip = newArrayList(1, 1, 1, 1, 2);
@@ -24,21 +24,21 @@ public class Advent3 {
                 ArrayList<Boolean> row = newArrayList();
                 Arrays.stream(s.split(""))
                       .forEach(b -> row.add(b.equals("#")));
-                map.add(row);
+                forest.add(row);
             });
 
-        int width = map.get(0)
-                       .size();
+        int width = forest.get(0)
+                          .size();
 
-        long reduce = IntStream.range(0, 5)
+        long reduce = IntStream.range(0, steps.size() + 1)
                                .map(value -> {
                                    AtomicInteger cursor = new AtomicInteger(0);
                                    AtomicInteger currentRow = new AtomicInteger(0);
-                                   Integer trees = map.stream()
-                                                      .filter(row -> currentRow.getAndIncrement() % rowSkip.get(value) == 0) // every n-th row
-                                                      .map(row -> row.get(cursor.getAndAdd(steps.get(value)) % width) ? 1 : 0) // is tree
-                                                      .reduce((integer, integer2) -> integer += integer2) // add trees
-                                                      .get();
+                                   Integer trees = forest.stream()
+                                                         .filter(row -> currentRow.getAndIncrement() % rowSkip.get(value) == 0) // every n-th row
+                                                         .map(row -> row.get(cursor.getAndAdd(steps.get(value)) % width) ? 1 : 0) // is tree
+                                                         .reduce((integer, integer2) -> integer += integer2) // add trees
+                                                         .get();
                                    log.info("Trees: {}", trees);
                                    return trees;
                                })
