@@ -30,12 +30,11 @@ public class Advent3 {
         int width = map.get(0)
                        .size();
 
-
 //        long mult = 1;
 //        for (int pass = 0; pass < 5; pass++) {
 //            int cursor = 0;
 //            int counter = 0;
-//            for (int row = 0; row < height; row += rowSkip.get(pass)) {
+//            for (int row = 0; row < map.size(); row += rowSkip.get(pass)) {
 //                counter += map.get(row)
 //                              .get(cursor % width) ? 1 : 0;
 //                cursor += steps.get(pass);
