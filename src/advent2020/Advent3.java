@@ -30,28 +30,14 @@ public class Advent3 {
         int width = map.get(0)
                        .size();
 
-//        long mult = 1;
-//        for (int pass = 0; pass < 5; pass++) {
-//            int cursor = 0;
-//            int counter = 0;
-//            for (int row = 0; row < map.size(); row += rowSkip.get(pass)) {
-//                counter += map.get(row)
-//                              .get(cursor % width) ? 1 : 0;
-//                cursor += steps.get(pass);
-//            }
-//            log.info("Trees: {}", counter);
-//            mult *= counter;
-//        }
-//        log.info("Final: {}", mult);
-
         long reduce = IntStream.range(0, 5)
                                .map(value -> {
                                    AtomicInteger cursor = new AtomicInteger(0);
                                    AtomicInteger currentRow = new AtomicInteger(0);
                                    Integer trees = map.stream()
-                                                      .filter(row -> currentRow.getAndIncrement() % rowSkip.get(value) == 0)
-                                                      .map(row -> row.get(cursor.getAndAdd(steps.get(value)) % width) ? 1 : 0)
-                                                      .reduce((integer, integer2) -> integer += integer2)
+                                                      .filter(row -> currentRow.getAndIncrement() % rowSkip.get(value) == 0) // every n-th row
+                                                      .map(row -> row.get(cursor.getAndAdd(steps.get(value)) % width) ? 1 : 0) // is tree
+                                                      .reduce((integer, integer2) -> integer += integer2) // add trees
                                                       .get();
                                    log.info("Trees: {}", trees);
                                    return trees;
