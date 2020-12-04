@@ -65,7 +65,7 @@ class Passport {
 
             boolean hcl = "ghijklmnopqrstuvwxyz".chars()
                                                 .mapToObj(c -> details.get("hcl")
-                                                                      .contains(c + ""))
+                                                                      .contains(String.valueOf((char) c)))
                                                 .reduce((left, right) -> left || right)
                                                 .orElse(false);
             boolean b5 = details.get("hcl")
