@@ -16,13 +16,13 @@ public class Advent6 {
         log.info("{}", anyone);
 
         Long everyone = Util.fileStream("advent2020/advent6")
-                            .map(strings -> strings.chars()
-                                                   .distinct()
-                                                   .mapToObj(c -> String.valueOf((char) c))
-                                                   .filter(value -> strings.replace(value, "")
-                                                                           .length() == strings.replace(",", "")
-                                                                                               .length() - 1)
-                                                   .count())
+                            .map(line -> line.chars()
+                                             .distinct()
+                                             .mapToObj(c -> String.valueOf((char) c))
+                                             .filter(value -> line.replace(value, "")
+                                                                  .length() == line.replace(",", "")
+                                                                                   .length() - 1)
+                                             .count())
                             .reduce(Long::sum)
                             .get();
         log.info("{}", everyone);
