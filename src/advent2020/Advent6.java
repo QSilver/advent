@@ -19,11 +19,9 @@ public class Advent6 {
                             .map(strings -> strings.chars()
                                                    .distinct()
                                                    .mapToObj(c -> String.valueOf((char) c))
-                                                   .filter(value -> {
-                                                       return strings.replace(value, "")
-                                                                     .length() == strings.replace(",", "")
-                                                                                         .length() - 1;
-                                                   })
+                                                   .filter(value -> strings.replace(value, "")
+                                                                           .length() == strings.replace(",", "")
+                                                                                               .length() - 1)
                                                    .count())
                             .reduce(Long::sum)
                             .get();
