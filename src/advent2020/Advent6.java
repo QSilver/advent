@@ -18,10 +18,9 @@ public class Advent6 {
         Long everyone = Util.fileStream("advent2020/advent6")
                             .map(line -> line.chars()
                                              .distinct()
-                                             .mapToObj(c -> String.valueOf((char) c))
-                                             .filter(value -> line.replace(value, "")
-                                                                  .length() == line.replace(",", "")
-                                                                                   .length() - 1)
+                                             .filter(c -> line.replace((char) c, Character.MIN_VALUE)
+                                                              .length() == line.replace(",", "")
+                                                                               .length() - 1)
                                              .count())
                             .reduce(Long::sum)
                             .orElse(-1L);
