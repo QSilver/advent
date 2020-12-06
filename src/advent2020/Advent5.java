@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 public class Advent5 {
     public static void main(String[] args) {
         List<Integer> seats = Util.fileStream("advent2020/advent5")
-                                  .map(s -> s.replace("F", "0")
-                                             .replace("B", "1")
-                                             .replace("L", "0")
-                                             .replace("R", "1"))
+                                  .map(s -> s.chars()
+                                             .map(c -> (c / 7) % 2)
+                                             .mapToObj(String::valueOf)
+                                             .collect(Collectors.joining()))
                                   .map(strings -> Integer.parseInt(strings, 2))
                                   .sorted()
                                   .collect(Collectors.toList());
