@@ -12,7 +12,7 @@ public class Advent6 {
                                            .distinct()
                                            .count())
                           .reduce(Long::sum)
-                          .get();
+                          .orElse(-1L);
         log.info("{}", anyone);
 
         Long everyone = Util.fileStream("advent2020/advent6")
@@ -24,7 +24,7 @@ public class Advent6 {
                                                                                    .length() - 1)
                                              .count())
                             .reduce(Long::sum)
-                            .get();
+                            .orElse(-1L);
         log.info("{}", everyone);
     }
 }
