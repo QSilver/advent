@@ -31,14 +31,8 @@ public class Advent7 {
                                      .split(" contain ");
                 String outer = split[0].replace(" ", "");
                 List<BagPair> bagPairs = Arrays.stream(split[1].split(", "))
-                                               .map(bag -> {
-                                                   String[] s = bag.split(" ");
-                                                   try {
-                                                       return new BagPair(Integer.parseInt(s[0]), s[1] + s[2]);
-                                                   } catch (Exception e) {
-                                                       return null;
-                                                   }
-                                               })
+                                               .map(Advent7::mapBag)
+                                               .filter(Objects::nonNull)
                                                .collect(Collectors.toList());
                 bags.put(outer, bagPairs);
             });
@@ -56,8 +50,6 @@ public class Advent7 {
             BagPair input = available.poll();
             List<BagPair> output = newArrayList();
             bags.get(input.type)
-                .stream()
-                .filter(Objects::nonNull)
                 .forEach(bagPair -> output.add(new BagPair(input.number * bagPair.number, bagPair.type)));
             output.forEach(bagPair -> count.getAndAdd(bagPair.number));
             available.addAll(output);
@@ -71,7 +63,6 @@ public class Advent7 {
             String poll = available.poll().type;
             bags.forEach((key, value) -> {
                 if (value.stream()
-                         .filter(Objects::nonNull)
                          .anyMatch(bagPair -> bagPair.type.equals(poll))) {
                     available.add(new BagPair(1, key));
                     haveSeen.add(key);
@@ -79,6 +70,15 @@ public class Advent7 {
             });
         }
         return haveSeen.size();
+    }
+
+    private static BagPair mapBag(String bag) {
+        String[] s = bag.split(" ");
+        try {
+            return new BagPair(Integer.parseInt(s[0]), s[1] + s[2]);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
 
