@@ -44,26 +44,25 @@ public class Advent7 {
             });
 
         available.add(new BagPair(1, "shinygold"));
-        int size = countOuterBags();
-        log.info("Bags {}", size);
+        log.info("Bags {}", countOuterBags());
 
         available.add(new BagPair(1, "shinygold"));
-        AtomicInteger count = new AtomicInteger();
-        while (!available.isEmpty()) {
-            List<BagPair> innerBags = digForBag(available.poll());
-            innerBags.forEach(bagPair -> count.addAndGet(bagPair.number));
-            available.addAll(innerBags);
-        }
-        log.info("Bags {}", count.get());
+        log.info("Bags {}", countInnerBags());
     }
 
-    private static List<BagPair> digForBag(BagPair input) {
-        List<BagPair> output = newArrayList();
-        bags.get(input.type)
-            .stream()
-            .filter(Objects::nonNull)
-            .forEach(bagPair -> output.add(new BagPair(input.number * bagPair.number, bagPair.type)));
-        return output;
+    private static int countInnerBags() {
+        AtomicInteger count = new AtomicInteger();
+        while (!available.isEmpty()) {
+            BagPair input = available.poll();
+            List<BagPair> output = newArrayList();
+            bags.get(input.type)
+                .stream()
+                .filter(Objects::nonNull)
+                .forEach(bagPair -> output.add(new BagPair(input.number * bagPair.number, bagPair.type)));
+            output.forEach(bagPair -> count.getAndAdd(bagPair.number));
+            available.addAll(output);
+        }
+        return count.get();
     }
 
     private static int countOuterBags() {
