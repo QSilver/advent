@@ -118,12 +118,12 @@ class Advent22Helper {
 
         Stream<String> stringStream = shuffleInstructions.stream()
                                                          .map(ShuffleInstruction::toString);
-        Files.write(Paths.get(".\\resources", "advent2019/advent22"), (Iterable<String>) stringStream::iterator);
+        Files.write(Paths.get(".\\resources", "advent2019/advent22-p1"), (Iterable<String>) stringStream::iterator);
     }
 
     private static ArrayList<ShuffleInstruction> getShuffleInstructions() {
         ArrayList<ShuffleInstruction> shuffleInstructions = newArrayList();
-        Util.fileStream("advent2019/advent22")
+        Util.fileStream("advent2019/advent22-p1")
             .forEach(s -> {
                 String[] splitLine = s.split(" ");
                 try {
