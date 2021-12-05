@@ -31,7 +31,7 @@ public class Advent5 {
                           .stream()
                           .filter(integer -> integer > 1)
                           .count();
-        log.info("P1 Overlap: {}", count);
+        log.info("Overlap: {}", count);
     }
 
     private static void markLine(Line line) {
