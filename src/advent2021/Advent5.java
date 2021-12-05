@@ -35,19 +35,19 @@ public class Advent5 {
     }
 
     private static void markLine(Line line) {
-        Pair<Integer, Integer> increment = getIncrementPair(line);
+        Pair<Integer, Integer> movePair = getMovePair(line);
 
         int i = line.A.X;
         int j = line.A.Y;
         while (i != line.B.X || j != line.B.Y) {
             board.merge(new Point(i, j), 1, Integer::sum);
-            i += increment.getFirst();
-            j += increment.getSecond();
+            i += movePair.getFirst();
+            j += movePair.getSecond();
         }
         board.merge(new Point(i, j), 1, Integer::sum);
     }
 
-    private static Pair<Integer, Integer> getIncrementPair(Line line) {
+    private static Pair<Integer, Integer> getMovePair(Line line) {
         int i_increment = 0;
         int j_increment = 0;
 
@@ -79,11 +79,6 @@ public class Advent5 {
             String[] split = input.split(",");
             X = Integer.parseInt(split[0]);
             Y = Integer.parseInt(split[1]);
-        }
-
-        @Override
-        public String toString() {
-            return X + "," + Y;
         }
     }
 
