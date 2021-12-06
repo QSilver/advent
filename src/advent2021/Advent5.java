@@ -6,9 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
 import util.Util;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Maps.newHashMap;
 
@@ -17,15 +15,9 @@ public class Advent5 {
     public static Map<Point, Integer> board = newHashMap();
 
     public static void main(String[] args) {
-        List<Line> collect = Util.fileStream("advent2021/advent5")
-                                 .map(s -> {
-                                     String[] split = s.split(" -> ");
-                                     return new Line(new Point(split[0]), new Point(split[1]));
-                                 })
-                                 .collect(Collectors.toList());
-
-
-        collect.forEach(Advent5::markLine);
+        Util.fileStream("advent2021/advent5")
+            .map(Line::new)
+            .forEach(Advent5::markLine);
 
         long count = board.values()
                           .stream()
@@ -86,5 +78,11 @@ public class Advent5 {
     static class Line {
         Point A;
         Point B;
+
+        public Line(String input) {
+            String[] split = input.split(" -> ");
+            A = new Point(split[0]);
+            B = new Point(split[1]);
+        }
     }
 }
