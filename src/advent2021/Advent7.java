@@ -19,7 +19,7 @@ public class Advent7 {
         double median = crabs.stream()
                              .sorted()
                              .skip(Math.max(0, (((long) crabs.size() + 1) >> 1) - 1))
-                             .limit(1 + (1 + (long) crabs.size()) % 2)
+                             .limit(1 + (1 + (long) crabs.size() & 1))
                              .mapToInt(Integer::intValue)
                              .average()
                              .getAsDouble();
