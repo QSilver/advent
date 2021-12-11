@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newLinkedList;
 
@@ -19,17 +17,15 @@ public class Advent11 {
         int[][] octopusMap = new int[SIZE][SIZE];
         boolean[][] hasFlashed = new boolean[SIZE][SIZE];
 
-        List<String> collect = Util.fileStream("advent2021/advent11")
-                                   .collect(Collectors.toList());
-
         AtomicInteger row = new AtomicInteger();
-        collect.forEach(s -> {
-            String[] split = s.split("");
-            AtomicInteger col = new AtomicInteger();
-            Arrays.stream(split)
-                  .forEach(c -> octopusMap[row.get()][col.getAndIncrement()] = Integer.parseInt(c));
-            row.getAndIncrement();
-        });
+        Util.fileStream("advent2021/advent11")
+            .forEach(s -> {
+                String[] split = s.split("");
+                AtomicInteger col = new AtomicInteger();
+                Arrays.stream(split)
+                      .forEach(c -> octopusMap[row.get()][col.getAndIncrement()] = Integer.parseInt(c));
+                row.getAndIncrement();
+            });
 
         int flashes = 0;
         int step = 0;
@@ -77,7 +73,7 @@ public class Advent11 {
             }
 
             step++;
-            log.info("After step {} - {}", step, flashes);
+            log.info("After step {} - {} flashes", step, flashes);
         }
     }
 }
