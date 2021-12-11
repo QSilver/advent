@@ -72,6 +72,11 @@ public class Advent5 {
             X = Integer.parseInt(split[0]);
             Y = Integer.parseInt(split[1]);
         }
+
+        @Override
+        public String toString() {
+            return "{" + X + "," + Y + '}';
+        }
     }
 
     @AllArgsConstructor
