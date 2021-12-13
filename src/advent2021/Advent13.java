@@ -63,7 +63,7 @@ public class Advent13 {
             StringBuilder sb = new StringBuilder();
             for (int j = 0; j <= maxY; j++) {
                 if (points.contains(new Advent5.Point(i, j))) {
-                    sb.append("X ");
+                    sb.append("██");
                 } else {
                     sb.append("  ");
                 }
