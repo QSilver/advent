@@ -16,7 +16,6 @@ public class Advent14 {
     public static void main(String[] args) {
         List<String> lines = Util.fileStream("advent2021/advent14")
                                  .collect(Collectors.toList());
-
         String base = lines.remove(0);
         lines.remove(0);
 
@@ -24,13 +23,7 @@ public class Advent14 {
                                              .map(s -> s.split(" -> "))
                                              .collect(Collectors.toMap(strings -> strings[0], strings -> strings[1]));
 
-
-        Map<String, Long> pairs = newHashMap();
-        for (int c = 1; c < base.length(); c++) {
-            pairs.merge(String.valueOf(base.charAt(c - 1)) +
-                    base.charAt(c), 1L, Long::sum);
-        }
-
+        Map<String, Long> pairs = formBasePairs(base);
         for (int step = 1; step <= STEPS; step++) {
             log.info("Step: {}", step);
             Map<String, Long> newPairs = newHashMap();
@@ -45,6 +38,11 @@ public class Advent14 {
             pairs.putAll(newPairs);
         }
 
+        long result = countPairs(pairs);
+        log.info("P1: {}", result);
+    }
+
+    private static long countPairs(Map<String, Long> pairs) {
         Map<Character, Long> charMap = newHashMap();
         pairs.forEach((pair, count) -> {
             String[] split = pair.split("");
@@ -60,6 +58,15 @@ public class Advent14 {
                                            .stream()
                                            .min(Long::compareTo)
                                            .orElse(-1L) / 2.0);
-        log.info("P1: {}", max - min);
+        return max - min;
+    }
+
+    private static Map<String, Long> formBasePairs(String base) {
+        Map<String, Long> pairs = newHashMap();
+        for (int c = 1; c < base.length(); c++) {
+            pairs.merge(String.valueOf(base.charAt(c - 1)) +
+                    base.charAt(c), 1L, Long::sum);
+        }
+        return pairs;
     }
 }
