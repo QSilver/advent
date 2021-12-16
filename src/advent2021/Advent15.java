@@ -5,7 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.PriorityQueue;
+
+import static java.lang.Math.min;
 
 @Slf4j
 public class Advent15 {
@@ -18,6 +21,26 @@ public class Advent15 {
                                               .map(Integer::parseInt)
                                               .toArray(Integer[]::new))
                               .toArray(Integer[][]::new);
+
+        int[][] newMap = multiplyInput(map, 5);
+
+        int[][] dynamic = new int[newMap.length][newMap[0].length];
+        dynamic[0][0] = newMap[0][0];
+        for (int i = 1; i < newMap.length; i++) {
+            dynamic[i][0] = newMap[i][0] + dynamic[i - 1][0];
+        }
+        for (int j = 1; j < newMap[0].length; j++) {
+            dynamic[0][j] = newMap[0][j] + dynamic[0][j - 1];
+        }
+
+        for (int i = 1; i < newMap.length; i++) {
+            for (int j = 1; j < newMap[0].length; j++) {
+                dynamic[i][j] = min(dynamic[i - 1][j], dynamic[i][j - 1]) + newMap[i][j];
+            }
+        }
+
+        int finalScore = dynamic[dynamic.length - 1][dynamic[0].length - 1];
+        log.info("Lowest Total Risk: {}", finalScore - dynamic[0][0]);
 
         solve(map, 1);
         solve(map, 5);
@@ -47,24 +70,23 @@ public class Advent15 {
 
     private static int getShortestPath(int[][] newMap) {
         int[][] dist = setInitialDistances(newMap);
-        PriorityQueue<Cell> queue = new PriorityQueue<>(newMap.length * newMap[0].length);
+        PriorityQueue<Cell> queue = new PriorityQueue<>(Comparator.comparingInt(value -> value.distance));
         queue.add(new Cell(0, 0, dist[0][0]));
 
         while (!queue.isEmpty()) {
-            Cell curr = queue.poll();
-            for (int i = 0; i < 4; i++) {
-                int rows = curr.x + DX[i];
-                int cols = curr.y + DY[i];
+            Cell curr = queue.remove();
+            for (int n = 0; n < 4; n++) {
+                int i = curr.x + DX[n];
+                int j = curr.y + DY[n];
 
-                if (rows >= 0 && rows < newMap.length && cols >= 0 && cols < newMap[0].length) {
-                    if (dist[rows][cols] > dist[curr.x][curr.y] + newMap[rows][cols]) {
-                        if (dist[rows][cols] != Integer.MAX_VALUE) {
-                            Cell adj = new Cell(rows, cols, dist[rows][cols]);
-                            queue.remove(adj);
+                if (i >= 0 && i < newMap.length && j >= 0 && j < newMap[0].length) {
+                    if (dist[i][j] > dist[curr.x][curr.y] + newMap[i][j]) {
+                        if (dist[i][j] != Integer.MAX_VALUE) {
+                            queue.remove(new Cell(i, j, dist[i][j]));
                         }
 
-                        dist[rows][cols] = dist[curr.x][curr.y] + newMap[rows][cols];
-                        queue.add(new Cell(rows, cols, dist[rows][cols]));
+                        dist[i][j] = dist[curr.x][curr.y] + newMap[i][j];
+                        queue.add(new Cell(i, j, dist[i][j]));
                     }
                 }
             }
@@ -84,14 +106,9 @@ public class Advent15 {
     }
 
     @AllArgsConstructor
-    static class Cell implements Comparable<Cell> {
+    static class Cell {
         int x;
         int y;
         int distance;
-
-        @Override
-        public int compareTo(Cell other) {
-            return Integer.compare(this.distance, other.distance);
-        }
     }
 }
