@@ -11,13 +11,14 @@ import static com.google.common.collect.Lists.newArrayList;
 @Slf4j
 public class Advent18 {
     public static void main(String[] args) {
+        long start = System.currentTimeMillis();
         List<String> inputs = Util.fileStream("advent2021/advent18")
                                   .collect(Collectors.toList());
-
         List<List<Snailfish>> numbers = inputs.stream()
                                               .map(Advent18::getSnailfish)
                                               .collect(Collectors.toList());
         solveP2(numbers);
+        log.info("{}ms", System.currentTimeMillis() - start);
     }
 
     private static void solveP1(List<List<Snailfish>> numbers) {
