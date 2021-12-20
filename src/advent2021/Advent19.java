@@ -87,7 +87,7 @@ public class Advent19 {
         }
         log.info("P2: {}", maxDistance);
 
-        log.info("{}ms", System.currentTimeMillis() - start);
+        log.info("{} ms", System.currentTimeMillis() - start);
     }
 
     private static int manhattan(Scanner scanner1, Scanner scanner2) {

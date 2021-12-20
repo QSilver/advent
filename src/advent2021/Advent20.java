@@ -25,7 +25,7 @@ public class Advent20 {
 
         log.info("P1: {}", solve(points, 2));
         log.info("P2: {}", solve(points, 50));
-        log.info("{}ms", System.currentTimeMillis() - start);
+        log.info("{} ms", System.currentTimeMillis() - start);
     }
 
     private static int solve(Set<Advent5.Point> points, int iterations) {

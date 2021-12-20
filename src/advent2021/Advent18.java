@@ -18,7 +18,7 @@ public class Advent18 {
                                               .map(Advent18::getSnailfish)
                                               .collect(Collectors.toList());
         solveP2(numbers);
-        log.info("{}ms", System.currentTimeMillis() - start);
+        log.info("{} ms", System.currentTimeMillis() - start);
     }
 
     private static void solveP1(List<List<Snailfish>> numbers) {
