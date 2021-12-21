@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
@@ -64,12 +65,14 @@ public class Advent21 {
         return new ScorePair(score1, score2);
     }
 
+    @EqualsAndHashCode
     @AllArgsConstructor
     static class ScorePair {
         long score1;
         long score2;
     }
 
+    @EqualsAndHashCode
     @AllArgsConstructor
     static class GameNode {
         int current_score;
