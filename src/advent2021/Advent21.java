@@ -3,6 +3,7 @@ package advent2021;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
@@ -33,15 +34,15 @@ public class Advent21 {
         int pos2 = Integer.parseInt(inputs.get(1)
                                           .split(" ")[4]);
 
-        ScorePair dive = dive(new GameNode(0, 0, pos1, pos2));
-        log.info("P2: {}", Math.max(dive.score1, dive.score2));
+        ScorePair finalScore = play(new GameNode(0, 0, pos1, pos2));
+        log.info("P2: {}", Math.max(finalScore.score1, finalScore.score2));
         log.info("{} ms", System.currentTimeMillis() - start);
     }
 
-    static LoadingCache<GameNode, ScorePair> cache = CacheBuilder.newBuilder()
-                                                                 .build(CacheLoader.from(Advent21::dive));
+    static final LoadingCache<GameNode, ScorePair> CACHE = CacheBuilder.newBuilder()
+                                                                       .build(CacheLoader.from(Advent21::play));
 
-    private static ScorePair dive(GameNode node) {
+    private static ScorePair play(GameNode node) {
         if (node.current_score >= 21) {
             return new ScorePair(1, 0);
         }
@@ -56,17 +57,24 @@ public class Advent21 {
             int new_score = node.current_score + new_pos;
 
             GameNode newNode = new GameNode(node.other_score, new_score, node.other_pos, new_pos);
-            ScorePair newGame = cache.getUnchecked(newNode);
+            ScorePair newGame = CACHE.getUnchecked(newNode);
             score2 += newGame.score1 * OCCUR[d - 3];
             score1 += newGame.score2 * OCCUR[d - 3];
         }
         return new ScorePair(score1, score2);
     }
 
-    private record ScorePair(long score1, long score2) {
+    @AllArgsConstructor
+    static class ScorePair {
+        long score1;
+        long score2;
     }
 
-    private record GameNode(int current_score, int other_score, int current_pos, int other_pos) {
-
+    @AllArgsConstructor
+    static class GameNode {
+        int current_score;
+        int other_score;
+        int current_pos;
+        int other_pos;
     }
 }
