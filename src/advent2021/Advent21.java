@@ -21,16 +21,7 @@ public class Advent21 {
             {1, 2, 3, 4, 5, 6, 7},
             {2, 3, 4, 5, 6, 7, 8},
             {3, 4, 5, 6, 7, 8, 9}};
-
-    static final Map<Integer, Integer> DICE_VALUES = Map.of(
-            3, 1,
-            4, 3,
-            5, 6,
-            6, 7,
-            7, 6,
-            8, 3,
-            9, 1
-    );
+    static final int[] OCCUR = {1, 3, 6, 7, 6, 3, 1};
 
     static Map<GameNode, Long> GAME_CACHE = newHashMap();
 
@@ -39,14 +30,14 @@ public class Advent21 {
         List<String> inputs = Util.fileStream("advent2021/advent21")
                                   .toList();
 
-        int p1_pos = Integer.parseInt(inputs.get(0)
-                                            .split(" ")[4]);
-        int p2_pos = Integer.parseInt(inputs.get(1)
-                                            .split(" ")[4]);
+        int pos1 = Integer.parseInt(inputs.get(0)
+                                          .split(" ")[4]);
+        int pos2 = Integer.parseInt(inputs.get(1)
+                                          .split(" ")[4]);
 
-        //solveP1(p1_pos, p2_pos, p1_Score, p2_Score);
+        //solveP1(pos1, pos2, p1_Score, p2_Score);
 
-        GameNode node = new GameNode(new Player(0, p1_pos), new Player(0, p2_pos), true);
+        GameNode node = new GameNode(new Player(0, pos1), new Player(0, pos2), true);
         GAME_CACHE.put(node, 1L);
 
         while (unfinishedGames()) {
@@ -55,7 +46,6 @@ public class Advent21 {
                       .forEach(game -> dive(game, temp));
             GAME_CACHE = temp;
         }
-
         log.info("P2: {}", getWinner());
         log.info("{} ms", System.currentTimeMillis() - start);
     }
@@ -92,7 +82,9 @@ public class Advent21 {
             temp.merge(node, count, Long::sum);
             return;
         }
-        DICE_VALUES.forEach((value, occur) -> temp.merge(node.move(value), count * occur, Long::sum));
+        for (int d = 3; d <= 9; d++) {
+            temp.merge(node.move(d), count * OCCUR[d - 3], Long::sum);
+        }
     }
 
     private record GameNode(Player p1, Player p2, boolean p1_turn) {
