@@ -8,11 +8,13 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
 public class Advent21 {
     static final int[][] MOVES = {
+            {0, 0, 0, 0, 0, 0, 0},
             {4, 5, 6, 7, 8, 9, 10},
             {5, 6, 7, 8, 9, 10, 1},
             {6, 7, 8, 9, 10, 1, 2},
@@ -24,6 +26,7 @@ public class Advent21 {
             {2, 3, 4, 5, 6, 7, 8},
             {3, 4, 5, 6, 7, 8, 9}};
     static final int[] OCCUR = {1, 3, 6, 7, 6, 3, 1};
+    private static final int TARGET = 21;
 
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
@@ -36,7 +39,7 @@ public class Advent21 {
                                           .split(" ")[4]);
 
         ScorePair finalScore = play(new GameNode(0, 0, pos1, pos2));
-        log.info("P2: {}", Math.max(finalScore.score1, finalScore.score2));
+        log.info("P2: {}", finalScore.score1.max(finalScore.score2));
         log.info("{} ms", System.currentTimeMillis() - start);
     }
 
@@ -44,23 +47,22 @@ public class Advent21 {
                                                                        .build(CacheLoader.from(Advent21::play));
 
     private static ScorePair play(GameNode node) {
-        if (node.current_score >= 21) {
-            return new ScorePair(1, 0);
+        if (node.current_score >= TARGET) {
+            return new ScorePair(new BigDecimal(1), new BigDecimal(0));
         }
-        if (node.other_score >= 21) {
-            return new ScorePair(0, 1);
+        if (node.other_score >= TARGET) {
+            return new ScorePair(new BigDecimal(0), new BigDecimal(1));
         }
 
-        long score1 = 0;
-        long score2 = 0;
-        for (int d = 3; d <= 9; d++) {
-            int new_pos = MOVES[node.current_pos - 1][d - 3];
+        BigDecimal score1 = new BigDecimal(0);
+        BigDecimal score2 = new BigDecimal(0);
+        for (int d = 0; d <= 6; d++) {
+            int new_pos = MOVES[node.current_pos][d];
             int new_score = node.current_score + new_pos;
-
-            GameNode newNode = new GameNode(node.other_score, new_score, node.other_pos, new_pos);
-            ScorePair newGame = CACHE.getUnchecked(newNode);
-            score2 += newGame.score1 * OCCUR[d - 3];
-            score1 += newGame.score2 * OCCUR[d - 3];
+            ScorePair newGame = CACHE.getUnchecked(new GameNode(node.other_score, new_score, node.other_pos, new_pos));
+            BigDecimal multiplicand = BigDecimal.valueOf(OCCUR[d]);
+            score2 = score2.add(newGame.score1.multiply(multiplicand));
+            score1 = score1.add(newGame.score2.multiply(multiplicand));
         }
         return new ScorePair(score1, score2);
     }
@@ -68,8 +70,8 @@ public class Advent21 {
     @EqualsAndHashCode
     @AllArgsConstructor
     static class ScorePair {
-        long score1;
-        long score2;
+        BigDecimal score1;
+        BigDecimal score2;
     }
 
     @EqualsAndHashCode
