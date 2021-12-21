@@ -1,12 +1,12 @@
 package advent2021;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.google.common.collect.Maps.newHashMap;
 
 @Slf4j
 public class Advent21 {
@@ -23,8 +23,6 @@ public class Advent21 {
             {3, 4, 5, 6, 7, 8, 9}};
     static final int[] OCCUR = {1, 3, 6, 7, 6, 3, 1};
 
-    static Map<GameNode, Long> GAME_CACHE = newHashMap();
-
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
         List<String> inputs = Util.fileStream("advent2021/advent21")
@@ -35,97 +33,40 @@ public class Advent21 {
         int pos2 = Integer.parseInt(inputs.get(1)
                                           .split(" ")[4]);
 
-        //solveP1(pos1, pos2, p1_Score, p2_Score);
-
-        GameNode node = new GameNode(new Player(0, pos1), new Player(0, pos2), true);
-        GAME_CACHE.put(node, 1L);
-
-        while (unfinishedGames()) {
-            Map<GameNode, Long> temp = newHashMap();
-            GAME_CACHE.keySet()
-                      .forEach(game -> dive(game, temp));
-            GAME_CACHE = temp;
-        }
-        log.info("P2: {}", getWinner());
+        ScorePair dive = dive(new GameNode(0, 0, pos1, pos2));
+        log.info("P2: {}", Math.max(dive.score1, dive.score2));
         log.info("{} ms", System.currentTimeMillis() - start);
     }
 
-    private static long getWinner() {
-        long p1_wins = GAME_CACHE.entrySet()
-                                 .stream()
-                                 .filter(entry -> entry.getKey().p1.score >= 21)
-                                 .map(Map.Entry::getValue)
-                                 .reduce(Long::sum)
-                                 .orElse(-1L);
+    static LoadingCache<GameNode, ScorePair> cache = CacheBuilder.newBuilder()
+                                                                 .build(CacheLoader.from(Advent21::dive));
 
-        long p2_wins = GAME_CACHE.entrySet()
-                                 .stream()
-                                 .filter(entry -> entry.getKey().p2.score >= 21)
-                                 .map(Map.Entry::getValue)
-                                 .reduce(Long::sum)
-                                 .orElse(-1L);
-        long winner = Math.max(p1_wins, p2_wins);
-        log.info("P1 wins: {}", p1_wins);
-        log.info("P2 wins: {}", p2_wins);
-        return winner;
-    }
-
-    private static boolean unfinishedGames() {
-        return GAME_CACHE.keySet()
-                         .stream()
-                         .anyMatch(game -> !game.isFinished());
-    }
-
-    private static void dive(GameNode node, Map<GameNode, Long> temp) {
-        long count = GAME_CACHE.getOrDefault(node, 0L);
-        if (node.isFinished()) {
-            temp.merge(node, count, Long::sum);
-            return;
+    private static ScorePair dive(GameNode node) {
+        if (node.current_score >= 21) {
+            return new ScorePair(1, 0);
         }
+        if (node.other_score >= 21) {
+            return new ScorePair(0, 1);
+        }
+
+        long score1 = 0;
+        long score2 = 0;
         for (int d = 3; d <= 9; d++) {
-            temp.merge(node.move(d), count * OCCUR[d - 3], Long::sum);
+            int new_pos = MOVES[node.current_pos - 1][d - 3];
+            int new_score = node.current_score + new_pos;
+
+            GameNode newNode = new GameNode(node.other_score, new_score, node.other_pos, new_pos);
+            ScorePair newGame = cache.getUnchecked(newNode);
+            score2 += newGame.score1 * OCCUR[d - 3];
+            score1 += newGame.score2 * OCCUR[d - 3];
         }
+        return new ScorePair(score1, score2);
     }
 
-    private record GameNode(Player p1, Player p2, boolean p1_turn) {
-        public boolean isFinished() {
-            return p1.score >= 21 || p2.score >= 21;
-        }
-
-        public GameNode move(int dice) {
-            if (p1_turn) {
-                return new GameNode(p1.move(dice), p2, false);
-            }
-            return new GameNode(p1, p2.move(dice), true);
-        }
+    private record ScorePair(long score1, long score2) {
     }
 
-    private record Player(int score, int pos) {
-        public Player move(int dice) {
-            var newPosition = MOVES[pos - 1][dice - 3];
-            var newPoints = score + newPosition;
-            return new Player(newPoints, newPosition);
-        }
-    }
+    private record GameNode(int current_score, int other_score, int current_pos, int other_pos) {
 
-    private static void solveP1(int p1_Pos, int p2_Pos, int p1_Score, int p2_Score) {
-        int rolls = 1;
-        while (p1_Score < 1000 && p2_Score < 1000) {
-            int p1_rolledNumber = (3 * rolls + 3) % 10;
-            p1_Pos = (p1_Pos + p1_rolledNumber) % 10 == 0 ? 10 : (p1_Pos + p1_rolledNumber) % 10;
-            p1_Score += p1_Pos;
-            log.info("P1 rolls {} and moves to {} for total score of {}", p1_rolledNumber, p1_Pos, p1_Score);
-
-            rolls += 3;
-            if (p1_Score < 1000) {
-                int p2_rolledNumber = (3 * rolls + 3) % 10;
-                p2_Pos = (p2_Pos + p2_rolledNumber) % 10 == 0 ? 10 : (p2_Pos + p2_rolledNumber) % 10;
-                p2_Score += p2_Pos;
-                log.info("P2 rolls {} and moves to {} for total score of {}", p2_rolledNumber, p2_Pos, p2_Score);
-                rolls += 3;
-            }
-        }
-        log.info("rolls {} score {}", rolls, p2_Score);
-        log.info("P1: {}", (rolls - 1) * p2_Score);
     }
 }
