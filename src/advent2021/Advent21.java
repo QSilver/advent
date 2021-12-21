@@ -11,17 +11,16 @@ import static com.google.common.collect.Maps.newHashMap;
 @Slf4j
 public class Advent21 {
     static final int[][] MOVES = {
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 4, 5, 6, 7, 8, 9, 10},
-            {0, 0, 0, 5, 6, 7, 8, 9, 10, 1},
-            {0, 0, 0, 6, 7, 8, 9, 10, 1, 2},
-            {0, 0, 0, 7, 8, 9, 10, 1, 2, 3},
-            {0, 0, 0, 8, 9, 10, 1, 2, 3, 4},
-            {0, 0, 0, 9, 10, 1, 2, 3, 4, 5},
-            {0, 0, 0, 10, 1, 2, 3, 4, 5, 6},
-            {0, 0, 0, 1, 2, 3, 4, 5, 6, 7},
-            {0, 0, 0, 2, 3, 4, 5, 6, 7, 8},
-            {0, 0, 0, 3, 4, 5, 6, 7, 8, 9}};
+            {4, 5, 6, 7, 8, 9, 10},
+            {5, 6, 7, 8, 9, 10, 1},
+            {6, 7, 8, 9, 10, 1, 2},
+            {7, 8, 9, 10, 1, 2, 3},
+            {8, 9, 10, 1, 2, 3, 4},
+            {9, 10, 1, 2, 3, 4, 5},
+            {10, 1, 2, 3, 4, 5, 6},
+            {1, 2, 3, 4, 5, 6, 7},
+            {2, 3, 4, 5, 6, 7, 8},
+            {3, 4, 5, 6, 7, 8, 9}};
 
     static final Map<Integer, Integer> DICE_VALUES = Map.of(
             3, 1,
@@ -111,7 +110,7 @@ public class Advent21 {
 
     private record Player(int score, int pos) {
         public Player move(int dice) {
-            var newPosition = MOVES[pos][dice];
+            var newPosition = MOVES[pos - 1][dice - 3];
             var newPoints = score + newPosition;
             return new Player(newPoints, newPosition);
         }
