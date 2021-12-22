@@ -8,6 +8,7 @@ import util.Util;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Sets.newHashSet;
 
@@ -17,21 +18,13 @@ public class Advent22 {
         long start = System.currentTimeMillis();
         List<Cuboid> cuboids = Util.fileStream("advent2021/advent22")
                                    .map(Cuboid::new)
-                                   .toList();
+                                   .collect(Collectors.toList());
 
-        Set<Cuboid> active = newHashSet();
+        Set<Cuboid> active = newHashSet(cuboids.remove(0));
         for (Cuboid cuboid : cuboids) {
-            if (active.isEmpty()) {
-                if (cuboid.on) {
-                    active = newHashSet(cuboid);
-                    continue;
-                }
-            }
-
             active = active.stream()
-                           .flatMap(other -> other.split(cuboid)
-                                                  .stream())
-                           .filter(other -> !other.fullyContains(cuboid))
+                           .flatMap(other -> cuboid.overlaps(other) ? other.split(cuboid) : Stream.of(other))
+                           .filter(splits -> !cuboid.fullyContains(splits))
                            .collect(Collectors.toSet());
             if (cuboid.on) {
                 active.add(cuboid);
@@ -77,59 +70,58 @@ public class Advent22 {
             this.max_z = Integer.parseInt(z[1]) + 1;
         }
 
+        boolean overlaps(Cuboid other) {
+            long x_overlap = Math.max(0, Math.min(max_x, other.max_x + 1) - Math.max(min_x, other.min_x - 1));
+            long y_overlap = Math.max(0, Math.min(max_y, other.max_y + 1) - Math.max(min_y, other.min_y - 1));
+            long z_overlap = Math.max(0, Math.min(max_z, other.max_z + 1) - Math.max(min_z, other.min_z - 1));
+            return x_overlap > 0 && y_overlap > 0 && z_overlap > 0;
+        }
+
         boolean fullyContains(Cuboid other) {
-            return other.min_x >= min_x &&
-                    other.max_x <= max_x &&
-                    other.min_y >= min_y &&
-                    other.max_y <= max_y &&
-                    other.min_z >= min_z &&
-                    other.max_z <= max_z;
+            return other.min_x >= min_x && other.max_x <= max_x && other.min_y >= min_y && other.max_y <= max_y && other.min_z >= min_z && other.max_z <= max_z;
         }
 
-        Set<Cuboid> split(Cuboid other) {
-            Set<Cuboid> splits = newHashSet(this);
-            splits.addAll(splitX(other.min_x));
-            splits.addAll(splitX(other.max_x));
-            splits.addAll(splitY(other.min_y));
-            splits.addAll(splitY(other.max_y));
-            splits.addAll(splitZ(other.min_z));
-            splits.addAll(splitZ(other.max_z));
-            return splits;
+        Stream<Cuboid> split(Cuboid other) {
+            return Stream.of(this)
+                         .flatMap(cuboid -> cuboid.splitX(other.min_x))
+                         .flatMap(cuboid -> cuboid.splitX(other.max_x))
+                         .flatMap(cuboid -> cuboid.splitY(other.min_y))
+                         .flatMap(cuboid -> cuboid.splitY(other.max_y))
+                         .flatMap(cuboid -> cuboid.splitZ(other.min_z))
+                         .flatMap(cuboid -> cuboid.splitZ(other.max_z));
         }
 
-        Set<Cuboid> splitX(long x) {
-            Set<Cuboid> splits = newHashSet(this);
+        private Stream<Cuboid> splitX(long x) {
             if (x > min_x && x < max_x) {
-                splits.add(new Cuboid(on, x, max_x, min_y, max_y, min_z, max_z));
-                splits.add(new Cuboid(on, min_x, x, min_y, max_y, min_z, max_z));
+                return Stream.of(
+                        new Cuboid(on, min_x, x, min_y, max_y, min_z, max_z),
+                        new Cuboid(on, x, max_x, min_y, max_y, min_z, max_z)
+                );
+            } else {
+                return Stream.of(this);
             }
-            return splits;
         }
 
-        Set<Cuboid> splitY(long y) {
-            Set<Cuboid> splits = newHashSet(this);
+        private Stream<Cuboid> splitY(long y) {
             if (y > min_y && y < max_y) {
-                splits.add(new Cuboid(on, min_x, max_x, y, max_y, min_z, max_z));
-                splits.add(new Cuboid(on, min_x, max_x, min_y, y, min_z, max_z));
+                return Stream.of(
+                        new Cuboid(on, min_x, max_x, min_y, y, min_z, max_z),
+                        new Cuboid(on, min_x, max_x, y, max_y, min_z, max_z)
+                );
+            } else {
+                return Stream.of(this);
             }
-            return splits;
         }
 
-        Set<Cuboid> splitZ(long z) {
-            Set<Cuboid> splits = newHashSet(this);
+        private Stream<Cuboid> splitZ(long z) {
             if (z > min_z && z < max_z) {
-                splits.add(new Cuboid(on, min_x, max_x, min_y, max_y, z, max_z));
-                splits.add(new Cuboid(on, min_x, max_x, min_y, max_y, min_z, z));
+                return Stream.of(
+                        new Cuboid(on, min_x, max_x, min_y, max_y, min_z, z),
+                        new Cuboid(on, min_x, max_x, min_y, max_y, z, max_z)
+                );
+            } else {
+                return Stream.of(this);
             }
-            return splits;
-        }
-
-        @Override
-        public String toString() {
-            return (on ? "on" : "off") + " "
-                    + "x=" + min_x + ".." + (max_x - 1) + ","
-                    + "y" + min_y + ".." + (max_y - 1) + ","
-                    + "z=" + min_z + ".." + (max_z - 1);
         }
     }
 }
