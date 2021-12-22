@@ -2,6 +2,7 @@ package advent2021;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
@@ -29,7 +30,6 @@ public class Advent22 {
             if (cuboid.on) {
                 active.add(cuboid);
             }
-            log.info("Currently active {}", active.size());
         }
 
         long overlap = active.stream()
@@ -39,6 +39,7 @@ public class Advent22 {
         log.info("{} ms", System.currentTimeMillis() - start);
     }
 
+    @With
     @EqualsAndHashCode
     @AllArgsConstructor
     static class Cuboid {
@@ -78,7 +79,9 @@ public class Advent22 {
         }
 
         boolean fullyContains(Cuboid other) {
-            return other.min_x >= min_x && other.max_x <= max_x && other.min_y >= min_y && other.max_y <= max_y && other.min_z >= min_z && other.max_z <= max_z;
+            return other.min_x >= min_x && other.max_x <= max_x &&
+                    other.min_y >= min_y && other.max_y <= max_y &&
+                    other.min_z >= min_z && other.max_z <= max_z;
         }
 
         Stream<Cuboid> split(Cuboid other) {
@@ -93,10 +96,7 @@ public class Advent22 {
 
         private Stream<Cuboid> splitX(long x) {
             if (x > min_x && x < max_x) {
-                return Stream.of(
-                        new Cuboid(on, min_x, x, min_y, max_y, min_z, max_z),
-                        new Cuboid(on, x, max_x, min_y, max_y, min_z, max_z)
-                );
+                return Stream.of(this.withMin_x(x), this.withMax_x(x));
             } else {
                 return Stream.of(this);
             }
@@ -104,10 +104,7 @@ public class Advent22 {
 
         private Stream<Cuboid> splitY(long y) {
             if (y > min_y && y < max_y) {
-                return Stream.of(
-                        new Cuboid(on, min_x, max_x, min_y, y, min_z, max_z),
-                        new Cuboid(on, min_x, max_x, y, max_y, min_z, max_z)
-                );
+                return Stream.of(this.withMin_y(y), this.withMax_y(y));
             } else {
                 return Stream.of(this);
             }
@@ -115,10 +112,7 @@ public class Advent22 {
 
         private Stream<Cuboid> splitZ(long z) {
             if (z > min_z && z < max_z) {
-                return Stream.of(
-                        new Cuboid(on, min_x, max_x, min_y, max_y, min_z, z),
-                        new Cuboid(on, min_x, max_x, min_y, max_y, z, max_z)
-                );
+                return Stream.of(this.withMin_z(z), this.withMax_z(z));
             } else {
                 return Stream.of(this);
             }
