@@ -77,10 +77,12 @@ public class Advent23 {
         }
 
         log.info("Min Cost: {}", currentBest);
-        do {
-            log.info("{}", winningMove);
-            winningMove = winningMove.parent;
-        } while (winningMove.parent != null);
+        if (winningMove != null) {
+            do {
+                log.info("{}", winningMove);
+                winningMove = winningMove.parent;
+            } while (winningMove.parent != null);
+        }
     }
 
     @AllArgsConstructor
