@@ -51,19 +51,17 @@ public class Advent23 {
         PriorityQueue<State> queue = new PriorityQueue<>(Comparator.comparingInt(state -> state.cost));
         queue.add(starting);
 
-        int currentBest = Integer.MAX_VALUE;
-        State winningMove = null;
+        State winningMove = new State(null, null, null, Integer.MAX_VALUE);
         while (!queue.isEmpty()) {
             State current = queue.poll();
-            if (current.cost >= currentBest) {
+            if (current.cost >= winningMove.cost) {
                 break;
             }
 
             List<State> possibleMoves = current.getPossibleMoves();
             for (State newState : possibleMoves) {
                 if (newState.isDone()) {
-                    if (newState.cost < currentBest) {
-                        currentBest = newState.cost;
+                    if (newState.cost < winningMove.cost) {
                         winningMove = newState;
                     }
                 } else {
@@ -76,12 +74,10 @@ public class Advent23 {
             }
         }
 
-        log.info("Min Cost: {}", currentBest);
-        if (winningMove != null) {
-            do {
-                log.info("{}", winningMove);
-                winningMove = winningMove.parent;
-            } while (winningMove.parent != null);
+        log.info("Min Cost: {}", winningMove.cost);
+        while (winningMove.parent != null) {
+            log.info("{}", winningMove);
+            winningMove = winningMove.parent;
         }
     }
 
