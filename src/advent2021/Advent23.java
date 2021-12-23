@@ -63,7 +63,7 @@ public class Advent23 {
                 if (newState.isDone()) {
                     winningMove = newState.cost < winningMove.cost ? newState : winningMove;
                 } else {
-                    String game = newState.shorten();
+                    String game = newState.toString();
                     if (newState.cost < MEMORY.getOrDefault(game, Integer.MAX_VALUE)) {
                         MEMORY.put(game, newState.cost);
                         queue.add(newState);
@@ -241,21 +241,6 @@ public class Advent23 {
             newRooms.put(hallway.get(currentPos), newRoom);
             int newCost = (STACK_SIZE - roomToMove.size() + abs(currentPos - newPos)) * ENERGY.get(remove);
             return new State(this, newHallway, newRooms, cost + newCost);
-        }
-
-        public String shorten() {
-            StringBuilder shorten = new StringBuilder();
-            shorten.append(hallway.stream()
-                                  .map(String::valueOf)
-                                  .collect(Collectors.joining())
-                                  .substring(1)
-                                  .replace('x', '.'));
-            for (int i = 3; i >= 0; i--) {
-                for (char c : newArrayList('A', 'B', 'C', 'D')) {
-                    shorten.append(getString(c, i));
-                }
-            }
-            return shorten.toString();
         }
 
         @Override
