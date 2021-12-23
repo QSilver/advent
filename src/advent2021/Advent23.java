@@ -61,11 +61,9 @@ public class Advent23 {
             List<State> possibleMoves = current.getPossibleMoves();
             for (State newState : possibleMoves) {
                 if (newState.isDone()) {
-                    if (newState.cost < winningMove.cost) {
-                        winningMove = newState;
-                    }
+                    winningMove = newState.cost < winningMove.cost ? newState : winningMove;
                 } else {
-                    String game = newState.toString();
+                    String game = newState.shorten();
                     if (newState.cost < MEMORY.getOrDefault(game, Integer.MAX_VALUE)) {
                         MEMORY.put(game, newState.cost);
                         queue.add(newState);
@@ -75,6 +73,10 @@ public class Advent23 {
         }
 
         log.info("Min Cost: {}", winningMove.cost);
+        displayWinningMove(winningMove);
+    }
+
+    private static void displayWinningMove(State winningMove) {
         while (winningMove.parent != null) {
             log.info("{}", winningMove);
             winningMove = winningMove.parent;
@@ -241,18 +243,40 @@ public class Advent23 {
             return new State(this, newHallway, newRooms, cost + newCost);
         }
 
+        public String shorten() {
+            StringBuilder shorten = new StringBuilder();
+            shorten.append(hallway.stream()
+                                  .map(String::valueOf)
+                                  .collect(Collectors.joining())
+                                  .substring(1)
+                                  .replace('x', '.'));
+            for (int i = 3; i >= 0; i--) {
+                for (char c : newArrayList('A', 'B', 'C', 'D')) {
+                    shorten.append(getString(c, i));
+                }
+            }
+            return shorten.toString();
+        }
+
         @Override
         public String toString() {
-            return "\n#############\n" + "#" + hallway.stream()
-                                                      .map(String::valueOf)
-                                                      .collect(Collectors.joining())
-                                                      .substring(1)
-                                                      .replace('x', '.') + "#\n" +
-                    "###" + getString('A', 3) + "#" + getString('B', 3) + "#" + getString('C', 3) + "#" + getString('D', 3) + "###\n" +
-                    "  #" + getString('A', 2) + "#" + getString('B', 2) + "#" + getString('C', 2) + "#" + getString('D', 2) + "#  \n" +
-                    "  #" + getString('A', 1) + "#" + getString('B', 1) + "#" + getString('C', 1) + "#" + getString('D', 1) + "#  \n" +
-                    "  #" + getString('A', 0) + "#" + getString('B', 0) + "#" + getString('C', 0) + "#" + getString('D', 0) + "#  \n" +
-                    "  #########  ";
+            StringBuilder string = new StringBuilder();
+            string.append("\n");
+            string.append(hallway.stream()
+                                 .map(String::valueOf)
+                                 .collect(Collectors.joining())
+                                 .substring(1)
+                                 .replace('x', '.'));
+            string.append("\n ");
+            for (int i = 3; i >= 0; i--) {
+                string.append(" ");
+                for (char c : newArrayList('A', 'B', 'C', 'D')) {
+                    string.append(getString(c, i));
+                    string.append(" ");
+                }
+                string.append("\n ");
+            }
+            return string.substring(0, string.length() - 2);
         }
 
         private String getString(Character room, int pos) {
