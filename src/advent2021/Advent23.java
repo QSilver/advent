@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -118,162 +117,132 @@ public class Advent23 {
                         .count() == STACK_SIZE;
         }
 
-        private boolean isCorrectRoom(Character c, Integer position) {
+        private boolean canGoIntoRoom(Character c, int newPos) {
+            return HALLWAY_MAPPING.containsKey(newPos) && !isRoomDone(HALLWAY_MAPPING.get(newPos)) && isCorrectRoom(c, newPos) && canFitInRoom(c, newPos);
+        }
+
+        private boolean hallwayNotBlocked(int newPos) {
+            return hallway.get(newPos) == '0' || hallway.get(newPos) == 'x';
+        }
+
+        private boolean isCorrectRoom(Character c, int position) {
             return HALLWAY_MAPPING.get(position) == c;
         }
 
-        private boolean canFit(Character c, Stack<Character> room) {
-            if (room.isEmpty()) {
+        private boolean canFitInRoom(Character c, int position) {
+            if (rooms.get(HALLWAY_MAPPING.get(position))
+                     .isEmpty()) {
                 return true;
             }
             // return false if any char in the room doesn't belong there
-            return room.stream()
-                       .noneMatch(character -> character != c);
+            return rooms.get(HALLWAY_MAPPING.get(position))
+                        .stream()
+                        .noneMatch(character -> character != c);
         }
 
         List<State> getPossibleMoves() {
             List<State> possibleMoves = newArrayList();
-            for (int i = 1; i <= 11; i++) {
-                if (hallway.get(i) != '0') {
-                    if (hallway.get(i) != 'x') {
-                        // can move from hallway to room
-                        for (int j = i - 1; j >= 3; j--) {
-                            if (hallwayToRoom(possibleMoves, i, j)) {
-                                break;
-                            }
+            for (int currentPos = 1; currentPos <= 11; currentPos++) {
+                // if not empty space
+                if (hallway.get(currentPos) != '0') {
+                    // if current is in hallway
+                    if (hallway.get(currentPos) != 'x') {
+                        // can move from hallway to room - left/right
+                        for (int newPos = currentPos - 1; newPos >= 3 && hallwayNotBlocked(newPos); newPos--) {
+                            moveOutOfHallway(possibleMoves, currentPos, newPos);
                         }
-                        for (int j = i + 1; j <= 9; j++) {
-                            if (hallwayToRoom(possibleMoves, i, j)) {
-                                break;
-                            }
+                        for (int newPos = currentPos + 1; newPos <= 9 && hallwayNotBlocked(newPos); newPos++) {
+                            moveOutOfHallway(possibleMoves, currentPos, newPos);
                         }
-                    } else if (hallway.get(i) == 'x') {
-                        if (!isRoomDone(HALLWAY_MAPPING.get(i))) {
-                            // can move out of room
-                            for (int j = i - 1; j >= 1; j--) {
-                                if (moveOutOfRoom(possibleMoves, i, j)) {
-                                    break;
-                                }
-                            }
-                            for (int j = i + 1; j <= 11; j++) {
-                                if (moveOutOfRoom(possibleMoves, i, j)) {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return possibleMoves.stream()
-                                .filter(Objects::nonNull)
-                                .filter(state -> state.cost < CURRENT_BEST)
-                                .toList();
-        }
-
-        private boolean moveOutOfRoom(List<State> possibleMoves, int i, int j) {
-            if (hallway.get(j) != '0') {
-                // hallway blocked
-                if (hallway.get(j) != 'x') {
-                    return true;
-                }
-                // try move into room
-                possibleMoves.add(roomToRoom(i, j));
-            }
-            // move into hallway
-            if (hallway.get(j) == '0') {
-                possibleMoves.add(roomToHallway(i, j));
-            }
-            return false;
-        }
-
-        private State roomToHallway(int i, int j) {
-            Stack<Character> currentRoom = rooms.get(HALLWAY_MAPPING.get(i));
-            if (currentRoom.size() > 0) {
-                Stack<Character> newRoom = new Stack<>();
-                newRoom.addAll(currentRoom);
-
-                List<Character> newHallway = newArrayList(hallway);
-                newHallway.remove(j);
-                Character pop = newRoom.pop();
-                newHallway.add(j, pop);
-
-                Map<Character, Stack<Character>> newRooms = newHashMap(rooms);
-                newRooms.put(HALLWAY_MAPPING.get(i), newRoom);
-                int newCost = (STACK_SIZE - newRoom.size() + abs(i - j)) * ENERGY.get(pop);
-                return new State(this, newHallway, newRooms, cost + newCost);
-            }
-            return null;
-        }
-
-        private State roomToRoom(int i, int j) {
-            Stack<Character> currentRoom = rooms.get(HALLWAY_MAPPING.get(i));
-            Stack<Character> moveInto = rooms.get(HALLWAY_MAPPING.get(j));
-            if (currentRoom.size() > 0) {
-                if (isCorrectRoom(currentRoom.peek(), j)) {
-                    if (canFit(currentRoom.peek(), moveInto)) {
+                    } else {
+                        // current is in room
+                        Stack<Character> currentRoom = rooms.get(HALLWAY_MAPPING.get(currentPos));
                         if (currentRoom.size() > 0) {
-                            Stack<Character> newCurrentRoom = new Stack<>();
-                            newCurrentRoom.addAll(currentRoom);
-
-                            Stack<Character> newMoveInto = new Stack<>();
-                            newMoveInto.addAll(moveInto);
-
-                            Character pop = newCurrentRoom.pop();
-                            newMoveInto.push(pop);
-
-                            List<Character> newHallway = newArrayList(hallway);
-
-                            Map<Character, Stack<Character>> newRooms = newHashMap(rooms);
-                            newRooms.put(HALLWAY_MAPPING.get(i), newCurrentRoom);
-                            newRooms.put(HALLWAY_MAPPING.get(j), newMoveInto);
-                            int newCost = (STACK_SIZE - newCurrentRoom.size() + STACK_SIZE - moveInto.size() + abs(i - j)) * ENERGY.get(pop);
-                            return new State(this, newHallway, newRooms, cost + newCost);
+                            // can move out of room - left/right
+                            for (int newPos = currentPos - 1; newPos >= 1 && hallwayNotBlocked(newPos); newPos--) {
+                                moveOutOfRoom(possibleMoves, currentPos, newPos);
+                            }
+                            for (int newPos = currentPos + 1; newPos <= 11 && hallwayNotBlocked(newPos); newPos++) {
+                                moveOutOfRoom(possibleMoves, currentPos, newPos);
+                            }
                         }
                     }
                 }
             }
-            return null;
+            return possibleMoves;
         }
 
-        private boolean hallwayToRoom(List<State> possibleMoves, int i, int j) {
-            if (hallway.get(j) != '0' && hallway.get(j) != 'x') {
-                // hallway blocked
-                return true;
+        private void moveOutOfRoom(List<State> possibleMoves, int currentPos, int newPos) {
+            if (canGoIntoRoom(hallway.get(currentPos), newPos)) {
+                possibleMoves.add(moveFromRoomToRoom(currentPos, newPos));
             }
-            Stack<Character> roomToMove = rooms.get(HALLWAY_MAPPING.get(j));
-            if (hallway.get(j) == 'x') {
-                if (isCorrectRoom(hallway.get(i), j)) {
-                    if (canFit(hallway.get(i), roomToMove)) {
-                        List<Character> newHallway = newArrayList(hallway);
-                        Character remove = newHallway.remove(i);
-                        newHallway.add(i, HALLWAY_MAPPING.containsKey(i) ? 'x' : '0');
-                        Stack<Character> newRoom = new Stack<>();
-                        newRoom.addAll(roomToMove);
-                        newRoom.push(hallway.get(i));
-                        Map<Character, Stack<Character>> newRooms = newHashMap(rooms);
-                        newRooms.put(hallway.get(i), newRoom);
-                        int newCost = (STACK_SIZE - roomToMove.size() + abs(i - j)) * ENERGY.get(remove);
-                        possibleMoves.add(new State(this, newHallway, newRooms, cost + newCost));
-                    }
-                }
+            // if not room or room is unsuitable; check if hallway is empty
+            if (hallway.get(newPos) == '0') {
+                possibleMoves.add(moveFromRoomIntoHallway(currentPos, newPos));
             }
-            return false;
+        }
+
+        private void moveOutOfHallway(List<State> possibleMoves, int currentPos, int newPos) {
+            if (canGoIntoRoom(hallway.get(currentPos), newPos)) {
+                possibleMoves.add(moveFromHallwayToRoom(currentPos, newPos));
+            }
+        }
+
+        private State moveFromRoomToRoom(int currentPos, int newPos) {
+            Stack<Character> newCurrentRoom = new Stack<>();
+            newCurrentRoom.addAll(rooms.get(HALLWAY_MAPPING.get(currentPos)));
+
+            Stack<Character> moveInto = rooms.get(HALLWAY_MAPPING.get(newPos));
+            Stack<Character> newMoveInto = new Stack<>();
+            newMoveInto.addAll(moveInto);
+
+            Character pop = newCurrentRoom.pop();
+            newMoveInto.push(pop);
+
+            Map<Character, Stack<Character>> newRooms = newHashMap(rooms);
+            newRooms.put(HALLWAY_MAPPING.get(currentPos), newCurrentRoom);
+            newRooms.put(HALLWAY_MAPPING.get(newPos), newMoveInto);
+            int newCost = (STACK_SIZE - newCurrentRoom.size() + STACK_SIZE - moveInto.size() + abs(currentPos - newPos)) * ENERGY.get(pop);
+            return new State(this, newArrayList(hallway), newRooms, cost + newCost);
+        }
+
+        private State moveFromRoomIntoHallway(int currentPos, int newPos) {
+            Stack<Character> newRoom = new Stack<>();
+            newRoom.addAll(rooms.get(HALLWAY_MAPPING.get(currentPos)));
+
+            List<Character> newHallway = newArrayList(hallway);
+            newHallway.remove(newPos);
+            Character pop = newRoom.pop();
+            newHallway.add(newPos, pop);
+
+            Map<Character, Stack<Character>> newRooms = newHashMap(rooms);
+            newRooms.put(HALLWAY_MAPPING.get(currentPos), newRoom);
+            int newCost = (STACK_SIZE - newRoom.size() + abs(currentPos - newPos)) * ENERGY.get(pop);
+            return new State(this, newHallway, newRooms, cost + newCost);
+        }
+
+        private State moveFromHallwayToRoom(int currentPos, int newPos) {
+            Stack<Character> roomToMove = rooms.get(HALLWAY_MAPPING.get(newPos));
+            List<Character> newHallway = newArrayList(hallway);
+            Character remove = newHallway.remove(currentPos);
+            newHallway.add(currentPos, HALLWAY_MAPPING.containsKey(currentPos) ? 'x' : '0');
+            Stack<Character> newRoom = new Stack<>();
+            newRoom.addAll(roomToMove);
+            newRoom.push(hallway.get(currentPos));
+            Map<Character, Stack<Character>> newRooms = newHashMap(rooms);
+            newRooms.put(hallway.get(currentPos), newRoom);
+            int newCost = (STACK_SIZE - roomToMove.size() + abs(currentPos - newPos)) * ENERGY.get(remove);
+            return new State(this, newHallway, newRooms, cost + newCost);
         }
 
         @Override
         public String toString() {
-            return "#############\n" +
-                    "#" + hallway.stream()
-                                 .map(String::valueOf)
-                                 .collect(Collectors.joining())
-                                 .substring(1)
-                                 .replace('x', '.')
-                                 .replace('0', '.') + "#\n" +
-                    "###" + getString('A', 3) + "#" + getString('B', 3) + "#" + getString('C', 3) + "#" + getString('D', 3) + "#  \n" +
-                    "  #" + getString('A', 2) + "#" + getString('B', 2) + "#" + getString('C', 2) + "#" + getString('D', 2) + "#  \n" +
-                    "  #" + getString('A', 1) + "#" + getString('B', 1) + "#" + getString('C', 1) + "#" + getString('D', 1) + "#  \n" +
-                    "  #" + getString('A', 0) + "#" + getString('B', 0) + "#" + getString('C', 0) + "#" + getString('D', 0) + "#  \n" +
-                    "  #########  ";
+            return "#############\n" + "#" + hallway.stream()
+                                                    .map(String::valueOf)
+                                                    .collect(Collectors.joining())
+                                                    .substring(1)
+                                                    .replace('x', '.')
+                                                    .replace('0', '.') + "#\n" + "###" + getString('A', 3) + "#" + getString('B', 3) + "#" + getString('C', 3) + "#" + getString('D', 3) + "#  \n" + "  #" + getString('A', 2) + "#" + getString('B', 2) + "#" + getString('C', 2) + "#" + getString('D', 2) + "#  \n" + "  #" + getString('A', 1) + "#" + getString('B', 1) + "#" + getString('C', 1) + "#" + getString('D', 1) + "#  \n" + "  #" + getString('A', 0) + "#" + getString('B', 0) + "#" + getString('C', 0) + "#" + getString('D', 0) + "#  \n" + "  #########  ";
         }
 
         private String getString(Character room, int pos) {
