@@ -2,11 +2,14 @@ package advent2021;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import util.Util;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -16,10 +19,12 @@ import static java.lang.Math.abs;
 
 @Slf4j
 public class Advent23 {
-    static final int STACK_SIZE = 4;
+    static int STACK_SIZE;
     static final Map<Integer, Character> HALLWAY_MAPPING = newHashMap();
     static final Map<Character, Integer> ENERGY = newHashMap();
     static final Map<String, Integer> MEMORY = newHashMap();
+    static final Queue<Character> EXTRA_ROW_1 = new LinkedList<>();
+    static final Queue<Character> EXTRA_ROW_2 = new LinkedList<>();
 
     static {
         ENERGY.put('A', 1);
@@ -31,29 +36,35 @@ public class Advent23 {
         HALLWAY_MAPPING.put(5, 'B');
         HALLWAY_MAPPING.put(7, 'C');
         HALLWAY_MAPPING.put(9, 'D');
-    }
 
-    static int CURRENT_BEST = Integer.MAX_VALUE;
-    static State WINNING_MOVE;
+        EXTRA_ROW_1.addAll(newArrayList('D', 'B', 'A', 'C'));
+        EXTRA_ROW_2.addAll(newArrayList('D', 'C', 'B', 'A'));
+    }
 
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
+        solve(new State(Util.lines("advent2021/advent23"), true));
+        log.info("{} ms", System.currentTimeMillis() - start);
+    }
 
+    private static void solve(State starting) {
         PriorityQueue<State> queue = new PriorityQueue<>(Comparator.comparingInt(state -> state.cost));
-        queue.add(new State());
+        queue.add(starting);
 
+        int currentBest = Integer.MAX_VALUE;
+        State winningMove = null;
         while (!queue.isEmpty()) {
             State current = queue.poll();
-            if (current.cost >= CURRENT_BEST) {
+            if (current.cost >= currentBest) {
                 break;
             }
 
             List<State> possibleMoves = current.getPossibleMoves();
             for (State newState : possibleMoves) {
                 if (newState.isDone()) {
-                    if (newState.cost < CURRENT_BEST) {
-                        CURRENT_BEST = newState.cost;
-                        WINNING_MOVE = newState;
+                    if (newState.cost < currentBest) {
+                        currentBest = newState.cost;
+                        winningMove = newState;
                     }
                 } else {
                     String game = newState.toString();
@@ -65,8 +76,11 @@ public class Advent23 {
             }
         }
 
-        log.info("Min Cost: {}", CURRENT_BEST);
-        log.info("{} ms", System.currentTimeMillis() - start);
+        log.info("Min Cost: {}", currentBest);
+        do {
+            log.info("{}", winningMove);
+            winningMove = winningMove.parent;
+        } while (winningMove.parent != null);
     }
 
     @AllArgsConstructor
@@ -76,34 +90,28 @@ public class Advent23 {
         Map<Character, Stack<Character>> rooms = newHashMap();
         int cost = 0;
 
-        public State() {
-            Stack<Character> A = new Stack<>();
-            A.push('D');
-            A.push('D');
-            A.push('D');
-            A.push('C');
-            rooms.put('A', A);
-            Stack<Character> B = new Stack<>();
-            B.push('C');
-            B.push('B');
-            B.push('C');
-            B.push('A');
-            rooms.put('B', B);
-            Stack<Character> C = new Stack<>();
-            C.push('A');
-            C.push('A');
-            C.push('B');
-            C.push('B');
-            rooms.put('C', C);
-            Stack<Character> D = new Stack<>();
-            D.push('B');
-            D.push('C');
-            D.push('A');
-            D.push('D');
-            rooms.put('D', D);
-            hallway = "-00x0x0x0x00".chars()
+        public State(List<String> input, boolean isPart2) {
+            String row3 = input.get(3);
+            String row2 = input.get(2);
+            rooms.put('A', getCharacters(row3.charAt(3), row2.charAt(3), isPart2));
+            rooms.put('B', getCharacters(row3.charAt(5), row2.charAt(5), isPart2));
+            rooms.put('C', getCharacters(row3.charAt(7), row2.charAt(7), isPart2));
+            rooms.put('D', getCharacters(row3.charAt(9), row2.charAt(9), isPart2));
+            hallway = "-..x.x.x.x..".chars()
                                     .mapToObj(value -> ((char) value))
                                     .collect(Collectors.toList());
+            STACK_SIZE = isPart2 ? 4 : 2;
+        }
+
+        private Stack<Character> getCharacters(char row3, char row2, boolean isPart2) {
+            Stack<Character> room = new Stack<>();
+            room.push(row3);
+            if (isPart2) {
+                room.push(EXTRA_ROW_1.poll());
+                room.push(EXTRA_ROW_2.poll());
+            }
+            room.push(row2);
+            return room;
         }
 
         boolean isDone() {
@@ -122,7 +130,7 @@ public class Advent23 {
         }
 
         private boolean hallwayNotBlocked(int newPos) {
-            return hallway.get(newPos) == '0' || hallway.get(newPos) == 'x';
+            return hallway.get(newPos) == '.' || hallway.get(newPos) == 'x';
         }
 
         private boolean isCorrectRoom(Character c, int position) {
@@ -144,7 +152,7 @@ public class Advent23 {
             List<State> possibleMoves = newArrayList();
             for (int currentPos = 1; currentPos <= 11; currentPos++) {
                 // if not empty space
-                if (hallway.get(currentPos) != '0') {
+                if (hallway.get(currentPos) != '.') {
                     // if current is in hallway
                     if (hallway.get(currentPos) != 'x') {
                         // can move from hallway to room - left/right
@@ -177,7 +185,7 @@ public class Advent23 {
                 possibleMoves.add(moveFromRoomToRoom(currentPos, newPos));
             }
             // if not room or room is unsuitable; check if hallway is empty
-            if (hallway.get(newPos) == '0') {
+            if (hallway.get(newPos) == '.') {
                 possibleMoves.add(moveFromRoomIntoHallway(currentPos, newPos));
             }
         }
@@ -225,7 +233,7 @@ public class Advent23 {
             Stack<Character> roomToMove = rooms.get(HALLWAY_MAPPING.get(newPos));
             List<Character> newHallway = newArrayList(hallway);
             Character remove = newHallway.remove(currentPos);
-            newHallway.add(currentPos, HALLWAY_MAPPING.containsKey(currentPos) ? 'x' : '0');
+            newHallway.add(currentPos, HALLWAY_MAPPING.containsKey(currentPos) ? 'x' : '.');
             Stack<Character> newRoom = new Stack<>();
             newRoom.addAll(roomToMove);
             newRoom.push(hallway.get(currentPos));
@@ -237,12 +245,16 @@ public class Advent23 {
 
         @Override
         public String toString() {
-            return "#############\n" + "#" + hallway.stream()
-                                                    .map(String::valueOf)
-                                                    .collect(Collectors.joining())
-                                                    .substring(1)
-                                                    .replace('x', '.')
-                                                    .replace('0', '.') + "#\n" + "###" + getString('A', 3) + "#" + getString('B', 3) + "#" + getString('C', 3) + "#" + getString('D', 3) + "#  \n" + "  #" + getString('A', 2) + "#" + getString('B', 2) + "#" + getString('C', 2) + "#" + getString('D', 2) + "#  \n" + "  #" + getString('A', 1) + "#" + getString('B', 1) + "#" + getString('C', 1) + "#" + getString('D', 1) + "#  \n" + "  #" + getString('A', 0) + "#" + getString('B', 0) + "#" + getString('C', 0) + "#" + getString('D', 0) + "#  \n" + "  #########  ";
+            return "\n#############\n" + "#" + hallway.stream()
+                                                      .map(String::valueOf)
+                                                      .collect(Collectors.joining())
+                                                      .substring(1)
+                                                      .replace('x', '.') + "#\n" +
+                    "###" + getString('A', 3) + "#" + getString('B', 3) + "#" + getString('C', 3) + "#" + getString('D', 3) + "###\n" +
+                    "  #" + getString('A', 2) + "#" + getString('B', 2) + "#" + getString('C', 2) + "#" + getString('D', 2) + "#  \n" +
+                    "  #" + getString('A', 1) + "#" + getString('B', 1) + "#" + getString('C', 1) + "#" + getString('D', 1) + "#  \n" +
+                    "  #" + getString('A', 0) + "#" + getString('B', 0) + "#" + getString('C', 0) + "#" + getString('D', 0) + "#  \n" +
+                    "  #########  ";
         }
 
         private String getString(Character room, int pos) {

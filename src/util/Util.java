@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -16,6 +18,10 @@ import static com.google.common.collect.Lists.newArrayList;
 @Slf4j
 public
 class Util {
+    public static List<String> lines(String fileName) {
+        return fileStream(fileName).collect(Collectors.toList());
+    }
+
     public static Stream<String> fileStream(String fileName) {
         try {
             return Files.lines(Paths.get(".\\resources", fileName));
