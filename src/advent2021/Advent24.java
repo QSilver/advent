@@ -21,7 +21,6 @@ public class Advent24 {
                                  .toList();
 
         Map<Integer, Integer> pairs = newHashMap();
-        Map<Integer, Integer> inverse = newHashMap();
         List<Integer> bounded = newArrayList();
         Stack<Integer> decision = new Stack<>();
         int[] popIndex = new int[14];
@@ -36,7 +35,7 @@ public class Advent24 {
                     } else {
                         Integer pop = decision.pop();
                         pairs.put(pop, line / 18);
-                        inverse.put(line / 18, pop);
+                        pairs.put(line / 18, pop);
                         bounded.add(pop);
                     }
                 }
@@ -60,14 +59,15 @@ public class Advent24 {
                          })
                          .collect(Collectors.toList());
 
-        var[bounded.get(0)] = upper[0];
-        var[bounded.get(1)] = upper[1];
-        var[bounded.get(2)] = upper[2];
-        var[bounded.get(3)] = upper[3];
-        var[bounded.get(4)] = upper[4];
-        var[bounded.get(5)] = upper[5];
-        var[bounded.get(6)] = upper[6];
-        inverse.forEach((key, value) -> var[key] = var[value] + pushIndex[value] + popIndex[pairs.get(value)]);
+        for (int i = 0; i < 7; i++) {
+            var[bounded.get(i)] = upper[i];
+        }
+
+        List<Integer> finalBounded = bounded;
+        pairs.entrySet()
+             .stream()
+             .filter(entry -> !finalBounded.contains(entry.getKey()))
+             .forEach(entry -> var[entry.getKey()] = var[entry.getValue()] + pushIndex[entry.getValue()] + popIndex[pairs.get(entry.getValue())]);
         StringBuilder maxVersion = new StringBuilder();
         for (int digit = 0; digit < 14; digit++) {
             maxVersion.append(var[digit]);
@@ -75,14 +75,13 @@ public class Advent24 {
         long max = Long.parseLong(maxVersion.toString());
         log.info("Max Version {}", max);
 
-        var[bounded.get(0)] = lower[0];
-        var[bounded.get(1)] = lower[1];
-        var[bounded.get(2)] = lower[2];
-        var[bounded.get(3)] = lower[3];
-        var[bounded.get(4)] = lower[4];
-        var[bounded.get(5)] = lower[5];
-        var[bounded.get(6)] = lower[6];
-        inverse.forEach((key, value) -> var[key] = var[value] + pushIndex[value] + popIndex[pairs.get(value)]);
+        for (int i = 0; i < 7; i++) {
+            var[bounded.get(i)] = lower[i];
+        }
+        pairs.entrySet()
+             .stream()
+             .filter(entry -> !finalBounded.contains(entry.getKey()))
+             .forEach(entry -> var[entry.getKey()] = var[entry.getValue()] + pushIndex[entry.getValue()] + popIndex[pairs.get(entry.getValue())]);
         StringBuilder version = new StringBuilder();
         for (int digit = 0; digit < 14; digit++) {
             version.append(var[digit]);
@@ -90,7 +89,5 @@ public class Advent24 {
         long min = Long.parseLong(version.toString());
         log.info("Min Version {}", min);
         log.info("{} ms", System.currentTimeMillis() - start);
-
-
     }
 }
