@@ -46,7 +46,6 @@ public class Advent24 {
         }
 
         int[] var = new int[14];
-        int[] bound = new int[14];
         int[] upper = new int[14];
         int[] lower = new int[14];
 
@@ -54,64 +53,44 @@ public class Advent24 {
         bounded = bounded.stream()
                          .sorted()
                          .map(integer -> {
-                             bound[integer] = pushIndex[integer] + popIndex[pairs.get(integer)];
-                             upper[index.get()] = 9 - max(0, bound[integer]);
-                             lower[index.get()] = max(0, -bound[integer]);
+                             upper[index.get()] = 9 - max(0, pushIndex[integer] + popIndex[pairs.get(integer)]);
+                             lower[index.get()] = max(0, -(pushIndex[integer] + popIndex[pairs.get(integer)])) + 1;
                              index.getAndIncrement();
                              return integer;
                          })
                          .collect(Collectors.toList());
 
-        long max = 0;
-        long min = 0;
-        for (var[bounded.get(0)] = upper[0]; var[bounded.get(0)] > lower[0]; var[bounded.get(0)]--) {
-            for (var[bounded.get(1)] = upper[1]; var[bounded.get(1)] > lower[1]; var[bounded.get(1)]--) {
-                for (var[bounded.get(2)] = upper[2]; var[bounded.get(2)] > lower[2]; var[bounded.get(2)]--) {
-                    for (var[bounded.get(3)] = upper[3]; var[bounded.get(3)] > lower[3]; var[bounded.get(3)]--) {
-                        for (var[bounded.get(4)] = upper[4]; var[bounded.get(4)] > lower[4]; var[bounded.get(4)]--) {
-                            for (var[bounded.get(5)] = upper[5]; var[bounded.get(5)] > lower[5]; var[bounded.get(5)]--) {
-                                for (var[bounded.get(6)] = upper[6]; var[bounded.get(6)] > lower[6]; var[bounded.get(6)]--) {
-                                    inverse.forEach((key, value) -> var[key] = var[value] + bound[value]);
-                                    StringBuilder version = new StringBuilder();
-                                    for (int digit = 0; digit < 14; digit++) {
-                                        version.append(var[digit]);
-                                    }
-                                    if (max == 0) {
-                                        max = Long.parseLong(version.toString());
-                                    }
-                                    min = Long.parseLong(version.toString());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        var[bounded.get(0)] = upper[0];
+        var[bounded.get(1)] = upper[1];
+        var[bounded.get(2)] = upper[2];
+        var[bounded.get(3)] = upper[3];
+        var[bounded.get(4)] = upper[4];
+        var[bounded.get(5)] = upper[5];
+        var[bounded.get(6)] = upper[6];
+        inverse.forEach((key, value) -> var[key] = var[value] + pushIndex[value] + popIndex[pairs.get(value)]);
+        StringBuilder maxVersion = new StringBuilder();
+        for (int digit = 0; digit < 14; digit++) {
+            maxVersion.append(var[digit]);
         }
+        long max = Long.parseLong(maxVersion.toString());
         log.info("Max Version {}", max);
+
+        var[bounded.get(0)] = lower[0];
+        var[bounded.get(1)] = lower[1];
+        var[bounded.get(2)] = lower[2];
+        var[bounded.get(3)] = lower[3];
+        var[bounded.get(4)] = lower[4];
+        var[bounded.get(5)] = lower[5];
+        var[bounded.get(6)] = lower[6];
+        inverse.forEach((key, value) -> var[key] = var[value] + pushIndex[value] + popIndex[pairs.get(value)]);
+        StringBuilder version = new StringBuilder();
+        for (int digit = 0; digit < 14; digit++) {
+            version.append(var[digit]);
+        }
+        long min = Long.parseLong(version.toString());
         log.info("Min Version {}", min);
         log.info("{} ms", System.currentTimeMillis() - start);
 
-//        for (int a = 9; a > 3; a--) {
-//            for (int b = 6; b > 0; b--) {
-//                for (int c = 9; c > 7; c--) {
-//                    for (int e = 9; e > 0; e--) {
-//                        for (int f = 9; f > 6; f--) {
-//                            for (int g = 9; g > 5; g--) {
-//                                for (int i = 2; i > 0; i--) {
-//                                    int d = c - 7;
-//                                    int h = g - 5;
-//                                    int j = i + 7;
-//                                    int k = f - 6;
-//                                    int l = e;
-//                                    int m = b + 3;
-//                                    int n = a - 3;
-//                                    log.info("Found {}", "" + a + b + c + d + e + f + g + h + i + j + k + l + m + n);
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+
     }
 }
