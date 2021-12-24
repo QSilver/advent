@@ -87,7 +87,7 @@ public class Advent24 {
                 }
             }
         }
-        log.info("Max Verison {}", max);
+        log.info("Max Version {}", max);
         log.info("Min Version {}", min);
         log.info("{} ms", System.currentTimeMillis() - start);
     }
