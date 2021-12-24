@@ -90,5 +90,28 @@ public class Advent24 {
         log.info("Max Version {}", max);
         log.info("Min Version {}", min);
         log.info("{} ms", System.currentTimeMillis() - start);
+
+//        for (int a = 9; a > 3; a--) {
+//            for (int b = 6; b > 0; b--) {
+//                for (int c = 9; c > 7; c--) {
+//                    for (int e = 9; e > 0; e--) {
+//                        for (int f = 9; f > 6; f--) {
+//                            for (int g = 9; g > 5; g--) {
+//                                for (int i = 2; i > 0; i--) {
+//                                    int d = c - 7;
+//                                    int h = g - 5;
+//                                    int j = i + 7;
+//                                    int k = f - 6;
+//                                    int l = e;
+//                                    int m = b + 3;
+//                                    int n = a - 3;
+//                                    log.info("Found {}", "" + a + b + c + d + e + f + g + h + i + j + k + l + m + n);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }
