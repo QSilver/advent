@@ -62,6 +62,8 @@ public class Advent24 {
                          })
                          .collect(Collectors.toList());
 
+        long max = 0;
+        long min = 0;
         for (var[bounded.get(0)] = upper[0]; var[bounded.get(0)] > lower[0]; var[bounded.get(0)]--) {
             for (var[bounded.get(1)] = upper[1]; var[bounded.get(1)] > lower[1]; var[bounded.get(1)]--) {
                 for (var[bounded.get(2)] = upper[2]; var[bounded.get(2)] > lower[2]; var[bounded.get(2)]--) {
@@ -74,7 +76,10 @@ public class Advent24 {
                                     for (int digit = 0; digit < 14; digit++) {
                                         version.append(var[digit]);
                                     }
-                                    log.info("Found {}", version);
+                                    if (max == 0) {
+                                        max = Long.parseLong(version.toString());
+                                    }
+                                    min = Long.parseLong(version.toString());
                                 }
                             }
                         }
@@ -82,6 +87,8 @@ public class Advent24 {
                 }
             }
         }
+        log.info("Max Verison {}", max);
+        log.info("Min Version {}", min);
         log.info("{} ms", System.currentTimeMillis() - start);
     }
 }
