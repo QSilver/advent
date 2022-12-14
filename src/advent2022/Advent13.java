@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-// 1052801021 - too low
 @Slf4j
 public class Advent13 {
     public static void main(String[] args) {

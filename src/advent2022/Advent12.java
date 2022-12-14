@@ -11,7 +11,6 @@ import java.util.PriorityQueue;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-// 1052801021 - too low
 @Slf4j
 public class Advent12 {
     private static final int[] DX = {-1, 1, 0, 0};
