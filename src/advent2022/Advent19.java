@@ -11,47 +11,65 @@ import java.util.stream.Collectors;
 import static java.lang.Math.max;
 
 // 2287 - too low
+// 8398 - too low P2
 @Slf4j
 public class Advent19 {
+    static int[] triangular = {
+            0, 1, 3, 6, 10,
+            15, 21, 28, 36, 45,
+            55, 66, 78, 91, 105,
+            120, 136, 153, 171, 190,
+            210, 231, 253, 276, 300,
+            325, 351, 378, 406, 435,
+            465, 496, 528};
+
     public static void main(String[] args) {
         List<Blueprint> blueprints = Util.fileStream("advent2022/advent19")
                 .map(Blueprint::new)
                 .collect(Collectors.toList());
 
         Turn startingTurn = new Turn(0, 0, 0, 0, 0, 1, 0, 0, 0);
-        part1(blueprints, startingTurn);
+        solve(blueprints, startingTurn, 24);
+        solve(blueprints.subList(0, 3), startingTurn, 32);
     }
 
-    private static void part1(List<Blueprint> blueprints, Turn startingTurn) {
-        blueprints.forEach(blueprint -> {
-            DFS(blueprint, startingTurn);
+    private static void solve(List<Blueprint> blueprints, Turn startingTurn, int maxTurns) {
+        blueprints.stream().parallel().forEach(blueprint -> {
+            DFS(blueprint, startingTurn, maxTurns);
             log.info("Blueprint {} - Max Geodes: {}", blueprint.id, blueprint.maxGeodes);
         });
         int totalQuality = blueprints.stream().mapToInt(blueprint -> blueprint.id * blueprint.maxGeodes).sum();
         log.info("Total Quality: {}", totalQuality);
+        int geodeProduct = blueprints.stream().mapToInt(blueprint -> blueprint.maxGeodes).reduce((left, right) -> left * right).getAsInt();
+        log.info("Geode Product: {}", geodeProduct);
     }
 
-    static void DFS(Blueprint blueprint, Turn turn) {
-        if (turn.minute == 24) {
-            if (blueprint.maxGeodes < turn.geode) {
-                blueprint.maxGeodes = turn.geode;
+    static void DFS(Blueprint blueprint, Turn turn, int maxTurns) {
+        if (turn.minute == maxTurns) {
+            if (turn.geodes > blueprint.maxGeodes) {
+                blueprint.maxGeodes = turn.geodes;
             }
             return;
         }
 
+        // we use triangular numbers to prune branches that cannot generate enough geodes to beat current max
+        if (turn.geodes + turn.geodeGenRobots * (maxTurns - turn.minute) + triangular[maxTurns - turn.minute] < blueprint.maxGeodes) {
+            return;
+        }
+
         if (turn.canBuildGeodeRobot(blueprint)) {
-            DFS(blueprint, turn.buildGeodeRobot(blueprint));
+            DFS(blueprint, turn.buildGeodeRobot(blueprint), maxTurns);
         } else {
             if (turn.canBuildObsiRobot(blueprint)) {
-                DFS(blueprint, turn.buildObsiRobot(blueprint));
+                DFS(blueprint, turn.buildObsiRobot(blueprint), maxTurns);
             }
             if (turn.canBuildClayRobot(blueprint)) {
-                DFS(blueprint, turn.buildClayRobot(blueprint));
+                DFS(blueprint, turn.buildClayRobot(blueprint), maxTurns);
             }
             if (turn.canBuildOreRobot(blueprint)) {
-                DFS(blueprint, turn.buildOreRobot(blueprint));
+                DFS(blueprint, turn.buildOreRobot(blueprint), maxTurns);
             }
-            DFS(blueprint, turn.mine());
+            DFS(blueprint, turn.mine(), maxTurns);
         }
     }
 
@@ -61,7 +79,7 @@ public class Advent19 {
         int ore;
         int clay;
         int obsi;
-        int geode;
+        int geodes;
         int oreGenRobots;
         int clayGenRobots;
         int obsiGenRobots;
@@ -72,7 +90,7 @@ public class Advent19 {
                     ore + oreGenRobots,
                     clay + clayGenRobots,
                     obsi + obsiGenRobots,
-                    geode + geodeGenRobots,
+                    geodes + geodeGenRobots,
                     oreGenRobots,
                     clayGenRobots,
                     obsiGenRobots,
@@ -105,7 +123,7 @@ public class Advent19 {
                     ore + oreGenRobots - blueprint.oreRobot.oreCost,
                     clay + clayGenRobots,
                     obsi + obsiGenRobots,
-                    geode + geodeGenRobots,
+                    geodes + geodeGenRobots,
                     oreGenRobots + 1,
                     clayGenRobots,
                     obsiGenRobots,
@@ -117,7 +135,7 @@ public class Advent19 {
                     ore + oreGenRobots - blueprint.clayRobot.oreCost,
                     clay + clayGenRobots,
                     obsi + obsiGenRobots,
-                    geode + geodeGenRobots,
+                    geodes + geodeGenRobots,
                     oreGenRobots,
                     clayGenRobots + 1,
                     obsiGenRobots,
@@ -129,7 +147,7 @@ public class Advent19 {
                     ore + oreGenRobots - blueprint.obsiRobot.oreCost,
                     clay + clayGenRobots - blueprint.obsiRobot.clayCost,
                     obsi + obsiGenRobots,
-                    geode + geodeGenRobots,
+                    geodes + geodeGenRobots,
                     oreGenRobots,
                     clayGenRobots,
                     obsiGenRobots + 1,
@@ -141,7 +159,7 @@ public class Advent19 {
                     ore + oreGenRobots - blueprint.geodeRobot.oreCost,
                     clay + clayGenRobots,
                     obsi + obsiGenRobots - blueprint.geodeRobot.obsiCost,
-                    geode + geodeGenRobots,
+                    geodes + geodeGenRobots,
                     oreGenRobots,
                     clayGenRobots,
                     obsiGenRobots,
@@ -153,12 +171,12 @@ public class Advent19 {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Turn turn = (Turn) o;
-            return minute == turn.minute && ore == turn.ore && clay == turn.clay && obsi == turn.obsi && geode == turn.geode && oreGenRobots == turn.oreGenRobots && clayGenRobots == turn.clayGenRobots && obsiGenRobots == turn.obsiGenRobots && geodeGenRobots == turn.geodeGenRobots;
+            return minute == turn.minute && ore == turn.ore && clay == turn.clay && obsi == turn.obsi && geodes == turn.geodes && oreGenRobots == turn.oreGenRobots && clayGenRobots == turn.clayGenRobots && obsiGenRobots == turn.obsiGenRobots && geodeGenRobots == turn.geodeGenRobots;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(minute, ore, clay, obsi, geode, oreGenRobots, clayGenRobots, obsiGenRobots, geodeGenRobots);
+            return Objects.hashCode(minute, ore, clay, obsi, geodes, oreGenRobots, clayGenRobots, obsiGenRobots, geodeGenRobots);
         }
     }
 
