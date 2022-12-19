@@ -28,7 +28,7 @@ public class Advent19 {
                 .collect(Collectors.toList());
 
         solve(blueprints, new Turn(24, 0, 0, 0, 0, 1, 0, 0, 0));
-//        solve(blueprints.subList(0, 3), new Turn(32, 0, 0, 0, 0, 1, 0, 0, 0));
+        solve(blueprints.subList(0, 3), new Turn(32, 0, 0, 0, 0, 1, 0, 0, 0));
     }
 
     private static void solve(List<Blueprint> blueprints, Turn startingTurn) {
