@@ -1,83 +1,113 @@
 package advent2022;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.util.Pair;
 import util.Util;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.floorMod;
 
-
+// 1214599383 - too low
 @Slf4j
 public class Advent20 {
-    static BiMap<Integer, Integer> positions = HashBiMap.create();
+    private static final long DECRYPTION_KEY = 811589153L;
 
     public static void main(String[] args) {
-        List<Integer> list = Util.fileStream("advent2022/advent20")
-                .map(Integer::parseInt)
+        AtomicReference<Node> zero = new AtomicReference<>();
+        List<Node> nodes = Util.fileStream("advent2022/advent20")
+                .map(Long::parseLong)
+                .map(value -> {
+                    Node node = new Node(value);
+                    if (value == 0) {
+                        zero.set(node);
+                    }
+                    return node;
+                })
                 .collect(Collectors.toList());
 
-        AtomicInteger index = new AtomicInteger();
-        list.forEach(value -> positions.put(index.getAndIncrement(), value));
+        setLinks(nodes);
+        mix(nodes);
+        calculateSum(zero);
 
-        List<Integer> display = positions.entrySet().stream()
-                .sorted(Comparator.comparingInt(Map.Entry::getKey))
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
-        log.info("{}", display);
+        setLinks(nodes);
+        nodes.forEach(node -> node.value *= DECRYPTION_KEY);
+        IntStream.range(0, 10).forEach(value -> mix(nodes));
+        calculateSum(zero);
+    }
 
-        for (Integer number : list) {
-            int oldPos = positions.inverse().get(number);
-            int newPos = floorMod(oldPos + number, list.size() - 1);
-
-            if (number >= 0) {
-                if (newPos >= oldPos) {
-                    decrementAll(oldPos, newPos);
-                } else {
-                    incrementAll(oldPos, newPos);
-                }
-                positions.forcePut(newPos, number);
-            } else {
-                if (newPos <= oldPos) {
-                    incrementAll(oldPos, newPos);
-                } else {
-                    decrementAll(oldPos, newPos);
-                }
-                positions.forcePut(newPos, number);
+    private static void calculateSum(AtomicReference<Node> zero) {
+        long sum = 0;
+        Node current = zero.get();
+        for (int i = 0; i <= 3000; i++) {
+            if (i % 1000 == 0) {
+                sum += current.value;
             }
-
-            display = positions.entrySet().stream()
-                    .sorted(Comparator.comparingInt(Map.Entry::getKey))
-                    .map(Map.Entry::getValue)
-                    .collect(Collectors.toList());
-            log.info("{} jumped {}", number, display);
+            current = current.next;
         }
-
-        int starting = positions.inverse().get(0);
-        Integer v1000 = positions.get((starting + 1000) % list.size());
-        Integer v2000 = positions.get((starting + 2000) % list.size());
-        Integer v3000 = positions.get((starting + 3000) % list.size());
-        log.info("Pos 1000: {}", v1000);
-        log.info("Pos 2000: {}", v2000);
-        log.info("Pos 3000: {}", v3000);
-        log.info("Sum: {}", v1000 + v2000 + v3000);
+        log.info("Sum: {}", sum);
     }
 
-    private static void decrementAll(int oldPos, int newPos) {
-        for (int jump = oldPos + 1; jump <= newPos; jump++) {
-            positions.forcePut(jump - 1, positions.get(jump));
+    private static void mix(List<Node> nodes) {
+        nodes.stream()
+                .map(node -> new Pair<>(node, node.value % (nodes.size() - 1)))
+                .filter(pair -> pair.getSecond() != 0)
+                .forEach(pair -> pair.getFirst().process(pair.getSecond()));
+    }
+
+    private static void setLinks(List<Node> nodes) {
+        for (int i = 0; i < nodes.size(); i++) {
+            nodes.get(i).prev = nodes.get(floorMod(i - 1, nodes.size()));
+            nodes.get(i).next = nodes.get(floorMod(i + 1, nodes.size()));
         }
     }
 
-    private static void incrementAll(int oldPos, int newPos) {
-        for (int jump = oldPos - 1; jump >= newPos; jump--) {
-            positions.forcePut(jump + 1, positions.get(jump));
+    static class Node {
+        Node prev;
+        long value;
+        Node next;
+
+        public Node(long value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value + "";
+        }
+
+        void process(long newPos) {
+            this.remove();
+            this.insertNodeAfter(this.getNewPosition(newPos));
+        }
+
+        void insertNodeAfter(Node newPrev) {
+            this.next = newPrev.next;
+            this.prev = newPrev;
+            this.next.prev = this;
+            this.prev.next = this;
+        }
+
+        Node getNewPosition(long newPos) {
+            Node newNode = prev;
+            if (this.value < 0) {
+                for (long i = 0; i > newPos; i--) {
+                    newNode = newNode.prev;
+                }
+            } else {
+                for (long i = 0; i < newPos; i++) {
+                    newNode = newNode.next;
+                }
+            }
+            return newNode;
+        }
+
+        void remove() {
+            this.prev.next = this.next;
+            this.next.prev = this.prev;
         }
     }
 }
