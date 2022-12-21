@@ -92,11 +92,6 @@ public class Advent21 {
             this.id = split[0];
             String[] strings = split[1].split(" ");
 
-            if (this.id.equals(HUMAN)) {
-                this.hasHuman = true;
-                this.value = -2;
-            }
-
             if (strings.length == 1) {
                 this.value = Long.parseLong(strings[0]);
             } else {
