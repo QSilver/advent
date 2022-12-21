@@ -13,18 +13,25 @@ public class Advent21 {
     public static final String ROOT = "root";
 
     public static void main(String[] args) {
-        part1();
-        part2();
+        Map<String, Monkey> monkeys = Util.fileStream("advent2022/advent21")
+                .map(Monkey::new)
+                .collect(Collectors.toMap(monkey -> monkey.id, monkey -> monkey));
+        initializeConnections(monkeys);
+
+        Monkey root = monkeys.get(ROOT);
+        log.info("Root: {}", root.getValue());
+
+        setHumanAncestors(monkeys);
+        calculateHumanBranch(root);
+
+        Monkey human = monkeys.get(HUMAN);
+        log.info("Human: {}", human.value);
     }
 
-    private static void part2() {
-        Map<String, MonkeyPart2> monkeysPart2 = Util.fileStream("advent2022/advent21")
-                .map(MonkeyPart2::new)
-                .collect(Collectors.toMap(monkey -> monkey.id, monkey -> monkey));
-
-        monkeysPart2.values().forEach(monkey -> {
-            monkey.left = monkeysPart2.get(monkey.leftId);
-            monkey.right = monkeysPart2.get(monkey.rightId);
+    private static void initializeConnections(Map<String, Monkey> monkeys) {
+        monkeys.values().forEach(monkey -> {
+            monkey.left = monkeys.get(monkey.leftId);
+            monkey.right = monkeys.get(monkey.rightId);
             if (monkey.left != null) {
                 monkey.left.prev = monkey;
             }
@@ -32,16 +39,20 @@ public class Advent21 {
                 monkey.right.prev = monkey;
             }
         });
+    }
 
-        MonkeyPart2 current = monkeysPart2.get(HUMAN);
+    private static void setHumanAncestors(Map<String, Monkey> monkeys) {
+        Monkey current = monkeys.get(HUMAN);
         while (!current.id.equals(ROOT)) {
             current.hasHuman = true;
             current = current.prev;
         }
-        MonkeyPart2 root = monkeysPart2.get(ROOT);
+        Monkey root = monkeys.get(ROOT);
         root.hasHuman = true;
         root.getValue();
+    }
 
+    private static void calculateHumanBranch(Monkey root) {
         if (root.left.hasHuman) {
             root.left.value = root.right.value;
             root.left.applyInverse();
@@ -49,22 +60,6 @@ public class Advent21 {
             root.right.value = root.left.value;
             root.right.applyInverse();
         }
-
-        MonkeyPart2 human = monkeysPart2.get(HUMAN);
-        log.info("Human: {}", human.value);
-    }
-
-    private static void part1() {
-        Map<String, Monkey> monkeys = Util.fileStream("advent2022/advent21")
-                .map(Monkey::new)
-                .collect(Collectors.toMap(monkey -> monkey.id, monkey -> monkey));
-
-        monkeys.values().forEach(monkey -> {
-            monkey.left = monkeys.get(monkey.leftId);
-            monkey.right = monkeys.get(monkey.rightId);
-        });
-
-        log.info("Root: {}", monkeys.get(ROOT).getValue());
     }
 
     static class Monkey {
@@ -76,63 +71,8 @@ public class Advent21 {
         Monkey right;
 
         String operation;
-
-        long getValue() {
-            if (this.value != -1) {
-                return value;
-            } else {
-                return applyOperation(left, right);
-            }
-        }
-
-        public Monkey(String line) {
-            String[] split = line.split(": ");
-            this.id = split[0];
-            String[] strings = split[1].split(" ");
-
-            if (strings.length == 1) {
-                this.value = Long.parseLong(strings[0]);
-            } else {
-                this.leftId = strings[0];
-                this.operation = strings[1];
-                this.rightId = strings[2];
-            }
-        }
-
-        private long applyOperation(Monkey left, Monkey right) {
-            long leftVal = left.getValue();
-            long rightVal = right.getValue();
-
-            switch (operation) {
-                case "*" -> {
-                    return leftVal * rightVal;
-                }
-                case "/" -> {
-                    return leftVal / rightVal;
-                }
-                case "+" -> {
-                    return leftVal + rightVal;
-                }
-                case "-" -> {
-                    return leftVal - rightVal;
-                }
-            }
-            log.error("Unknown Operation");
-            return -1;
-        }
-    }
-
-    static class MonkeyPart2 {
-        String id;
-        long value = -1;
-        String leftId;
-        MonkeyPart2 left;
-        String rightId;
-        MonkeyPart2 right;
-
-        String operation;
         boolean hasHuman;
-        MonkeyPart2 prev;
+        Monkey prev;
 
         @Override
         public String toString() {
@@ -140,13 +80,14 @@ public class Advent21 {
         }
 
         long getValue() {
+            // if uninitialized, calculate
             if (this.value == -1) {
                 this.value = applyOperation(left, right);
             }
             return this.value;
         }
 
-        public MonkeyPart2(String line) {
+        public Monkey(String line) {
             String[] split = line.split(": ");
             this.id = split[0];
             String[] strings = split[1].split(" ");
@@ -165,26 +106,18 @@ public class Advent21 {
             }
         }
 
-        private long applyOperation(MonkeyPart2 left, MonkeyPart2 right) {
+        private long applyOperation(Monkey left, Monkey right) {
             long leftVal = left.getValue();
             long rightVal = right.getValue();
 
+            long value = -1;
             switch (operation) {
-                case "*" -> {
-                    return leftVal * rightVal;
-                }
-                case "/" -> {
-                    return leftVal / rightVal;
-                }
-                case "+" -> {
-                    return leftVal + rightVal;
-                }
-                case "-" -> {
-                    return leftVal - rightVal;
-                }
+                case "+" -> value = leftVal + rightVal;
+                case "-" -> value = leftVal - rightVal;
+                case "*" -> value = leftVal * rightVal;
+                case "/" -> value = leftVal / rightVal;
             }
-            log.error("Unknown Operation");
-            return -1;
+            return value;
         }
 
         private void applyInverse() {
@@ -193,19 +126,21 @@ public class Advent21 {
             }
 
             if (left.hasHuman) {
+                // left = unknown
                 switch (operation) {
-                    case "+" -> left.value = this.value - right.value;
-                    case "-" -> left.value = this.value + right.value;
-                    case "*" -> left.value = this.value / right.value;
-                    case "/" -> left.value = this.value * right.value;
+                    case "+" -> left.value = this.value - right.value; // V=X+R -> X=V-R
+                    case "-" -> left.value = this.value + right.value; // V=X-R -> X=V+R
+                    case "*" -> left.value = this.value / right.value; // V=X*R -> X=V/R
+                    case "/" -> left.value = this.value * right.value; // V=X/R -> X=V*R
                 }
                 left.applyInverse();
             } else if (right.hasHuman) {
+                // right = unknown
                 switch (operation) {
-                    case "+" -> right.value = this.value - left.value;
-                    case "-" -> right.value = left.value - this.value;
-                    case "*" -> right.value = this.value / left.value;
-                    case "/" -> right.value = left.value / this.value;
+                    case "+" -> right.value = this.value - left.value; // V=L+X -> X=V-L
+                    case "-" -> right.value = left.value - this.value; // V=L-X -> X=L-V
+                    case "*" -> right.value = this.value / left.value; // V=L*X -> X=V/L
+                    case "/" -> right.value = left.value / this.value; // V=L/X -> X=L/V
                 }
                 right.applyInverse();
             }
