@@ -23,6 +23,7 @@ public class Advent22 {
     //   3
     // 4 5
     // 6
+    // refer to visual aid - resources/2022-day22.jpg
 
     static Map<Point, Point> map = newHashMap();
     static Player player = new Player();
