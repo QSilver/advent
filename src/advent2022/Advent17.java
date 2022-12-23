@@ -1,20 +1,28 @@
 package advent2022;
 
-import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.util.Pair;
 import util.Util;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
+// 1572093021178 - too low
+// 1572093023882 - too high
 @Slf4j
 public class Advent17 {
     static Set<Point> occupied = newHashSet();
+    static boolean[][] map = new boolean[50000][7];
+    static Map<Pair<String, Integer>, Pair<Integer, Integer>> memoization = newHashMap();
+    static Map<Pair<String, Integer>, String> state = newHashMap();
 
     public static void main(String[] args) {
         List<Character> directions = Util.fileStream("advent2022/advent17")
@@ -22,60 +30,56 @@ public class Advent17 {
                 .chars().mapToObj(e -> (char) e)
                 .collect(Collectors.toList());
 
-        solve(directions, 2022);
+        Pair<Pair<String, Integer>, Pair<Integer, Integer>> period = getPeriod(directions, 5600);
+
+        Integer periodTurns = period.getSecond().getFirst();
+        Integer periodHeight = period.getSecond().getSecond();
+        Integer initialTurns = memoization.get(period.getFirst()).getFirst();
+        Integer initialHeight = memoization.get(period.getFirst()).getSecond();
+
+        long cycles = (1000000000000L - initialTurns) / periodTurns + 1;
+        log.info("Max Height: {}", cycles * periodHeight + initialHeight - 1);
     }
 
-    private static void pruneOccupied() {
-        int[] maxHeightsPerCol = new int[7];
-        occupied.forEach(point -> {
-            if (point.down > maxHeightsPerCol[point.across]) {
-                maxHeightsPerCol[point.across] = point.down;
-            }
-        });
-        List<Point> toRemove = newArrayList();
-        occupied.forEach(point -> {
-            if (point.down < maxHeightsPerCol[point.across]) {
-                toRemove.add(point);
-            }
-        });
-        toRemove.forEach(occupied::remove);
-    }
-
-    private static void solve(List<Character> directions, int turns) {
+    private static Pair<Pair<String, Integer>, Pair<Integer, Integer>> getPeriod(List<Character> directions, int turns) {
         int maxHeight;
         int windIndex = 0;
         for (int turn = 1; turn <= turns; turn++) {
             maxHeight = occupied.size() > 0 ? occupied.stream().mapToInt(point -> point.down).max().getAsInt() : 0;
             Shape newRock = nextFallingRock(turn - 1, maxHeight + 1);
 
+            Pair<String, Integer> rockWindPair = new Pair<>(newRock.getClass().getSimpleName(), windIndex % directions.size());
             while (!newRock.settled) {
                 char wind = directions.get(windIndex++ % directions.size());
                 newRock.pushedByWind(wind);
                 newRock.fall();
             }
             occupied.addAll(newRock.points);
-//            pruneOccupied();
-//            draw();
-        }
+            occupied.stream()
+                    .sorted(Comparator.comparingInt(o -> o.down))
+                    .forEach(point -> map[point.down][point.across] = true);
 
-        maxHeight = occupied.stream().mapToInt(point -> point.down).max().getAsInt();
-        log.info("Max Height: {}", maxHeight);
+            if (memoization.containsKey(rockWindPair)) {
+                if (toByte(maxHeight).equals(state.get(rockWindPair))) {
+                    log.info("Found loop: {} - First {} @ {} - Second {} @ {}", rockWindPair, memoization.get(rockWindPair).getFirst(), memoization.get(rockWindPair).getSecond(), turn, maxHeight);
+                    Pair<Integer, Integer> period = new Pair<>(turn - memoization.get(rockWindPair).getFirst(), maxHeight - memoization.get(rockWindPair).getSecond());
+                    return new Pair<>(rockWindPair, period);
+                }
+            }
+            memoization.put(rockWindPair, new Pair<>(turn, maxHeight));
+            state.put(rockWindPair, toByte(maxHeight));
+        }
+        return null;
     }
 
-    static void draw() {
-        int maxHeight = occupied.size() > 0 ? occupied.stream().mapToInt(point -> point.down).max().getAsInt() : 0;
-        boolean[][] map = new boolean[maxHeight + 1][7];
-
-        occupied.forEach(point -> map[maxHeight - point.down][point.across] = true);
-
-        StringBuffer sb = new StringBuffer("\n");
-        for (boolean[] row : map) {
-            for (boolean pos : row) {
-                sb.append(pos ? "█" : " ");
+    static String toByte(int current) {
+        StringBuilder sb = new StringBuilder();
+        for (int iter = 0; iter < 10; iter++) {
+            for (boolean b : map[current]) {
+                sb.append(b ? 0 : 1);
             }
-            sb.append('\n');
         }
-        log.info("{}", sb);
+        return sb.toString();
     }
 
     static Shape nextFallingRock(int turn, int maxHeight) {
@@ -215,7 +219,7 @@ public class Advent17 {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(down, across);
+            return 100003 * down + across;
         }
     }
 }
