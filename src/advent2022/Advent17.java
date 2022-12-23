@@ -18,7 +18,6 @@ import static com.google.common.collect.Sets.newHashSet;
 @Slf4j
 public class Advent17 {
     public static final int CACHE_ROWS = 50;
-    public static final long MAX_TURNS = 1000000000000L;
     static Set<Point> occupied = newHashSet();
     static boolean[][] map = new boolean[50000][7];
     static Map<Pair<String, Integer>, Pair<Integer, Integer>> memoization = newHashMap();
@@ -30,20 +29,33 @@ public class Advent17 {
                 .chars().mapToObj(e -> (char) e)
                 .collect(Collectors.toList());
 
-        Pair<Pair<String, Integer>, Pair<Integer, Integer>> period = getPeriod(directions);
+        int maxTurns_part1 = 2022;
+        Pair<Pair<String, Integer>, Pair<Integer, Integer>> part1_period = getPeriod(directions, maxTurns_part1);
+        printSolution(part1_period, maxTurns_part1);
 
+        map = new boolean[50000][7];
+        occupied.clear();
+        memoization.clear();
+        state.clear();
+
+        long maxTurns_part2 = 1000000000L;
+        Pair<Pair<String, Integer>, Pair<Integer, Integer>> part2_period = getPeriod(directions, maxTurns_part2);
+        printSolution(part2_period, maxTurns_part2);
+    }
+
+    private static void printSolution(Pair<Pair<String, Integer>, Pair<Integer, Integer>> period, long maxTurns) {
         Integer periodTurns = period.getSecond().getFirst();
         Integer periodHeight = period.getSecond().getSecond();
         Integer initialTurns = memoization.get(period.getFirst()).getFirst();
         Integer initialHeight = memoization.get(period.getFirst()).getSecond();
 
-        long cycles = (MAX_TURNS - initialTurns) / periodTurns;
+        long cycles = (maxTurns - initialTurns) / periodTurns;
         log.info("Period Turns: {} Height: {} Cycles: {}", periodTurns, periodHeight, cycles);
         log.info("Initial Turns: {} Height: {}", initialTurns, initialHeight);
         log.info("Max Height: {}", cycles * periodHeight + initialHeight);
     }
 
-    private static Pair<Pair<String, Integer>, Pair<Integer, Integer>> getPeriod(List<Character> directions) {
+    private static Pair<Pair<String, Integer>, Pair<Integer, Integer>> getPeriod(List<Character> directions, long maxTurns) {
         int maxHeight;
         int windIndex = 0;
         int turn = 0;
@@ -65,7 +77,7 @@ public class Advent17 {
             if (memoization.containsKey(rockWindPair)) {
                 if (maxHeight > CACHE_ROWS && toByte(maxHeight).equals(state.get(rockWindPair))) {
                     Pair<Integer, Integer> period = new Pair<>(turn - memoization.get(rockWindPair).getFirst(), maxHeight - memoization.get(rockWindPair).getSecond());
-                    if (turn - period.getFirst() == MAX_TURNS % period.getFirst()) {
+                    if (turn - period.getFirst() == maxTurns % period.getFirst()) {
                         return new Pair<>(rockWindPair, period);
                     }
                 }
