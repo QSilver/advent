@@ -15,10 +15,10 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
-// 1572093021178 - too low
-// 1572093023882 - too high
 @Slf4j
 public class Advent17 {
+    public static final int CACHE_ROWS = 50;
+    public static final long MAX_TURNS = 1000000000000L;
     static Set<Point> occupied = newHashSet();
     static boolean[][] map = new boolean[50000][7];
     static Map<Pair<String, Integer>, Pair<Integer, Integer>> memoization = newHashMap();
@@ -30,23 +30,26 @@ public class Advent17 {
                 .chars().mapToObj(e -> (char) e)
                 .collect(Collectors.toList());
 
-        Pair<Pair<String, Integer>, Pair<Integer, Integer>> period = getPeriod(directions, 5600);
+        Pair<Pair<String, Integer>, Pair<Integer, Integer>> period = getPeriod(directions);
 
         Integer periodTurns = period.getSecond().getFirst();
         Integer periodHeight = period.getSecond().getSecond();
         Integer initialTurns = memoization.get(period.getFirst()).getFirst();
         Integer initialHeight = memoization.get(period.getFirst()).getSecond();
 
-        long cycles = (1000000000000L - initialTurns) / periodTurns + 1;
-        log.info("Max Height: {}", cycles * periodHeight + initialHeight - 1);
+        long cycles = (MAX_TURNS - initialTurns) / periodTurns;
+        log.info("Period Turns: {} Height: {} Cycles: {}", periodTurns, periodHeight, cycles);
+        log.info("Initial Turns: {} Height: {}", initialTurns, initialHeight);
+        log.info("Max Height: {}", cycles * periodHeight + initialHeight);
     }
 
-    private static Pair<Pair<String, Integer>, Pair<Integer, Integer>> getPeriod(List<Character> directions, int turns) {
+    private static Pair<Pair<String, Integer>, Pair<Integer, Integer>> getPeriod(List<Character> directions) {
         int maxHeight;
         int windIndex = 0;
-        for (int turn = 1; turn <= turns; turn++) {
+        int turn = 0;
+        while (true) {
             maxHeight = occupied.size() > 0 ? occupied.stream().mapToInt(point -> point.down).max().getAsInt() : 0;
-            Shape newRock = nextFallingRock(turn - 1, maxHeight + 1);
+            Shape newRock = nextFallingRock(turn, maxHeight + 1);
 
             Pair<String, Integer> rockWindPair = new Pair<>(newRock.getClass().getSimpleName(), windIndex % directions.size());
             while (!newRock.settled) {
@@ -60,22 +63,25 @@ public class Advent17 {
                     .forEach(point -> map[point.down][point.across] = true);
 
             if (memoization.containsKey(rockWindPair)) {
-                if (toByte(maxHeight).equals(state.get(rockWindPair))) {
-                    log.info("Found loop: {} - First {} @ {} - Second {} @ {}", rockWindPair, memoization.get(rockWindPair).getFirst(), memoization.get(rockWindPair).getSecond(), turn, maxHeight);
+                if (maxHeight > CACHE_ROWS && toByte(maxHeight).equals(state.get(rockWindPair))) {
                     Pair<Integer, Integer> period = new Pair<>(turn - memoization.get(rockWindPair).getFirst(), maxHeight - memoization.get(rockWindPair).getSecond());
-                    return new Pair<>(rockWindPair, period);
+                    if (turn - period.getFirst() == MAX_TURNS % period.getFirst()) {
+                        return new Pair<>(rockWindPair, period);
+                    }
                 }
             }
             memoization.put(rockWindPair, new Pair<>(turn, maxHeight));
-            state.put(rockWindPair, toByte(maxHeight));
+            if (maxHeight > CACHE_ROWS) {
+                state.put(rockWindPair, toByte(maxHeight));
+            }
+            turn++;
         }
-        return null;
     }
 
     static String toByte(int current) {
         StringBuilder sb = new StringBuilder();
-        for (int iter = 0; iter < 10; iter++) {
-            for (boolean b : map[current]) {
+        for (int iter = 0; iter < CACHE_ROWS; iter++) {
+            for (boolean b : map[current - iter]) {
                 sb.append(b ? 0 : 1);
             }
         }
