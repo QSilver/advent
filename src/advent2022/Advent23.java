@@ -1,11 +1,11 @@
 package advent2022;
 
-import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,15 +37,12 @@ public class Advent23 {
             minMax(round++);
             elves.values().forEach(Elf::proposeMove);
 
-            // collect all proposed elf moves
-            Map<Point, Long> allProposedMoves = elves.values().stream()
+            // collect all proposed elf moves and remove overlapping
+            Set<Point> remainingMoves = elves.values().stream()
                     .map(elf -> elf.proposed)
                     .filter(java.util.Objects::nonNull)
-                    .collect(Collectors.groupingBy(identity(), counting()));
-
-            // filter duplicate moves
-            Set<Point> remainingMoves = allProposedMoves.entrySet().stream()
-                    .filter(entry -> entry.getValue() <= 1)
+                    .collect(Collectors.groupingBy(identity(), counting())).entrySet().stream()
+                    .filter(entry -> entry.getValue() == 1)
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toSet());
 
@@ -70,7 +67,6 @@ public class Advent23 {
         if (round == 10) {
             log.info("Empty tiles: {}", (maxDown - minDown + 1) * (maxAcross - minAcross + 1) - elves.size());
         }
-
     }
 
     static class Elf {
@@ -91,6 +87,7 @@ public class Advent23 {
         }
 
         void proposeMove() {
+            proposed = null;
             if (position.neighbours().stream().noneMatch(point -> elves.containsKey(point))) {
                 canMove = false;
                 cycleDirection();
@@ -134,27 +131,31 @@ public class Advent23 {
         }
 
         List<Point> northPoints() {
-            return newArrayList(new Point(down - 1, across - 1),
+            return newArrayList(
+                    new Point(down - 1, across - 1),
                     new Point(down - 1, across),
                     new Point(down - 1, across + 1));
         }
 
         List<Point> southPoints() {
-            return newArrayList(new Point(down + 1, across - 1),
+            return newArrayList(
+                    new Point(down + 1, across - 1),
                     new Point(down + 1, across),
                     new Point(down + 1, across + 1));
         }
 
         List<Point> westPoints() {
-            return newArrayList(new Point(down + 1, across - 1),
+            return newArrayList(
+                    new Point(down - 1, across - 1),
                     new Point(down, across - 1),
-                    new Point(down - 1, across - 1));
+                    new Point(down + 1, across - 1));
         }
 
         List<Point> eastPoints() {
-            return newArrayList(new Point(down + 1, across + 1),
+            return newArrayList(
+                    new Point(down - 1, across + 1),
                     new Point(down, across + 1),
-                    new Point(down - 1, across + 1));
+                    new Point(down + 1, across + 1));
         }
 
         List<Point> neighbours() {
@@ -180,7 +181,7 @@ public class Advent23 {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(down, across);
+            return Objects.hash(down, across);
         }
     }
 
