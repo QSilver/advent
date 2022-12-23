@@ -5,7 +5,6 @@ import util.Util;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,10 +32,10 @@ public class Advent23 {
         }
 
         int round = 0;
-        while (elves.values().stream().anyMatch(elf -> elf.canMove)) {
-            minMax(round++);
-            elves.values().forEach(Elf::proposeMove);
+        while (true) {
+            countPointsInBound(round++);
 
+            elves.values().forEach(Elf::proposeMove);
             // collect all proposed elf moves and remove overlapping
             Set<Point> remainingMoves = elves.values().stream()
                     .map(elf -> elf.proposed)
@@ -45,6 +44,10 @@ public class Advent23 {
                     .filter(entry -> entry.getValue() == 1)
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toSet());
+
+            if (remainingMoves.size() == 0) {
+                break;
+            }
 
             // identify which elf proposed each move
             Map<Point, Elf> whoProposedMove = elves.values().stream()
@@ -58,13 +61,12 @@ public class Advent23 {
         log.info("Last Round: {}", round);
     }
 
-    static void minMax(int round) {
-        int minDown = elves.keySet().stream().mapToInt(point -> point.down).min().getAsInt();
-        int maxDown = elves.keySet().stream().mapToInt(point -> point.down).max().getAsInt();
-        int minAcross = elves.keySet().stream().mapToInt(point -> point.across).min().getAsInt();
-        int maxAcross = elves.keySet().stream().mapToInt(point -> point.across).max().getAsInt();
-
+    static void countPointsInBound(int round) {
         if (round == 10) {
+            int minDown = elves.keySet().stream().mapToInt(point -> point.down).min().getAsInt();
+            int maxDown = elves.keySet().stream().mapToInt(point -> point.down).max().getAsInt();
+            int minAcross = elves.keySet().stream().mapToInt(point -> point.across).min().getAsInt();
+            int maxAcross = elves.keySet().stream().mapToInt(point -> point.across).max().getAsInt();
             log.info("Empty tiles: {}", (maxDown - minDown + 1) * (maxAcross - minAcross + 1) - elves.size());
         }
     }
@@ -73,7 +75,6 @@ public class Advent23 {
         Point position;
         Point proposed;
         List<Direction> proposedDirections = newArrayList(NORTH, SOUTH, WEST, EAST);
-        boolean canMove = true;
 
         public Elf(Point position) {
             this.position = position;
@@ -89,11 +90,9 @@ public class Advent23 {
         void proposeMove() {
             proposed = null;
             if (position.neighbours().stream().noneMatch(point -> elves.containsKey(point))) {
-                canMove = false;
                 cycleDirection();
                 return;
             }
-            canMove = true;
 
             Direction selected = null;
             for (Direction direction : proposedDirections) {
@@ -181,7 +180,7 @@ public class Advent23 {
 
         @Override
         public int hashCode() {
-            return Objects.hash(down, across);
+            return 100003 * down + across;
         }
     }
 
