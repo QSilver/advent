@@ -30,6 +30,7 @@ public class Advent24 {
         findPathBetween(start, end);
         findPathBetween(end, start);
         findPathBetween(start, end);
+        // add 2 to this sum to get the real answer
     }
 
     private static void findPathBetween(Point start, Point end) {
