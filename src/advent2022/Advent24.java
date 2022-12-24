@@ -4,20 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static advent2022.Advent24.Direction.*;
-import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
 @Slf4j
 public class Advent24 {
     static Set<Point> map = newHashSet();
     static Set<Blizzard> blizzards = newHashSet();
+    static Map<Point, Blizzard> blizzardPositions = newHashMap();
     static int maxDown, maxAcross = 0;
 
     public static void main(String[] args) {
@@ -27,61 +27,32 @@ public class Advent24 {
         Point start = map.stream().filter(point -> point.down == 0).findFirst().get();
         Point end = map.stream().filter(point -> point.down == mapLines.size() - 1).findFirst().get();
 
-        findPathBetween(start, end);
-        findPathBetween(end, start);
-        findPathBetween(start, end);
-        // add 2 to this sum to get the real answer
+        int distance = findPathBetween(start, end);
+        log.info("Part 1 Shortest Path: {}", distance);
+        int distanceSnacks = findPathBetween(end, start);
+        int distanceBack = findPathBetween(start, end);
+        log.info("Part 2 Shortest Path: {}", distance + distanceSnacks + distanceBack + 2);
+        // add 2 to this sum to get the real answer ????
     }
 
-    private static void findPathBetween(Point start, Point end) {
-        Path starting = new Path();
-        starting.route.add(start);
-        Set<Path> paths = newHashSet(starting);
-        AtomicReference<Path> exit = new AtomicReference<>();
-        AtomicBoolean foundExit = new AtomicBoolean(false);
+    private static int findPathBetween(Point start, Point end) {
+        Set<Point> paths = newHashSet(start);
+        AtomicInteger foundDistance = new AtomicInteger(-1);
+        AtomicInteger currentDistance = new AtomicInteger(0);
         do {
+            blizzardPositions.clear();
             blizzards.forEach(Blizzard::move);
-            Set<Path> newPaths = newHashSet();
-            paths.forEach(path -> {
-                Point current = path.route.get(path.route.size() - 1);
+            Set<Point> newPaths = newHashSet();
+            paths.forEach(current -> {
                 if (current.equals(end)) {
-                    foundExit.set(true);
-                    exit.set(path);
+                    foundDistance.set(currentDistance.get());
                 }
-                current.getAdjacentOrWait()
-                        .forEach(point -> newPaths.add(path.append(point)));
+                newPaths.addAll(current.getAdjacentOrWait());
             });
             paths = newPaths;
-        } while (!foundExit.get());
-        log.info("Shortest Path: {}", exit.get().route.size() - 1);
-    }
-
-    static void display() {
-        StringBuffer sb = new StringBuffer("\n");
-        for (int d = 0; d < maxDown; d++) {
-            for (int a = 0; a < maxAcross; a++) {
-                Point current = new Point(d, a);
-                List<Blizzard> blizzards = Advent24.blizzards.stream().filter(blizzard -> blizzard.position.equals(current)).collect(Collectors.toList());
-                if (blizzards.size() > 0) {
-                    if (blizzards.size() == 1) {
-                        switch (blizzards.get(0).direction) {
-                            case UP -> sb.append("^");
-                            case DOWN -> sb.append("v");
-                            case LEFT -> sb.append("<");
-                            case RIGHT -> sb.append(">");
-                        }
-                    } else {
-                        sb.append(blizzards.size());
-                    }
-                } else if (map.contains(current)) {
-                    sb.append(".");
-                } else {
-                    sb.append("#");
-                }
-            }
-            sb.append("\n");
-        }
-        log.info("{}", sb);
+            currentDistance.getAndIncrement();
+        } while (foundDistance.get() == -1);
+        return foundDistance.get();
     }
 
     private static void parseMapLines(List<String> mapLines) {
@@ -104,38 +75,6 @@ public class Advent24 {
         maxAcross = mapLines.get(0).length();
     }
 
-    static class Path {
-        List<Point> route = newArrayList();
-
-        Path append(Point point) {
-            Path path = new Path();
-            path.route.addAll(route);
-            path.route.add(point);
-            return path;
-        }
-
-        @Override
-        public String toString() {
-            return route + "";
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Path other = (Path) o;
-            int size = route.size() - 1;
-            int otherSize = other.route.size() - 1;
-            return size == otherSize && route.get(size).equals(other.route.get(otherSize));
-        }
-
-        @Override
-        public int hashCode() {
-            int size = route.size() - 1;
-            return Objects.hash(route.get(size), size);
-        }
-    }
-
     static class Blizzard {
         Point position;
         Direction direction;
@@ -150,8 +89,8 @@ public class Advent24 {
             }
         }
 
-        Point move() {
-            Point newPosition;
+        void move() {
+            Point newPosition = null;
             switch (direction) {
                 case UP -> {
                     newPosition = new Point(position.down() - 1, position.across());
@@ -177,13 +116,10 @@ public class Advent24 {
                         newPosition = new Point(position.down(), 1);
                     }
                 }
-                default -> {
-                    log.error("Invalid Blizzard Direction");
-                    return null;
-                }
+                default -> log.error("Invalid Blizzard Direction");
             }
             position = newPosition;
-            return newPosition;
+            blizzardPositions.put(newPosition, this);
         }
 
         @Override
@@ -193,6 +129,12 @@ public class Advent24 {
     }
 
     record Point(int down, int across) {
+        /**
+         * this has a small bug
+         * you can  pass through a blizzard if it moves onto your spot and there is nothing behind it
+         *
+         * @return Set of new reachable point
+         */
         Set<Point> getAdjacentOrWait() {
             return newHashSet(
                     new Point(down - 1, across),
@@ -201,7 +143,7 @@ public class Advent24 {
                     new Point(down, across + 1),
                     new Point(down, across))
                     .stream().filter(point -> map.contains(point))
-                    .filter(point -> blizzards.stream().noneMatch(blizzard -> blizzard.position.equals(point)))
+                    .filter(point -> !blizzardPositions.containsKey(point))
                     .collect(Collectors.toSet());
         }
 
