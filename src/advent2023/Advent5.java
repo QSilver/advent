@@ -10,7 +10,10 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static java.lang.Long.min;
 import static java.lang.Long.parseLong;
+
+// 3244927 - too low
 
 @Slf4j
 public class Advent5 {
@@ -73,15 +76,15 @@ public class Advent5 {
             Arrays.stream(lines).toList().subList(1, lines.length).forEach(line -> {
                 String[] entry = line.split(" ");
                 conversions.get(mapType)
-                        .add(new Conversion(mapType, parseLong(entry[0]), parseLong(entry[1]), parseLong(entry[2])));
+                        .add(new Conversion(mapType, parseLong(entry[0]), parseLong(entry[1]), parseLong(entry[1]) + parseLong(entry[2]) - 1));
             });
         }
 
         String[] seeds = split[0].split(" ");
 
         List<Interval> intervals = newArrayList();
-        for (int seed = 1; seed <= seeds.length / 2 + 1; seed += 2) {
-            intervals.add(new Interval("seed", parseLong(seeds[seed]), parseLong(seeds[seed + 1])));
+        for (int seed = 1; seed < seeds.length; seed += 2) {
+            intervals.add(new Interval("seed", parseLong(seeds[seed]), parseLong(seeds[seed]) + parseLong(seeds[seed + 1]) - 1));
         }
 
         for (int type = 1; type < types.size(); type++) {
@@ -90,7 +93,10 @@ public class Advent5 {
             intervals = convert(list, intervals, convertTo);
         }
 
-        return 0L;
+        return intervals.stream()
+                .sorted(Comparator.comparing(o -> o.start))
+                .findFirst().get()
+                .start;
     }
 
     private List<Interval> convert(List<Conversion> conversions, List<Interval> intervals, String to) {
@@ -105,7 +111,7 @@ public class Advent5 {
         List<Interval> result = newArrayList();
         newIntervals.forEach(interval -> {
             Optional<Conversion> first = conversions.stream()
-                    .filter(conversion -> conversion.start <= interval.start && conversion.end() >= interval.end())
+                    .filter(conversion -> conversion.start <= interval.start && conversion.end >= interval.end)
                     .findFirst();
 
             if (first.isPresent()) {
@@ -119,15 +125,13 @@ public class Advent5 {
     }
 
     private Interval convertInterval(Interval interval, Conversion conversion) {
-        Long newIntervalStart = conversion.destination + interval.start - conversion.start;
-        return interval.withType(conversion.type).withStart(newIntervalStart);
+        long delta = conversion.destination - conversion.start;
+        return interval.withType(conversion.type)
+                .withStart(interval.start + delta)
+                .withEnd(interval.end + delta);
     }
 
     private void breakDownInterval(List<Conversion> conversions, Interval interval, List<Interval> result) {
-        /*
-            split interval at conversion start and end
-        */
-
         List<Long> breakpoints = newArrayList();
 
         conversions.stream()
@@ -136,45 +140,45 @@ public class Advent5 {
                 .forEach(conversion -> breakpoints.add(conversion.start));
         conversions.stream()
                 .sorted(Comparator.comparing(Conversion::end))
-                .filter(conversion -> interval.contains(conversion.end()))
-                .forEach(conversion -> breakpoints.add(conversion.end()));
+                .filter(conversion -> interval.contains(conversion.end))
+                .forEach(conversion -> breakpoints.add(conversion.end));
 
         breakpoints.sort(Long::compare);
 
         AtomicBoolean requiresBreak = new AtomicBoolean(false);
         final Long[] prev = {interval.start};
-        breakpoints.forEach(breakpoint -> {
-            result.add(new Interval(interval.type, prev[0], breakpoint - prev[0]));
+
+        for (int b = 0; b < breakpoints.size(); b++) {
+            Long breakpoint = breakpoints.get(b);
+
+            result.add(new Interval(interval.type, prev[0], breakpoint - 1));
+
+            Long tempBreak = interval.end;
+            if (b != breakpoints.size() - 1) {
+                tempBreak = breakpoints.get(b + 1);
+            }
+            long end = min(interval.end, tempBreak);
+            result.add(new Interval(interval.type, breakpoint, end));
             prev[0] = breakpoint;
             requiresBreak.set(true);
-        });
+        }
 
         if (!requiresBreak.get()) {
             result.add(interval);
         }
-
-        log.info("Breakpoint done");
     }
 
     @With
-    record Interval(String type, Long start, Long range) {
+    record Interval(String type, Long start, Long end) {
         boolean contains(Long point) {
-            return point >= start && point < start + range;
-        }
-
-        Long end() {
-            return start + range - 1;
+            return point > start && point < end;
         }
     }
 
-    record Conversion(String type, Long destination, Long start, Long range) {
-        Long end() {
-            return start + range - 1;
-        }
-
+    record Conversion(String type, Long destination, Long start, Long end) {
         @Override
         public String toString() {
-            return start + "-" + end();
+            return start + "-" + end + " -> " + destination + "-" + (destination + end - start);
         }
     }
 }
