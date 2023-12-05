@@ -20,7 +20,6 @@ import static java.util.Comparator.comparing;
 
 @Slf4j
 public class Advent5 {
-    Map<String, List<String>> translations = newHashMap();
     Map<String, List<Conversion>> conversions = newHashMap();
     List<String> types = newArrayList("seed", "soil", "fertilizer", "water", "light", "temperature", "humidity", "location");
 
@@ -31,16 +30,12 @@ public class Advent5 {
         for (int i = 1; i < seeds.length; i++) {
             long current = parseLong(seeds[i]);
             for (String string : types) {
-                List<String> translation = translations.get(string);
+                List<Conversion> translation = conversions.get(string);
 
                 long match = current;
-                for (String s : translation) {
-                    String[] line = s.split(" ");
-
-                    long start = parseLong(line[1]);
-                    long range = parseLong(line[2]);
-                    if (current >= start && current < start + range) {
-                        match = current - start + parseLong(line[0]);
+                for (Conversion conversion : translation) {
+                    if (current >= conversion.start && current <= conversion.end) {
+                        match = current - conversion.start + conversion.destination;
                     }
                 }
                 current = match;
@@ -59,14 +54,14 @@ public class Advent5 {
 
         List<Interval> intervals = newArrayList();
         for (int seed = 1; seed < seeds.length; seed += 2) {
-            intervals.add(new Interval("seed", parseLong(seeds[seed]), parseLong(seeds[seed]) + parseLong(seeds[seed + 1]) - 1));
+            intervals.add(new Interval(parseLong(seeds[seed]), parseLong(seeds[seed]) + parseLong(seeds[seed + 1]) - 1));
         }
 
         // apply each set of conversions in order
         for (int type = 1; type < types.size(); type++) {
             String convertTo = types.get(type);
             List<Conversion> list = conversions.get(convertTo);
-            intervals = applyConversions(list, intervals, convertTo);
+            intervals = applyConversions(list, intervals);
         }
 
         return intervals.stream()
@@ -81,23 +76,22 @@ public class Advent5 {
                 .split("\n\n");
         types.forEach(s -> conversions.put(s, newArrayList()));
 
-        for (int i = 1; i < split.length; i++) {
-            String[] lines = split[i].split("\n");
-            String mapType = lines[0].split(" ")[0].split("-")[2];
-
-            Arrays.stream(lines).toList().subList(1, lines.length).forEach(line -> {
-                String[] entry = line.split(" ");
-                long start = parseLong(entry[1]);
-                long end = start + parseLong(entry[2]) - 1;
-                conversions.get(mapType)
-                        .add(new Conversion(mapType, parseLong(entry[0]), start, end));
-            });
-        }
+        parseConversionBlock(split);
 
         return split[0].split(" ");
     }
 
-    private List<Interval> applyConversions(List<Conversion> conversions, List<Interval> intervals, String to) {
+    private void parseConversionBlock(String[] conversionBlock) {
+        for (int i = 1; i < conversionBlock.length; i++) {
+            List<String> lines = Arrays.stream(conversionBlock[i].split("\n")).toList();
+            String mapType = lines.get(0).split(" ")[0].split("-")[2];
+
+            lines.subList(1, lines.size())
+                    .forEach(line -> conversions.get(mapType).add(new Conversion(line.split(" "))));
+        }
+    }
+
+    private List<Interval> applyConversions(List<Conversion> conversions, List<Interval> intervals) {
         List<Interval> newIntervals = newArrayList();
 
         // break down intervals into smaller ones so that an interval is either fully contained or fully outside a conversion
@@ -114,13 +108,13 @@ public class Advent5 {
                 .filter(conversion -> conversion.containsInterval(interval))
                 .findFirst()
                 .ifPresentOrElse(conversion -> result.add(convertInterval(interval, conversion)),
-                        () -> result.add(interval.withType(to))));
+                        () -> result.add(interval)));
         return result;
     }
 
     private Interval convertInterval(Interval interval, Conversion conversion) {
         long delta = conversion.destination - conversion.start;
-        return interval.withType(conversion.type)
+        return interval
                 .withStart(interval.start + delta)
                 .withEnd(interval.end + delta);
     }
@@ -150,14 +144,14 @@ public class Advent5 {
         for (int b = 0; b < breakpoints.size(); b++) {
             Long breakpoint = breakpoints.get(b);
 
-            result.add(new Interval(interval.type, prev, breakpoint - 1));
+            result.add(new Interval(prev, breakpoint - 1));
 
             Long tempBreak = interval.end;
             if (b != breakpoints.size() - 1) {
                 tempBreak = breakpoints.get(b + 1);
             }
             long end = min(interval.end, tempBreak);
-            result.add(new Interval(interval.type, breakpoint, end));
+            result.add(new Interval(breakpoint, end));
 
             prev = breakpoint;
             requiresBreak = true;
@@ -171,16 +165,15 @@ public class Advent5 {
     }
 
     @With
-    record Interval(String type, Long start, Long end) {
+    record Interval(Long start, Long end) {
         boolean contains(Long point) {
             return point > start && point < end;
         }
     }
 
-    record Conversion(String type, Long destination, Long start, Long end) {
-        @Override
-        public String toString() {
-            return start + "-" + end + " -> " + destination + "-" + (destination + end - start);
+    record Conversion(Long destination, Long start, Long end) {
+        Conversion(String[] entry) {
+            this(parseLong(entry[0]), parseLong(entry[1]), parseLong(entry[1]) + parseLong(entry[2]) - 1);
         }
 
         boolean containsInterval(Interval interval) {
