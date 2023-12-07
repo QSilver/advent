@@ -4,7 +4,10 @@ import com.google.common.base.CharMatcher;
 import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -18,9 +21,17 @@ public class Advent7 {
     List<String> cardsListWithJoker = Arrays.stream(cardsWithJoker.split("")).toList();
 
     public Long runP1(String file) {
+        return run(file, handCompare());
+    }
+
+    public Long runP2(String file) {
+        return run(file, handCompareWithJoker());
+    }
+
+    private long run(String file, Comparator<String> comparator) {
         Map<String, Long> bids = getBids(file);
 
-        List<String> orderedHands = bids.keySet().stream().sorted(handCompare()).collect(Collectors.toList());
+        List<String> orderedHands = bids.keySet().stream().sorted(comparator).collect(Collectors.toList());
 
         long pot = 0;
         for (int hand = 0; hand < orderedHands.size(); hand++) {
@@ -41,150 +52,38 @@ public class Advent7 {
 
     Comparator<String> handCompare() {
         return (hand1, hand2) -> {
-            long hand1DistinctCount = hand1.chars().distinct().count();
-            long hand2DistinctCount = hand2.chars().distinct().count();
-
-            if (hand1DistinctCount < hand2DistinctCount) {
-                return 1;
-            }
-            if (hand1DistinctCount > hand2DistinctCount) {
-                return -1;
-            }
-
-            // five of a kind, one pair, or high card = can compare hand directly
-            if (hand1DistinctCount == 1 || hand1DistinctCount == 4 || hand1DistinctCount == 5) {
-                return compareHandsOfEqualRank(hand1, hand2);
-            }
-
-            // four of a kind OR full house
-            if (hand1DistinctCount == 2) {
-                Set<String> hand1Cards = Arrays.stream(hand1.split("")).collect(Collectors.toSet());
-                Set<String> hand2Cards = Arrays.stream(hand2.split("")).collect(Collectors.toSet());
-
-                // four of a kind = 4
-                // full house = 3
-                int hand1Score = hand1Cards.stream()
-                        .mapToInt(s -> CharMatcher.is(s.charAt(0)).countIn(hand1))
-                        .max().orElseThrow();
-                int hand2Score = hand2Cards.stream()
-                        .mapToInt(s -> CharMatcher.is(s.charAt(0)).countIn(hand2))
-                        .max().orElseThrow();
-
-                int compare = Integer.compare(hand1Score, hand2Score);
-                if (compare != 0) {
-                    return compare;
-                }
-
-                return compareHandsOfEqualRank(hand1, hand2);
-            }
-
-            // three of a kind OR two pair
-            if (hand1DistinctCount == 3) {
-                Set<String> hand1Cards = Arrays.stream(hand1.split("")).collect(Collectors.toSet());
-                Set<String> hand2Cards = Arrays.stream(hand2.split("")).collect(Collectors.toSet());
-
-                // three of a kind = 3
-                // two pair = 2
-                int hand1Score = hand1Cards.stream()
-                        .mapToInt(s -> CharMatcher.is(s.charAt(0)).countIn(hand1))
-                        .max().orElseThrow();
-                int hand2Score = hand2Cards.stream()
-                        .mapToInt(s -> CharMatcher.is(s.charAt(0)).countIn(hand2))
-                        .max().orElseThrow();
-
-                int compare = Integer.compare(hand1Score, hand2Score);
-                if (compare != 0) {
-                    return compare;
-                }
-
-                return compareHandsOfEqualRank(hand1, hand2);
-            }
-
-            return 0;
+            int compare = Integer.compare(getHandScore(hand1), getHandScore(hand2));
+            return compare != 0 ? compare : compareHandsOfEqualRank(hand1, hand2, cardsList);
         };
-    }
-
-    int compareHandsOfEqualRank(String hand1, String hand2) {
-        for (int i = 0; i < hand1.length(); i++) {
-            int c = Integer.compare(cardsList.indexOf(hand1.charAt(i) + ""), cardsList.indexOf(hand2.charAt(i) + ""));
-            if (c != 0) {
-                return c;
-            }
-        }
-        return 0;
     }
 
     Comparator<String> handCompareWithJoker() {
         return (hand1, hand2) -> {
-            String hand1Convert = convertJokerIntoBestCard(hand1);
-            String hand2Convert = convertJokerIntoBestCard(hand2);
-
-            long hand1DistinctCount = hand1Convert.chars().distinct().count();
-            long hand2DistinctCount = hand2Convert.chars().distinct().count();
-
-            if (hand1DistinctCount < hand2DistinctCount) {
-                return 1;
-            }
-            if (hand1DistinctCount > hand2DistinctCount) {
-                return -1;
-            }
-
-            // five of a kind, one pair, or high card = can compare hand directly
-            if (hand1DistinctCount == 1 || hand1DistinctCount == 4 || hand1DistinctCount == 5) {
-                return compareHandsOfEqualRankWithJoker(hand1, hand2);
-            }
-
-            // four of a kind OR full house
-            if (hand1DistinctCount == 2) {
-                Set<String> hand1Cards = Arrays.stream(hand1Convert.split("")).collect(Collectors.toSet());
-                Set<String> hand2Cards = Arrays.stream(hand2Convert.split("")).collect(Collectors.toSet());
-
-                // four of a kind = 4
-                // full house = 3
-                int hand1Score = hand1Cards.stream()
-                        .mapToInt(s -> CharMatcher.is(s.charAt(0)).countIn(hand1Convert))
-                        .max().orElseThrow();
-                int hand2Score = hand2Cards.stream()
-                        .mapToInt(s -> CharMatcher.is(s.charAt(0)).countIn(hand2Convert))
-                        .max().orElseThrow();
-
-                int compare = Integer.compare(hand1Score, hand2Score);
-                if (compare != 0) {
-                    return compare;
-                }
-
-                return compareHandsOfEqualRankWithJoker(hand1, hand2);
-            }
-
-            // three of a kind OR two pair
-            if (hand1DistinctCount == 3) {
-                Set<String> hand1Cards = Arrays.stream(hand1Convert.split("")).collect(Collectors.toSet());
-                Set<String> hand2Cards = Arrays.stream(hand2Convert.split("")).collect(Collectors.toSet());
-
-                // three of a kind = 3
-                // two pair = 2
-                int hand1Score = hand1Cards.stream()
-                        .mapToInt(s -> CharMatcher.is(s.charAt(0)).countIn(hand1Convert))
-                        .max().orElseThrow();
-                int hand2Score = hand2Cards.stream()
-                        .mapToInt(s -> CharMatcher.is(s.charAt(0)).countIn(hand2Convert))
-                        .max().orElseThrow();
-
-                int compare = Integer.compare(hand1Score, hand2Score);
-                if (compare != 0) {
-                    return compare;
-                }
-
-                return compareHandsOfEqualRankWithJoker(hand1, hand2);
-            }
-
-            return 0;
+            int compare = Integer.compare(getHandScore(convertJokerIntoBestCard(hand1)), getHandScore(convertJokerIntoBestCard(hand2)));
+            return compare != 0 ? compare : compareHandsOfEqualRank(hand1, hand2, cardsListWithJoker);
         };
     }
 
-    int compareHandsOfEqualRankWithJoker(String hand1, String hand2) {
+    /**
+     * math way of ordering hands by raising the highest occurrence ^3
+     * five of a kind = 5^3 = 125
+     * four of a kind = 4^3 + 1^3 = 65
+     * full house = 3^3 + 2^3 = 35
+     * three of a kind = 3^3 + 1^3 + 1^3 = 29
+     * two pair = 2^3 + 2^3 + 1^3 = 17
+     * one pair = 2^3 + 1^3 + 1^3 + 1^3 = 11
+     * high card = 1^3 + 1^3 + 1^3 + 1^3 + 1^3 = 5
+     */
+    private static int getHandScore(String hand) {
+        return Arrays.stream(hand.split(""))
+                .distinct()
+                .mapToInt(s -> (int) Math.pow(CharMatcher.is(s.charAt(0)).countIn(hand), 3))
+                .sum();
+    }
+
+    int compareHandsOfEqualRank(String hand1, String hand2, List<String> cards) {
         for (int i = 0; i < hand1.length(); i++) {
-            int c = Integer.compare(cardsListWithJoker.indexOf(hand1.charAt(i) + ""), cardsListWithJoker.indexOf(hand2.charAt(i) + ""));
+            int c = Integer.compare(cards.indexOf(hand1.charAt(i) + ""), cards.indexOf(hand2.charAt(i) + ""));
             if (c != 0) {
                 return c;
             }
@@ -203,18 +102,5 @@ public class Advent7 {
 
         newHands.sort(handCompare());
         return newHands.get(newHands.size() - 1);
-    }
-
-    public Long runP2(String file) {
-        Map<String, Long> bids = getBids(file);
-
-        List<String> orderedHands = bids.keySet().stream().sorted(handCompareWithJoker()).collect(Collectors.toList());
-
-        long pot = 0;
-        for (int hand = 0; hand < orderedHands.size(); hand++) {
-            pot += (hand + 1) * bids.get(orderedHands.get(hand));
-        }
-
-        return pot;
     }
 }
