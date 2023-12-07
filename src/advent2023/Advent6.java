@@ -6,8 +6,6 @@ import util.Util;
 import java.util.Arrays;
 import java.util.List;
 
-// 3244927 - too low
-
 @Slf4j
 public class Advent6 {
     public Long runP1(String file) {
@@ -42,6 +40,7 @@ public class Advent6 {
         return simulateHolding(timesString, distanceString);
     }
 
+    // TODO - change this to be quadratic when I can be bothered
     private static long simulateHolding(String timesString, String distanceString) {
         long time = Long.parseLong(timesString.replace(" ", ""));
         long distance = Long.parseLong(distanceString.replace(" ", ""));
