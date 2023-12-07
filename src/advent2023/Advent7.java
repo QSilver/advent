@@ -65,7 +65,7 @@ public class Advent7 {
     }
 
     /**
-     * math way of ordering hands by raising the highest occurrence ^3
+     * math way of ordering hands by raising the card occurrences ^3
      * five of a kind = 5^3 = 125
      * four of a kind = 4^3 + 1^3 = 65
      * full house = 3^3 + 2^3 = 35
