@@ -55,7 +55,7 @@ public class Advent8 {
 
     private static void parseInput(String file) {
         List<String> list = fileStream(file).toList();
-        instructions = list.get(0);
+        instructions = list.getFirst();
         nodeMap = getNodeMap(list);
     }
 
@@ -76,7 +76,7 @@ public class Advent8 {
     }
 
     private static long lcm(List<Long> input) {
-        long result = input.get(0);
+        long result = input.getFirst();
         for (int i = 1; i < input.size(); i++) {
             result = lcm(result, input.get(i));
         }
