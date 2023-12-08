@@ -26,7 +26,7 @@ class Util {
         try {
             return Files.lines(Paths.get(".\\resources", fileName));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return newArrayList("").stream();
     }
