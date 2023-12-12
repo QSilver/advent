@@ -14,6 +14,7 @@ import static com.google.common.collect.Maps.newHashMap;
 
 @Slf4j
 public class Advent12 {
+    // https://adventofcode.com/2023/day/12
     List<Pair<String, int[]>> springs = newArrayList();
     Map<Key, Long> cache = newHashMap();
 

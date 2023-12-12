@@ -11,7 +11,7 @@ import static java.util.Arrays.stream;
 
 @Slf4j
 public class Advent4 {
-
+    // https://adventofcode.com/2023/day/4
     public Integer runP1(String file) {
         return Util.fileStream(file)
                 .mapToInt(this::getMatchesFromTicket)

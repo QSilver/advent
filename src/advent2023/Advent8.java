@@ -11,6 +11,7 @@ import static util.Util.fileStream;
 
 @Slf4j
 public class Advent8 {
+    // https://adventofcode.com/2023/day/8
     static String instructions;
     static Map<String, Node> nodeMap;
 

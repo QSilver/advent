@@ -12,6 +12,7 @@ import static java.lang.Math.min;
 
 @Slf4j
 public class Advent3 {
+    // https://adventofcode.com/2023/day/3
     List<String> map = newArrayList();
 
     public Integer runP1(String file) {

@@ -8,6 +8,7 @@ import java.util.List;
 
 @Slf4j
 public class Advent6 {
+    // https://adventofcode.com/2023/day/6
     public Long runP1(String file) {
         List<String> list = Util.fileStream(file).toList();
 

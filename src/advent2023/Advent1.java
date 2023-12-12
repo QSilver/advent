@@ -12,6 +12,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 @Slf4j
 public class Advent1 {
+    // https://adventofcode.com/2023/day/1
     public static final Pattern DIGIT_REGEX = Pattern.compile("\\d");
     private final List<String> digits = newArrayList("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "zero");
     private final List<String> modded = newArrayList("o1e", "t2o", "t3e", "f4r", "f5e", "s6x", "s7n", "e8t", "n9e", "z0o");

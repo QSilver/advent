@@ -17,6 +17,7 @@ import static java.util.Arrays.stream;
 
 @Slf4j
 public class Advent7 {
+    // https://adventofcode.com/2023/day/7
     String cards = "23456789TJQKA";
     List<String> cardsList = stream(cards.split("")).toList();
     String cardsWithJoker = "J23456789TQKA";

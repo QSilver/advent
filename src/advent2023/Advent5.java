@@ -16,10 +16,9 @@ import static java.lang.Long.min;
 import static java.lang.Long.parseLong;
 import static java.util.Comparator.comparing;
 
-// 3244927 - too low
-
 @Slf4j
 public class Advent5 {
+    // https://adventofcode.com/2023/day/5
     Map<String, List<Conversion>> conversions = newHashMap();
     List<String> types = newArrayList("seed", "soil", "fertilizer", "water", "light", "temperature", "humidity", "location");
 

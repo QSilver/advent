@@ -13,6 +13,7 @@ import static com.google.common.collect.Sets.newHashSet;
 
 @Slf4j
 public class Advent11 {
+    // https://adventofcode.com/2023/day/11
     Set<Integer> emptyColumns = newHashSet();
     Set<Integer> emptyRows = newHashSet();
 

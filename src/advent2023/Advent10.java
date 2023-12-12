@@ -11,6 +11,7 @@ import static java.lang.Math.abs;
 
 @Slf4j
 public class Advent10 {
+    // https://adventofcode.com/2023/day/10
     public static final String UP = "|7F";
     public static final String DOWN = "|LJ";
     public static final String LEFT = "-LF";
