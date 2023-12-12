@@ -26,7 +26,7 @@ public class Advent11 {
         return run(file, 999999);
     }
 
-    private long run(String file, int d) {
+    private long run(String file, int expansion) {
         List<String> list = Util.fileStream(file).toList();
 
         Set<Integer> columns = newHashSet();
@@ -43,21 +43,24 @@ public class Advent11 {
             }
         }
 
-        emptyColumns = IntStream.range(0, list.size()).filter(value -> !columns.contains(value)).boxed().collect(Collectors.toSet());
-        emptyRows = IntStream.range(0, list.size()).filter(value -> !rows.contains(value)).boxed().collect(Collectors.toSet());
+        emptyColumns = IntStream.range(0, list.size())
+                .filter(value -> !columns.contains(value))
+                .boxed().collect(Collectors.toSet());
+        emptyRows = IntStream.range(0, list.size())
+                .filter(value -> !rows.contains(value))
+                .boxed().collect(Collectors.toSet());
 
         long pointSums = 0L;
         for (int p1 = 0; p1 < points.size() - 1; p1++) {
             for (int p2 = p1 + 1; p2 < points.size(); p2++) {
-                long distance = getDistance(points.get(p1), points.get(p2), d);
+                long distance = getDistance(points.get(p1), points.get(p2), expansion);
                 pointSums += distance;
             }
         }
-
         return pointSums;
     }
 
-    long getDistance(Point p1, Point p2, long d) {
+    long getDistance(Point p1, Point p2, long expansion) {
         int minRow = Math.min(p1.row, p2.row);
         int maxRow = Math.max(p1.row, p2.row);
         int minCol = Math.min(p1.col, p2.col);
@@ -66,7 +69,7 @@ public class Advent11 {
         long rowSum = 0;
         for (int row = minRow; row < maxRow; row++) {
             if (emptyRows.contains(row)) {
-                rowSum += d;
+                rowSum += expansion;
             }
             rowSum++;
         }
@@ -74,7 +77,7 @@ public class Advent11 {
         long colSum = 0;
         for (int col = minCol; col < maxCol; col++) {
             if (emptyColumns.contains(col)) {
-                colSum += d;
+                colSum += expansion;
             }
             colSum++;
         }

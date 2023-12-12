@@ -18,20 +18,9 @@ public class Advent1 {
 
     public Integer runP1(String file) {
         return Util.fileStream(file)
-                .map(Advent1::extractFirstAndLastDigit)
+                .map(this::extractFirstAndLastDigit)
                 .mapToInt(Integer::parseInt)
                 .sum();
-    }
-
-    private static String extractFirstAndLastDigit(String s) {
-        Matcher matcher = DIGIT_REGEX.matcher(s);
-        List<String> digits = newArrayList();
-
-        while (matcher.find()) {
-            digits.add(matcher.group());
-        }
-
-        return digits.getFirst() + digits.getLast();
     }
 
     public Integer runP2(String file) {
@@ -47,6 +36,17 @@ public class Advent1 {
                     return extractFirstAndLastDigit(string);
                 }).mapToInt(Integer::parseInt)
                 .sum();
+    }
+
+    private String extractFirstAndLastDigit(String s) {
+        Matcher matcher = DIGIT_REGEX.matcher(s);
+        List<String> digits = newArrayList();
+
+        while (matcher.find()) {
+            digits.add(matcher.group());
+        }
+
+        return digits.getFirst() + digits.getLast();
     }
 
     private String replaceDigits(String string, AtomicBoolean stop) {

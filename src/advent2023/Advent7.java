@@ -4,7 +4,6 @@ import com.google.common.base.CharMatcher;
 import lombok.extern.slf4j.Slf4j;
 import util.Util;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -12,13 +11,16 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static java.lang.Integer.compare;
+import static java.lang.Math.pow;
+import static java.util.Arrays.stream;
 
 @Slf4j
 public class Advent7 {
     String cards = "23456789TJQKA";
-    List<String> cardsList = Arrays.stream(cards.split("")).toList();
+    List<String> cardsList = stream(cards.split("")).toList();
     String cardsWithJoker = "J23456789TQKA";
-    List<String> cardsListWithJoker = Arrays.stream(cardsWithJoker.split("")).toList();
+    List<String> cardsListWithJoker = stream(cardsWithJoker.split("")).toList();
 
     public Long runP1(String file) {
         return run(file, handCompare());
@@ -52,14 +54,14 @@ public class Advent7 {
 
     Comparator<String> handCompare() {
         return (hand1, hand2) -> {
-            int compare = Integer.compare(getHandScore(hand1), getHandScore(hand2));
+            int compare = compare(getHandScore(hand1), getHandScore(hand2));
             return compare != 0 ? compare : compareHandsOfEqualRank(hand1, hand2, cardsList);
         };
     }
 
     Comparator<String> handCompareWithJoker() {
         return (hand1, hand2) -> {
-            int compare = Integer.compare(getHandScore(convertJokerIntoBestCard(hand1)), getHandScore(convertJokerIntoBestCard(hand2)));
+            int compare = compare(getHandScore(convertJokerIntoBestCard(hand1)), getHandScore(convertJokerIntoBestCard(hand2)));
             return compare != 0 ? compare : compareHandsOfEqualRank(hand1, hand2, cardsListWithJoker);
         };
     }
@@ -75,15 +77,15 @@ public class Advent7 {
      * high card = 1^3 + 1^3 + 1^3 + 1^3 + 1^3 = 5
      */
     private static int getHandScore(String hand) {
-        return Arrays.stream(hand.split(""))
+        return stream(hand.split(""))
                 .distinct()
-                .mapToInt(s -> (int) Math.pow(CharMatcher.is(s.charAt(0)).countIn(hand), 3))
+                .mapToInt(s -> (int) pow(CharMatcher.is(s.charAt(0)).countIn(hand), 3))
                 .sum();
     }
 
     int compareHandsOfEqualRank(String hand1, String hand2, List<String> cards) {
         for (int i = 0; i < hand1.length(); i++) {
-            int c = Integer.compare(cards.indexOf(hand1.charAt(i) + ""), cards.indexOf(hand2.charAt(i) + ""));
+            int c = compare(cards.indexOf(hand1.charAt(i) + ""), cards.indexOf(hand2.charAt(i) + ""));
             if (c != 0) {
                 return c;
             }
@@ -94,11 +96,10 @@ public class Advent7 {
     String convertJokerIntoBestCard(String hand) {
         List<String> newHands = newArrayList();
 
-        List<String> split = Arrays.stream(cardsWithJoker.replace("J", "").split("")).toList();
-        split.forEach(card -> {
-            String j1 = hand.replace("J", card);
-            newHands.add(j1);
-        });
+        // replace joker with every other card
+        stream(cardsWithJoker.replace("J", "").split(""))
+                .map(card -> hand.replace("J", card))
+                .forEach(newHands::add);
 
         newHands.sort(handCompare());
         return newHands.getLast();

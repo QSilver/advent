@@ -10,10 +10,6 @@ import static java.lang.Character.isDigit;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-// 24707881 - too low
-// 74186179 - too low
-// 80703636
-// 88060280 - too high
 @Slf4j
 public class Advent3 {
     List<String> map = newArrayList();
@@ -49,6 +45,21 @@ public class Advent3 {
         }
 
         return sum;
+    }
+
+    public Integer runP2(String file) {
+        map = Util.fileStream(file).toList();
+
+        List<Point> gears = newArrayList();
+        for (int i = 0; i < map.size(); i++) {
+            for (int j = 0; j < map.get(i).length(); j++) {
+                if (map.get(i).charAt(j) == '*') {
+                    gears.add(new Point(i, j));
+                }
+            }
+        }
+
+        return gears.stream().mapToInt(this::extractNumbers).sum();
     }
 
     private boolean adjacent(int i, int j, String line, int end) {
@@ -87,21 +98,6 @@ public class Advent3 {
             }
         }
         return adj;
-    }
-
-    public Integer runP2(String file) {
-        map = Util.fileStream(file).toList();
-
-        List<Point> gears = newArrayList();
-        for (int i = 0; i < map.size(); i++) {
-            for (int j = 0; j < map.get(i).length(); j++) {
-                if (map.get(i).charAt(j) == '*') {
-                    gears.add(new Point(i, j));
-                }
-            }
-        }
-
-        return gears.stream().mapToInt(this::extractNumbers).sum();
     }
 
     private int extractNumbers(Point gear) {

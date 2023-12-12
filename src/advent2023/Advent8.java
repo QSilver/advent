@@ -53,13 +53,13 @@ public class Advent8 {
         return node -> !node.endsWith("Z");
     }
 
-    private static void parseInput(String file) {
+    private void parseInput(String file) {
         List<String> list = fileStream(file).toList();
         instructions = list.getFirst();
         nodeMap = getNodeMap(list);
     }
 
-    private static Map<String, Node> getNodeMap(List<String> list) {
+    private Map<String, Node> getNodeMap(List<String> list) {
         Map<String, Node> nodeMap = newHashMap();
         list.subList(2, list.size()).forEach(line -> {
             line = line.replace(",", "")
@@ -75,7 +75,7 @@ public class Advent8 {
         return nodeMap;
     }
 
-    private static long lcm(List<Long> input) {
+    private long lcm(List<Long> input) {
         long result = input.getFirst();
         for (int i = 1; i < input.size(); i++) {
             result = lcm(result, input.get(i));
@@ -83,11 +83,11 @@ public class Advent8 {
         return result;
     }
 
-    private static long lcm(long a, long b) {
+    private long lcm(long a, long b) {
         return a * (b / gcd(a, b));
     }
 
-    private static long gcd(long a, long b) {
+    private long gcd(long a, long b) {
         while (b > 0) {
             long temp = b;
             b = a % b; // % is remainder
