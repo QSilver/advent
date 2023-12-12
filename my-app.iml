@@ -7,4 +7,14 @@
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
     </content>
   </component>
+  <component name="AutoImportedSourceRoots">
+    <option name="directories">
+      <list>
+        <option value="src" />
+        <option value="target/generated-sources/annotations" />
+        <option value="target/generated-test-sources/test-annotations" />
+        <option value="test" />
+      </list>
+    </option>
+  </component>
 </module>

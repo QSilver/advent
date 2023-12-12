@@ -101,6 +101,6 @@ public class Advent7 {
         });
 
         newHands.sort(handCompare());
-        return newHands.get(newHands.size() - 1);
+        return newHands.getLast();
     }
 }

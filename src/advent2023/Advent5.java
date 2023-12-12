@@ -84,7 +84,7 @@ public class Advent5 {
     private void parseConversionBlock(String[] conversionBlock) {
         for (int i = 1; i < conversionBlock.length; i++) {
             List<String> lines = Arrays.stream(conversionBlock[i].split("\n")).toList();
-            String mapType = lines.get(0).split(" ")[0].split("-")[2];
+            String mapType = lines.getFirst().split(" ")[0].split("-")[2];
 
             lines.subList(1, lines.size())
                     .forEach(line -> conversions.get(mapType).add(new Conversion(line.split(" "))));

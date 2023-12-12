@@ -31,7 +31,7 @@ public class Advent1 {
             digits.add(matcher.group());
         }
 
-        return digits.get(0) + digits.get(digits.size() - 1);
+        return digits.getFirst() + digits.getLast();
     }
 
     public Integer runP2(String file) {
