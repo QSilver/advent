@@ -23,6 +23,8 @@ public class Advent14 {
     Map<List<Point>, Long> cycleCache = newHashMap();
     Long period;
 
+    char[][] map; // TODO - convert to using this array at some point
+
     public Long runP1(String file) {
         List<String> list = getRocks(file);
 
@@ -161,9 +163,11 @@ public class Advent14 {
 
     private List<String> getRocks(String file) {
         List<String> list = Util.fileStream(file).toList();
+        map = new char[list.size()][list.getFirst().length()];
 
         for (int row = 0; row < list.size(); row++) {
             for (int col = 0; col < list.getFirst().length(); col++) {
+                map[row][col] = list.get(row).charAt(col);
                 if (list.get(row).charAt(col) == 'O') {
                     roundRockList.add(new Point(row, col));
                 } else if (list.get(row).charAt(col) == '#') {
