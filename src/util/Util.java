@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.Math.abs;
 
 @Slf4j
 public
@@ -34,14 +35,51 @@ class Util {
     public static ArrayList<String> splitLine(Stream<String> stream) {
         Optional<String> first = stream.findFirst();
         return first.map(s -> newArrayList(s.split(",")))
-                    .orElseGet(Lists::newArrayList);
+                .orElseGet(Lists::newArrayList);
     }
 
     @SneakyThrows
     public static void clearConsole() {
         new ProcessBuilder("cmd", "/c", "cls").inheritIO()
-                                              .start()
-                                              .waitFor();
+                .start()
+                .waitFor();
         log.debug("{}", System.in.read());
+    }
+
+    public static Surface calculateSurface(List<? extends Point> points) {
+        long perimeter = 0L;
+        long shoelaceArea = 0L;
+
+        // https://en.m.wikipedia.org/wiki/Shoelace_formula
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point current = points.get(i);
+            Point next = points.get(i + 1);
+
+            perimeter += current.distanceTo(next);
+            shoelaceArea += ((current.row() * next.col()) - (next.row() * current.col()));
+        }
+
+        Point last = points.getLast();
+        Point first = points.getFirst();
+
+        perimeter += last.distanceTo(first);
+        shoelaceArea += ((last.row() * first.col()) - (first.row() * last.col()));
+        shoelaceArea = abs(shoelaceArea) / 2L;
+
+        // https://en.m.wikipedia.org/wiki/Pick%27s_theorem
+        long insidePoints = shoelaceArea + 1 - perimeter / 2;
+        long area = insidePoints + perimeter;
+
+        return new Surface(perimeter, area, insidePoints, shoelaceArea, newArrayList(points));
+    }
+
+    public record Surface(long perimeter, long area, long insidePoints, long shoelaceArea, List<Point> points) {
+    }
+
+    public record Point(long row, long col) {
+
+        long distanceTo(Point other) {
+            return abs(row - other.row) + abs(col - other.col);
+        }
     }
 }
