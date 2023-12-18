@@ -16,23 +16,11 @@ public class Advent18 {
     // https://adventofcode.com/2023/day/18
 
     public Long runP1(String file) {
-        return extractPointsAndCalculateArea(file, split -> {
-            Direction direction = Direction.valueOf(split[0]);
-            int digSize = parseInt(split[1]);
-            return new Result(direction, digSize);
-        });
+        return extractPointsAndCalculateArea(file, Advent18::p1Input);
     }
 
     public Long runP2(String file) {
-        return extractPointsAndCalculateArea(file, split -> {
-            String hex = split[2];
-            int lastDigit = parseInt(hex.substring(hex.length() - 2, hex.length() - 1));
-
-            Direction direction = Direction.values()[lastDigit];
-            int digSize = parseInt(hex.substring(2, hex.length() - 2), 16);
-
-            return new Result(direction, digSize);
-        });
+        return extractPointsAndCalculateArea(file, Advent18::p2Input);
     }
 
     private long extractPointsAndCalculateArea(String file, Function<String[], Result> coordinateExtractor) {
@@ -45,6 +33,22 @@ public class Advent18 {
         });
 
         return calculateSurface(points).area();
+    }
+
+    private static Result p1Input(String[] split) {
+        Direction direction = Direction.valueOf(split[0]);
+        int digSize = parseInt(split[1]);
+        return new Result(direction, digSize);
+    }
+
+    private static Result p2Input(String[] split) {
+        String hex = split[2];
+        int lastDigit = parseInt(hex.substring(hex.length() - 2, hex.length() - 1));
+
+        Direction direction = Direction.values()[lastDigit];
+        int digSize = parseInt(hex.substring(2, hex.length() - 2), 16);
+
+        return new Result(direction, digSize);
     }
 
     private static Point getNextPoint(Point last, Direction direction, int digSize) {
