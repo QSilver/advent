@@ -26,7 +26,7 @@ public class Advent18 {
             Direction direction = Direction.valueOf(split[0]);
             int digSize = parseInt(split[1]);
 
-            buildPointList(points, direction, digSize);
+            points.add(getNextPoint(points.getLast(), direction, digSize));
         });
 
         Surface surface = calculateSurface(points);
@@ -48,21 +48,29 @@ public class Advent18 {
             Direction direction = Direction.values()[lastDigit];
             int digSize = parseInt(hex.substring(2, hex.length() - 2), 16);
 
-            buildPointList(points, direction, digSize);
+            points.add(getNextPoint(points.getLast(), direction, digSize));
         });
 
         Surface surface = calculateSurface(points);
         return surface.area();
     }
 
-    private static void buildPointList(List<Point> points, Direction direction, int digSize) {
-        Point last = points.getLast();
+    private static Point getNextPoint(Point last, Direction direction, int digSize) {
         switch (direction) {
-            case U -> points.add(new Point(last.row() - digSize, last.col()));
-            case D -> points.add(new Point(last.row() + digSize, last.col()));
-            case L -> points.add(new Point(last.row(), last.col() - digSize));
-            case R -> points.add(new Point(last.row(), last.col() + digSize));
+            case U -> {
+                return new Point(last.row() - digSize, last.col());
+            }
+            case D -> {
+                return new Point(last.row() + digSize, last.col());
+            }
+            case L -> {
+                return new Point(last.row(), last.col() - digSize);
+            }
+            case R -> {
+                return new Point(last.row(), last.col() + digSize);
+            }
         }
+        return null;
     }
 
     enum Direction {
