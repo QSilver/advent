@@ -162,45 +162,48 @@ public class Advent19 {
             workflowMap.put(split1[0], new Workflow(split1[0], workflowRules));
         });
 
-        Queue<Workflow> toProcess = newArrayDeque();
-        Map<Workflow, WorkflowInterval> allowed = newHashMap();
+        List<List<WorkflowRule>> in = process(workflowMap, workflowMap.get("in"));
 
-        Workflow in = workflowMap.get("in");
-        toProcess.add(in);
-        allowed.put(in, new WorkflowInterval(
-                range(1, 4001).boxed().collect(Collectors.toSet()),
-                range(1, 4001).boxed().collect(Collectors.toSet()),
-                range(1, 4001).boxed().collect(Collectors.toSet()),
-                range(1, 4001).boxed().collect(Collectors.toSet())));
+        AtomicLong count = new AtomicLong(0L);
+        in.forEach(workflowRules -> {
+            boolean a = workflowRules.get(workflowRules.size() - 1).goToWorkflow.equals("A");
+            if (a) {
+                AtomicReference<WorkflowInterval> interval = new AtomicReference<>(new WorkflowInterval(
+                        range(1, 4001).boxed().collect(Collectors.toSet()),
+                        range(1, 4001).boxed().collect(Collectors.toSet()),
+                        range(1, 4001).boxed().collect(Collectors.toSet()),
+                        range(1, 4001).boxed().collect(Collectors.toSet())));
 
-        AtomicLong accepted = new AtomicLong(0L);
-        while (!toProcess.isEmpty()) {
-            Workflow workflow = toProcess.remove();
-            AtomicReference<WorkflowInterval> interval = new AtomicReference<>(allowed.get(workflow));
+                workflowRules.forEach(workflowRule -> interval.set(interval.get().restrict(workflowRule)));
 
-            AtomicReference<String> previous = new AtomicReference<>(null);
-            workflow.conditions.forEach(rule -> {
-                if (previous.get() != null) {
-                    interval.set(interval.get().invert(previous.get()));
+                count.addAndGet((long) interval.get().x.size() * interval.get().m.size() * interval.get().a.size() * interval.get().s.size());
+            }
+        });
+
+        return count.get();
+    }
+
+    List<List<WorkflowRule>> process(Map<String, Workflow> workflowMap, Workflow workflow) {
+        List<List<WorkflowRule>> workflowRules = newArrayList();
+
+        if (workflow != null) {
+            for (int c1 = 0; c1 < workflow.conditions.size(); c1++) {
+                List<List<WorkflowRule>> process = process(workflowMap, workflowMap.get(workflow.conditions.get(c1).goToWorkflow));
+
+                WorkflowRule parent = workflow.conditions.get(c1);
+                process.forEach(list -> list.add(0, parent));
+                for (int c2 = 0; c2 < c1; c2++) {
+                    WorkflowRule previous = workflow.conditions.get(c2);
+                    process.forEach(list -> list.add(0, previous.invert()));
                 }
 
-                if (rule.variable != null) {
-                    interval.set(interval.get().restrict(rule));
-                }
-
-                if (rule.goToWorkflow.equals("A")) {
-                    long delta = ((long) interval.get().x.size()) * interval.get().m.size() * interval.get().a.size() * interval.get().s.size();
-                    accepted.addAndGet(delta);
-                } else if (!rule.goToWorkflow.equals("R")) {
-                    Workflow goTo = workflowMap.get(rule.goToWorkflow);
-                    toProcess.add(goTo);
-                    allowed.put(goTo, interval.get());
-                }
-                previous.set(rule.variable);
-            });
+                workflowRules.addAll(process);
+            }
+        } else {
+            workflowRules.add(newArrayList());
         }
 
-        return accepted.get();
+        return workflowRules;
     }
 
     record Workflow(String name, List<WorkflowRule> conditions) {
@@ -208,24 +211,6 @@ public class Advent19 {
 
     @With
     record WorkflowInterval(Set<Integer> x, Set<Integer> m, Set<Integer> a, Set<Integer> s) {
-        WorkflowInterval invert(String variable) {
-            switch (variable) {
-                case "x" -> {
-                    return this.withX(range(1, 4001).filter(value -> !this.x.contains(value)).boxed().collect(Collectors.toSet()));
-                }
-                case "m" -> {
-                    return this.withM(range(1, 4001).filter(value -> !this.m.contains(value)).boxed().collect(Collectors.toSet()));
-                }
-                case "a" -> {
-                    return this.withA(range(1, 4001).filter(value -> !this.a.contains(value)).boxed().collect(Collectors.toSet()));
-                }
-                case "s" -> {
-                    return this.withS(range(1, 4001).filter(value -> !this.s.contains(value)).boxed().collect(Collectors.toSet()));
-                }
-            }
-            return new WorkflowInterval(null, null, null, null);
-        }
-
         WorkflowInterval restrict(WorkflowRule rule) {
             if (rule.variable == null) {
                 return this;
@@ -265,7 +250,12 @@ public class Advent19 {
         }
     }
 
+    @With
     record WorkflowRule(String variable, boolean lessThan, int threshold, String goToWorkflow) {
+        WorkflowRule invert() {
+            if (lessThan) return this.withLessThan(false).withThreshold(threshold - 1);
+            else return this.withLessThan(true).withThreshold(threshold + 1);
+        }
     }
 
     record MachinePart(int x, int m, int a, int s) {
