@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Integer.parseInt;
+import static java.util.stream.Collectors.toSet;
 import static util.Util.rangeToSet;
 import static util.Util.readDoubleNewlineBlocks;
 
@@ -154,11 +154,9 @@ public class Advent19 {
             }
 
             Map<String, Set<Integer>> filtered = newHashMap(variables());
-            if (rule.lessThan) {
-                filtered.put(rule.variable, variables.get(rule.variable).stream().filter(value -> value < rule.threshold).collect(Collectors.toSet()));
-            } else {
-                filtered.put(rule.variable, variables.get(rule.variable).stream().filter(value -> value > rule.threshold).collect(Collectors.toSet()));
-            }
+            filtered.put(rule.variable, variables.get(rule.variable).stream()
+                    .filter(rule.lessThan ? value -> value < rule.threshold : value -> value > rule.threshold)
+                    .collect(toSet()));
             return new WorkflowInterval(filtered);
         }
     }
