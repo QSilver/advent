@@ -4,10 +4,10 @@ import advent2023.Advent19.WorkflowInterval;
 import advent2023.Advent19.WorkflowRule;
 import org.junit.jupiter.api.Test;
 
-import java.util.stream.Collectors;
+import java.util.Map;
 
-import static java.util.stream.IntStream.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static util.Util.rangeToSet;
 
 class Advent19Test {
     private final Advent19 underTest = new Advent19();
@@ -27,26 +27,22 @@ class Advent19Test {
     @Test
     void testIntervalRestrict() {
         WorkflowInterval expected;
-        WorkflowInterval in = new WorkflowInterval(
-                range(1, 4001).boxed().collect(Collectors.toSet()),
-                range(1, 4001).boxed().collect(Collectors.toSet()),
-                range(1, 4001).boxed().collect(Collectors.toSet()),
-                range(1, 4001).boxed().collect(Collectors.toSet()));
+        WorkflowInterval in = WorkflowInterval.fullInterval();
 
         WorkflowInterval in_px = in.restrict(new WorkflowRule("s", true, 1351, "test"));
         WorkflowInterval in_px_qkq = in_px.restrict(new WorkflowRule("a", true, 2006, "test"));
         WorkflowInterval in_px_qkq_A = in_px_qkq.restrict(new WorkflowRule("x", true, 1416, "test"));
 
-        expected = new WorkflowInterval(
-                range(1, 1416).boxed().collect(Collectors.toSet()),
-                range(1, 4001).boxed().collect(Collectors.toSet()),
-                range(1, 2006).boxed().collect(Collectors.toSet()),
-                range(1, 1351).boxed().collect(Collectors.toSet()));
+        expected = new WorkflowInterval(Map.of(
+                "x", rangeToSet(1, 1416),
+                "m", rangeToSet(1, 4001),
+                "a", rangeToSet(1, 2006),
+                "s", rangeToSet(1, 1351)));
 
-        assertEquals(expected.x(), in_px_qkq_A.x());
-        assertEquals(expected.m(), in_px_qkq_A.m());
-        assertEquals(expected.a(), in_px_qkq_A.a());
-        assertEquals(expected.s(), in_px_qkq_A.s());
+        assertEquals(expected.variables().get("x"), in_px_qkq_A.variables().get("x"));
+        assertEquals(expected.variables().get("m"), in_px_qkq_A.variables().get("m"));
+        assertEquals(expected.variables().get("a"), in_px_qkq_A.variables().get("a"));
+        assertEquals(expected.variables().get("s"), in_px_qkq_A.variables().get("s"));
     }
 
     @Test

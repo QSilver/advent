@@ -127,21 +127,25 @@ public class Advent19 {
     }
 
     @With
-    record WorkflowInterval(Set<Integer> x, Set<Integer> m, Set<Integer> a, Set<Integer> s) {
+    record WorkflowInterval(Map<String, Set<Integer>> variables) {
         boolean isValid() {
-            return !x.isEmpty() && !m.isEmpty() && !a.isEmpty() && !s.isEmpty();
+            return variables().values().stream().noneMatch(Set::isEmpty);
         }
 
         long intervalSumFirst() {
-            return x.iterator().next() + m.iterator().next() + a.iterator().next() + s.iterator().next();
+            return variables().values().stream().mapToInt(value -> value.iterator().next()).sum();
         }
 
         long intervalCount() {
-            return (long) x.size() * m.size() * a.size() * s.size();
+            return variables().values().stream().mapToLong(Set::size).reduce(1L, (left, right) -> left * right);
         }
 
         static WorkflowInterval fullInterval() {
-            return new WorkflowInterval(rangeToSet(1, 4001), rangeToSet(1, 4001), rangeToSet(1, 4001), rangeToSet(1, 4001));
+            return new WorkflowInterval(Map.of(
+                    "x", rangeToSet(1, 4001),
+                    "m", rangeToSet(1, 4001),
+                    "a", rangeToSet(1, 4001),
+                    "s", rangeToSet(1, 4001)));
         }
 
         WorkflowInterval restrict(WorkflowRule rule) {
@@ -149,37 +153,13 @@ public class Advent19 {
                 return this;
             }
 
-            switch (rule.variable()) {
-                case "x" -> {
-                    if (rule.lessThan()) {
-                        return this.withX(x.stream().filter(value -> value < rule.threshold).collect(Collectors.toSet()));
-                    } else {
-                        return this.withX(x.stream().filter(value -> value > rule.threshold).collect(Collectors.toSet()));
-                    }
-                }
-                case "m" -> {
-                    if (rule.lessThan()) {
-                        return this.withM(m.stream().filter(value -> value < rule.threshold).collect(Collectors.toSet()));
-                    } else {
-                        return this.withM(m.stream().filter(value -> value > rule.threshold).collect(Collectors.toSet()));
-                    }
-                }
-                case "a" -> {
-                    if (rule.lessThan()) {
-                        return this.withA(a.stream().filter(value -> value < rule.threshold).collect(Collectors.toSet()));
-                    } else {
-                        return this.withA(a.stream().filter(value -> value > rule.threshold).collect(Collectors.toSet()));
-                    }
-                }
-                case "s" -> {
-                    if (rule.lessThan()) {
-                        return this.withS(s.stream().filter(value -> value < rule.threshold).collect(Collectors.toSet()));
-                    } else {
-                        return this.withS(s.stream().filter(value -> value > rule.threshold).collect(Collectors.toSet()));
-                    }
-                }
+            Map<String, Set<Integer>> filtered = newHashMap(variables());
+            if (rule.lessThan) {
+                filtered.put(rule.variable, variables.get(rule.variable).stream().filter(value -> value < rule.threshold).collect(Collectors.toSet()));
+            } else {
+                filtered.put(rule.variable, variables.get(rule.variable).stream().filter(value -> value > rule.threshold).collect(Collectors.toSet()));
             }
-            return new WorkflowInterval(null, null, null, null);
+            return new WorkflowInterval(filtered);
         }
     }
 
@@ -193,11 +173,12 @@ public class Advent19 {
 
     record MachinePart(int x, int m, int a, int s) {
         WorkflowInterval getInterval() {
-            return new WorkflowInterval(
-                    rangeToSet(this.x, this.x + 1),
-                    rangeToSet(this.m, this.m + 1),
-                    rangeToSet(this.a, this.a + 1),
-                    rangeToSet(this.s, this.s + 1));
+            return new WorkflowInterval(Map.of(
+                    "x", rangeToSet(this.x, this.x + 1),
+                    "m", rangeToSet(this.m, this.m + 1),
+                    "a", rangeToSet(this.a, this.a + 1),
+                    "s", rangeToSet(this.s, this.s + 1)
+            ));
         }
     }
 }
