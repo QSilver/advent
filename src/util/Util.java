@@ -10,15 +10,21 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Math.abs;
+import static java.util.stream.IntStream.range;
 
 @Slf4j
 public
 class Util {
+    public static String[] readDoubleNewlineBlocks(String fileName) {
+        return fileStream(fileName).collect(Collectors.joining("\n")).split("\n\n");
+    }
+
     public static List<String> lines(String fileName) {
         return fileStream(fileName).collect(Collectors.toList());
     }
@@ -44,6 +50,10 @@ class Util {
                 .start()
                 .waitFor();
         log.debug("{}", System.in.read());
+    }
+
+    public static Set<Integer> rangeToSet(int startInclusive, int endExclusive) {
+        return range(startInclusive, endExclusive).boxed().collect(Collectors.toSet());
     }
 
     public static Surface calculateSurface(List<? extends Point> points) {

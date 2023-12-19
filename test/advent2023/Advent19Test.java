@@ -25,7 +25,7 @@ class Advent19Test {
     }
 
     @Test
-    void test() {
+    void testIntervalRestrict() {
         WorkflowInterval expected;
         WorkflowInterval in = new WorkflowInterval(
                 range(1, 4001).boxed().collect(Collectors.toSet()),
