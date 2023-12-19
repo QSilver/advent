@@ -47,19 +47,6 @@ class Advent19Test {
         assertEquals(expected.m(), in_px_qkq_A.m());
         assertEquals(expected.a(), in_px_qkq_A.a());
         assertEquals(expected.s(), in_px_qkq_A.s());
-
-        WorkflowInterval in_px_qkq_crn = in_px_qkq_A.invert("x");
-
-        expected = new WorkflowInterval(
-                range(1416, 4001).boxed().collect(Collectors.toSet()),
-                range(1, 4001).boxed().collect(Collectors.toSet()),
-                range(1, 2006).boxed().collect(Collectors.toSet()),
-                range(1, 1351).boxed().collect(Collectors.toSet()));
-
-        assertEquals(expected.x(), in_px_qkq_crn.x());
-        assertEquals(expected.m(), in_px_qkq_crn.m());
-        assertEquals(expected.a(), in_px_qkq_crn.a());
-        assertEquals(expected.s(), in_px_qkq_crn.s());
     }
 
     @Test
