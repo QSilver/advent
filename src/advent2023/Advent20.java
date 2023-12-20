@@ -5,121 +5,77 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
+import java.util.Queue;
 
-import static advent2023.Advent20.Signal.HIGH;
-import static advent2023.Advent20.Signal.LOW;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
-import static java.lang.System.currentTimeMillis;
+import static com.google.common.collect.Queues.newArrayDeque;
 import static util.Util.fileStream;
 
 @Slf4j
 public class Advent20 {
+    public static final String BROADCASTER = "broadcaster";
+    public static final String BUTTON = "button";
     // https://adventofcode.com/2023/day/20
 
-    static Map<String, Map<String, Long>> periodicity = newHashMap();
-    static long cycle = 0L;
+    Map<String, Map<String, Long>> periodicity = newHashMap();
+    long cycle = 0L;
+    long countHigh;
+    long countLow;
+
+    Queue<Module> toProcess = newArrayDeque();
+    Map<String, Module> moduleMap = newHashMap();
 
     public Long runP1(String file) {
-        Map<String, Module> moduleMap = getModuleMap(file);
-        initModules(moduleMap);
+        initModules(file);
 
-        AtomicLong countHigh = new AtomicLong(0L);
-        AtomicLong countLow = new AtomicLong(0L);
+        Button button = new Button(BUTTON);
+        button.output.add(BROADCASTER);
 
         for (int i = 0; i < 1000; i++) {
-            buttonPress(countHigh, countLow, moduleMap);
+            buttonPress(button);
         }
 
-        return countHigh.get() * countLow.get();
+        return countHigh * countLow;
     }
 
     public Long runP2(String file) {
-        Map<String, Module> moduleMap = getModuleMap(file);
-        initModules(moduleMap);
+        initModules(file);
 
-        long count = 0L;
+        Button button = new Button(BUTTON);
+        button.output.add(BROADCASTER);
 
-        long start = currentTimeMillis();
-        boolean end = false;
-        while (!end) {
-            ++cycle;
-            end = buttonPress(new AtomicLong(), new AtomicLong(), moduleMap);
-            if (++count % 1000000 == 0) {
-                log.info("{} - {}s", count, (currentTimeMillis() - start) / 1000);
-                break;
-            }
+        long conjCount = moduleMap.values().stream()
+                .filter(module -> module instanceof Conjunction)
+                .count();
+
+        while (periodicity.size() < conjCount - 1) {
+            buttonPress(button);
         }
 
-        periodicity.forEach((module, moduleInputs) -> {
-            Function<Map.Entry<String, Long>, String> formatPeriod = entry -> entry.getKey() + " " + entry.getValue();
-            log.info("{} - with input periods {}", module, moduleInputs.entrySet().stream().map(formatPeriod).toList());
-        });
-
-        return count;
+        return periodicity.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .flatMap(map -> map.values().stream())
+                .reduce(1L, (left, right) -> left * right);
     }
 
-    private static boolean buttonPress(AtomicLong countHigh, AtomicLong countLow, Map<String, Module> moduleMap) {
-        Button button = new Button("button");
-        button.output.add("broadcaster");
-
-        List<Wire> signalsToProcess = button.send();
-        while (!signalsToProcess.isEmpty()) {
-            List<Wire> newSignals = newArrayList();
-
-            signalsToProcess.forEach(wire -> {
-                if (wire.signal == HIGH) {
-                    countHigh.getAndIncrement();
-                } else {
-                    countLow.getAndIncrement();
-                }
-
-                List<Wire> receive = newArrayList();
-                Module module = moduleMap.get(wire.destination);
-
-                if (module != null) {
-                    receive = module.receive(wire.from, wire.signal);
-                }
-
-                newSignals.addAll(receive);
-            });
-
-            signalsToProcess = newSignals;
-
-            if (signalsToProcess.stream().anyMatch(wire -> wire.destination.equals("rx") && wire.signal == LOW)) {
-                return true;
-            }
+    private void buttonPress(Module button) {
+        ++cycle;
+        toProcess.add(button);
+        while (!toProcess.isEmpty()) {
+            toProcess.poll().receive();
         }
-        return false;
     }
 
-    private static void initModules(Map<String, Module> moduleMap) {
-        moduleMap.forEach((name, module) -> {
-            module.output.forEach(down -> {
-                Module downstream = moduleMap.get(down);
-                if (downstream != null) {
-                    downstream.input.add(name);
-                }
-            });
-
-            if (module instanceof Conjunction) {
-                ((Conjunction) module).init();
-            }
-        });
-    }
-
-    private static Map<String, Module> getModuleMap(String file) {
-        Map<String, Module> moduleMap = newHashMap();
+    private void initModules(String file) {
         fileStream(file).forEach(line -> {
             String[] split = line.split(" -> ");
 
             List<String> outputs = Arrays.stream(split[1].split(", ")).toList();
-            if (split[0].equals("broadcaster")) {
-                Broadcast broadcast = new Broadcast("broadcaster");
+            if (split[0].equals(BROADCASTER)) {
+                Broadcast broadcast = new Broadcast(BROADCASTER);
                 broadcast.output = outputs;
-                moduleMap.put("broadcaster", broadcast);
+                moduleMap.put(BROADCASTER, broadcast);
             } else {
                 String name = split[0].substring(1);
                 if (split[0].charAt(0) == '%') {
@@ -133,90 +89,64 @@ public class Advent20 {
                 }
             }
         });
-        return moduleMap;
+
+        moduleMap.forEach((key, module) -> {
+            if (module instanceof Conjunction) {
+                moduleMap.values().stream()
+                        .filter(parent -> parent.output.contains(key))
+                        .forEach(parent -> ((Conjunction) module).memory.put(parent.name, false));
+            }
+        });
     }
 
-    static class Button extends Module {
+    class Button extends Module {
         public Button(String name) {
             super(name);
         }
 
-        public List<Wire> send() {
-            return send(LOW);
-        }
-
         @Override
-        List<Wire> receive(String from, Signal signal) {
-            return send(LOW);
+        void receive() {
+            send(false);
         }
 
     }
 
-    static class Broadcast extends Module {
+    class Broadcast extends Module {
         public Broadcast(String name) {
             super(name);
         }
 
         @Override
-        List<Wire> receive(String from, Signal signal) {
-            return send(signal);
+        void receive() {
+            send(input.removeFirst().isHigh);
         }
 
     }
 
-    static class Conjunction extends Module {
-        Map<String, Signal> memory = newHashMap();
+    class Conjunction extends Module {
+        Map<String, Boolean> memory = newHashMap();
 
         public Conjunction(String name) {
             super(name);
         }
 
-        void init() {
-            input.forEach(input -> memory.put(input, LOW));
-        }
-
         @Override
-        List<Wire> receive(String from, Signal signal) {
-            // When a pulse is received, the conjunction module first updates its memory for that input.
-            memory.put(from, signal);
+        void receive() {
+            Signal signal = input.removeFirst();
+            memory.put(signal.from, signal.isHigh);
+            boolean isHigh = !memory.values().stream().allMatch(b -> b);
 
-            if (signal == HIGH) {
-                if (periodicity.get(name) == null) {
-                    periodicity.put(name, newHashMap());
-                }
-                periodicity.get(name).computeIfAbsent(from, k -> cycle);
+            if (!isHigh) {
+                periodicity.computeIfAbsent(name, k -> newHashMap());
+                periodicity.get(name).computeIfAbsent(this.name, k -> cycle);
             }
 
-            // Then, if it remembers high pulses for all inputs, it sends a low pulse; otherwise, it sends a high pulse.
-            Signal toSend;
-            if (memory.values().stream().allMatch(memSignal -> memSignal == HIGH)) {
-                toSend = LOW;
-            } else {
-                toSend = HIGH;
-            }
-            return send(toSend);
+            send(isHigh);
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Conjunction that = (Conjunction) o;
-
-            if (!memory.equals(that.memory)) return false;
-            return name.equals(that.name);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = memory.hashCode();
-            result = 31 * result + name.hashCode();
-            return result;
-        }
     }
 
-    static class FlipFlop extends Module {
+    class FlipFlop extends Module {
         boolean isOn;
 
         public FlipFlop(String name) {
@@ -224,56 +154,41 @@ public class Advent20 {
         }
 
         @Override
-        List<Wire> receive(String from, Signal signal) {
-            if (signal == LOW) {
-                // If it was off, it turns on and sends a high pulse. If it was on, it turns off and sends a low pulse.
+        void receive() {
+            Signal signal = input.removeFirst();
+            if (!signal.isHigh) {
                 isOn = !isOn;
-                return send(isOn ? HIGH : LOW);
+                send(isOn);
             }
-            return newArrayList();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            FlipFlop flipFlop = (FlipFlop) o;
-
-            if (isOn != flipFlop.isOn) return false;
-            return name.equals(flipFlop.name);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = (isOn ? 1 : 0);
-            result = 31 * result + name.hashCode();
-            return result;
         }
     }
 
-    static abstract class Module {
+    abstract class Module {
         String name;
-        List<String> input = newArrayList();
+        List<Signal> input = newArrayList();
         List<String> output = newArrayList();
 
         public Module(String name) {
             this.name = name;
         }
 
-        abstract List<Wire> receive(String from, Signal signal);
+        abstract void receive();
 
-        protected List<Wire> send(Signal signal) {
-            return output.stream().map(module -> new Wire(name, signal, module)).toList();
+        protected void send(boolean isHigh) {
+            output.forEach(output -> {
+                if (isHigh) countHigh++;
+                else countLow++;
+
+                Module to = moduleMap.get(output);
+
+                if (to != null) {
+                    to.input.add(new Signal(this.name, isHigh));
+                    toProcess.add(to);
+                }
+            });
         }
     }
 
-    record Wire(String from, Signal signal, String destination) {
-
-    }
-
-    enum Signal {
-        HIGH,
-        LOW
+    record Signal(String from, boolean isHigh) {
     }
 }
