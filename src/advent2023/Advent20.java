@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 import static advent2023.Advent20.Signal.HIGH;
 import static advent2023.Advent20.Signal.LOW;
@@ -17,6 +18,9 @@ import static util.Util.fileStream;
 @Slf4j
 public class Advent20 {
     // https://adventofcode.com/2023/day/20
+
+    static Map<String, Map<String, Long>> periodicity = newHashMap();
+    static long cycle = 0L;
 
     public Long runP1(String file) {
         Map<String, Module> moduleMap = getModuleMap(file);
@@ -37,14 +41,22 @@ public class Advent20 {
         initModules(moduleMap);
 
         long count = 0L;
+
         long start = currentTimeMillis();
         boolean end = false;
         while (!end) {
+            ++cycle;
             end = buttonPress(new AtomicLong(), new AtomicLong(), moduleMap);
             if (++count % 1000000 == 0) {
                 log.info("{} - {}s", count, (currentTimeMillis() - start) / 1000);
+                break;
             }
         }
+
+        periodicity.forEach((module, moduleInputs) -> {
+            Function<Map.Entry<String, Long>, String> formatPeriod = entry -> entry.getKey() + " " + entry.getValue();
+            log.info("{} - with input periods {}", module, moduleInputs.entrySet().stream().map(formatPeriod).toList());
+        });
 
         return count;
     }
@@ -167,6 +179,14 @@ public class Advent20 {
         List<Wire> receive(String from, Signal signal) {
             // When a pulse is received, the conjunction module first updates its memory for that input.
             memory.put(from, signal);
+
+            if (signal == HIGH) {
+                if (periodicity.get(name) == null) {
+                    periodicity.put(name, newHashMap());
+                }
+                periodicity.get(name).computeIfAbsent(from, k -> cycle);
+            }
+
             // Then, if it remembers high pulses for all inputs, it sends a low pulse; otherwise, it sends a high pulse.
             Signal toSend;
             if (memory.values().stream().allMatch(memSignal -> memSignal == HIGH)) {
