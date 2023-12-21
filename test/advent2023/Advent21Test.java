@@ -4,19 +4,19 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Advent20Test {
-    private final Advent20 underTest = new Advent20();
+class Advent21Test {
+    private final Advent21 underTest = new Advent21();
 
     @Test
     void testPart1() {
         Long run = underTest.runP1("advent2023/advent20_ex1.in");
-        assertEquals(32000000, run);
+        assertEquals(0L, run);
     }
 
     @Test
     void testPart1_2() {
         Long run = underTest.runP1("advent2023/advent20_ex2.in");
-        assertEquals(11687500, run);
+        assertEquals(0L, run);
     }
 
     @Test
