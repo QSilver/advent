@@ -17,8 +17,6 @@ import static java.util.Collections.disjoint;
 import static java.util.UUID.randomUUID;
 import static util.Util.fileStream;
 
-// 84803 - too high
-
 @Slf4j
 public class Advent22 {
     // https://adventofcode.com/2023/day/22
@@ -83,7 +81,6 @@ public class Advent22 {
     }
 
     void fall(Brick current, List<Brick> brickList) {
-        Set<Point> surface = current.getSurface();
 
         int currentWillFallToZ = 0;
         Set<Brick> willFallOn = newHashSet();
@@ -95,7 +92,7 @@ public class Advent22 {
             }
 
             // if points in the projection of the brick overlap, then the falling brick will touch another
-            if (!disjoint(surface, other.getSurface())) {
+            if (!disjoint(current.surface, other.surface)) {
                 int heightOfTower = other.getMaxZ() + 1;
 
                 // we've discovered an intersecting brick higher than the previously found one
@@ -131,13 +128,10 @@ public class Advent22 {
         Set<Point3D> points = newHashSet();
         Set<Brick> above = newHashSet();
         Set<Brick> below = newHashSet();
+        Set<Point> surface = newHashSet();
 
         public Brick(String input, boolean withRandomIds) {
-            if (withRandomIds) {
-                this.uuid = randomUUID().toString();
-            } else {
-                this.uuid = brickIDs.charAt(id++ % brickIDs.length()) + "";
-            }
+            generateId(withRandomIds);
 
             String[] split = input.split("~");
             String[] from = split[0].split(",");
@@ -150,18 +144,24 @@ public class Advent22 {
                     }
                 }
             }
+
+            // calculate the projection of the brick looking top-down
+            // this makes it easy to see what bricks would intersect by falling
+            surface = points.stream()
+                    .map(point3D -> new Point(point3D.x(), point3D.y(), 0))
+                    .collect(Collectors.toSet());
+        }
+
+        private void generateId(boolean withRandomIds) {
+            if (withRandomIds) {
+                this.uuid = randomUUID().toString();
+            } else {
+                this.uuid = brickIDs.charAt(id++ % brickIDs.length()) + "";
+            }
         }
 
         public boolean hasMoreThanOneSupport() {
             return below.size() > 1;
-        }
-
-        // calculate the projection of the brick looking top-down
-        // this makes it easy to see what bricks would intersect by falling
-        public Set<Point> getSurface() {
-            return points.stream()
-                    .map(point3D -> new Point(point3D.x(), point3D.y(), 0))
-                    .collect(Collectors.toSet());
         }
 
         public int getMaxZ() {
