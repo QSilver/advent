@@ -4,14 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import util.Util.Point;
 import util.Util.Point3D;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Queues.newArrayDeque;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.disjoint;
+import static java.util.UUID.randomUUID;
 import static util.Util.fileStream;
 
 // 84803 - too high
@@ -19,79 +22,53 @@ import static util.Util.fileStream;
 @Slf4j
 public class Advent22 {
     // https://adventofcode.com/2023/day/22
-
-    static Map<Brick, Set<Brick>> brickRestsOn = newHashMap();
-    static Map<Brick, Set<Brick>> brickIsSupporting = newHashMap();
     static String brickIDs = "ABCDEFG";
     static int id = 0;
 
     public Long runP1(String file, boolean withRandomIds) {
-        List<Brick> bricks = getBricks(file, withRandomIds);
-
-        bricks.forEach(brick -> fall(brick, bricks));
-
-        // can disintegrate all bricks that don't have anything above
-        Set<Brick> canDisintegrate = bricks.stream()
-                .filter(brick -> !brickIsSupporting.containsKey(brick))
-                .collect(Collectors.toSet());
-
-        // can disintegrate a bricks in the case where every other brick that depends on it has at least 1 other support
-        brickIsSupporting.forEach((brick, dependents) -> {
-            if (dependents.stream().allMatch(Brick::hasMoreThanOneSupport)) {
-                canDisintegrate.add(brick);
-            }
-        });
-
-        return (long) canDisintegrate.size();
+        return (long) getCanDisintegrate(file, withRandomIds).canDisintegrate.size();
     }
 
     public Long runP2(String file, boolean withRandomIds) {
-        List<Brick> bricks = getBricks(file, withRandomIds);
-
-        bricks.forEach(brick -> fall(brick, bricks));
-
-        // can disintegrate all bricks that don't have anything above
-        Set<Brick> canDisintegrate = bricks.stream()
-                .filter(brick -> !brickIsSupporting.containsKey(brick))
-                .collect(Collectors.toSet());
-
-        // can disintegrate a bricks in the case where every other brick that rests on it has at least 1 other support
-        brickIsSupporting.forEach((brick, aboveList) -> {
-            if (aboveList.stream().allMatch(Brick::hasMoreThanOneSupport)) {
-                canDisintegrate.add(brick);
-            }
-        });
-
-        // bricks that will make something fall
-        Set<Brick> worthDisintegrating = bricks.stream()
-                .filter(brick -> !canDisintegrate.contains(brick))
-                .collect(Collectors.toSet());
-
-        return (long) worthDisintegrating.stream()
+        Result result = getCanDisintegrate(file, withRandomIds);
+        return (long) result.zSortedBricks.stream()
+                .filter(brick -> !result.canDisintegrate.contains(brick))
                 .mapToInt(this::getAllBricksRestingOn)
                 .sum();
     }
 
-    private int getAllBricksRestingOn(Brick brick) {
-        Set<Brick> willFall = newHashSet();
-        Queue<Brick> toProcess = newArrayDeque();
+    private Result getCanDisintegrate(String file, boolean withRandomIds) {
+        List<Brick> bricks = getSnapshotSortedByZ(file, withRandomIds);
+        bricks.forEach(brick -> fall(brick, bricks));
 
-        willFall.add(brick);
+        // can disintegrate all bricks that don't have anything above
+        Set<Brick> canDisintegrate = bricks.stream()
+                .filter(brick -> brick.above.isEmpty())
+                .collect(Collectors.toSet());
+
+        // can disintegrate a bricks in the case where every other brick that depends on it has at least 1 other support
+        bricks.forEach(brick -> {
+            if (brick.above.stream().allMatch(Brick::hasMoreThanOneSupport)) {
+                canDisintegrate.add(brick);
+            }
+        });
+        return new Result(canDisintegrate, bricks);
+    }
+
+    private int getAllBricksRestingOn(Brick brick) {
+        Set<Brick> willFall = newHashSet(brick);
+
+        Queue<Brick> toProcess = newArrayDeque();
         toProcess.add(brick);
 
         while (!toProcess.isEmpty()) {
             Brick current = toProcess.poll();
-            Set<Brick> dependOnBrick = brickIsSupporting.get(current);
-
-            if (dependOnBrick != null) {
-                // for each brick, get the other bricks that depend on it
-                // for each of those dependents, check which ones rest on something else that won't fall
-                Set<Brick> toAdd = dependOnBrick.stream()
-                        .filter(dependent -> isRestingOnAnyOtherBrickThatWillNotFall(dependent, willFall))
-                        .collect(Collectors.toSet());
-
-                willFall.addAll(toAdd);
-                toProcess.addAll(toAdd);
+            // get resting on current brick, check which ones rest on something else that won't fall
+            for (Brick dependent : current.above) {
+                if (isRestingOnAnyOtherBrickThatWillNotFall(dependent, willFall)) {
+                    willFall.add(dependent);
+                    toProcess.add(dependent);
+                }
             }
         }
 
@@ -100,7 +77,7 @@ public class Advent22 {
     }
 
     private boolean isRestingOnAnyOtherBrickThatWillNotFall(Brick dependent, Set<Brick> willFall) {
-        Set<Brick> bricksThisOneRestsOn = newHashSet(brickRestsOn.get(dependent));
+        Set<Brick> bricksThisOneRestsOn = newHashSet(dependent.below);
         bricksThisOneRestsOn.removeAll(willFall);
         return bricksThisOneRestsOn.isEmpty();
     }
@@ -137,11 +114,11 @@ public class Advent22 {
 
         current.fallDownTo(currentWillFallToZ);
 
-        brickRestsOn.computeIfAbsent(current, b -> newHashSet()).addAll(willFallOn);
-        willFallOn.forEach(supporting -> brickIsSupporting.computeIfAbsent(supporting, s -> newHashSet()).add(current));
+        current.below.addAll(willFallOn);
+        willFallOn.forEach(supporting -> supporting.above.add(current));
     }
 
-    private static List<Brick> getBricks(String file, boolean withRandomIds) {
+    private static List<Brick> getSnapshotSortedByZ(String file, boolean withRandomIds) {
         return fileStream(file)
                 .map(line -> new Brick(line, withRandomIds))
                 // sort bricks by Z-index to ensure lower ones fall first
@@ -151,11 +128,13 @@ public class Advent22 {
 
     static class Brick {
         String uuid;
-        public Set<Point3D> points = newHashSet();
+        Set<Point3D> points = newHashSet();
+        Set<Brick> above = newHashSet();
+        Set<Brick> below = newHashSet();
 
         public Brick(String input, boolean withRandomIds) {
             if (withRandomIds) {
-                this.uuid = UUID.randomUUID().toString();
+                this.uuid = randomUUID().toString();
             } else {
                 this.uuid = brickIDs.charAt(id++) + "";
             }
@@ -174,7 +153,7 @@ public class Advent22 {
         }
 
         public boolean hasMoreThanOneSupport() {
-            return brickRestsOn.get(this).size() > 1;
+            return below.size() > 1;
         }
 
         // calculate the projection of the brick looking top-down
@@ -208,15 +187,16 @@ public class Advent22 {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-
-            Brick brick = (Brick) o;
-
-            return uuid.equals(brick.uuid);
+            return uuid.equals(((Brick) o).uuid);
         }
 
         @Override
         public int hashCode() {
             return uuid.hashCode();
         }
+    }
+
+    record Result(Set<Brick> canDisintegrate, List<Brick> zSortedBricks) {
+
     }
 }
