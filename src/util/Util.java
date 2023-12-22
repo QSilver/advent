@@ -92,4 +92,8 @@ class Util {
             return abs(row - other.row) + abs(col - other.col);
         }
     }
+
+    @With
+    public record Point3D(long x, long y, long z) {
+    }
 }
