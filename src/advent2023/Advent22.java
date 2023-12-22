@@ -29,7 +29,7 @@ public class Advent22 {
 
     public Long runP2(String file, boolean withRandomIds) {
         return (long) processBricks(file, withRandomIds).zSortedBricks.stream()
-                .mapToInt(Brick::getAllBricksRestingOn)
+                .mapToInt(Brick::getAllBricksRestingOnThisThatWouldFall)
                 .sum();
     }
 
@@ -103,7 +103,7 @@ public class Advent22 {
             return below.size() > 1;
         }
 
-        int getAllBricksRestingOn() {
+        int getAllBricksRestingOnThisThatWouldFall() {
             Set<Brick> willFall = newHashSet(this);
 
             Queue<Brick> toProcess = newArrayDeque();
