@@ -20,8 +20,8 @@ import static util.Util.fileStream;
 public class Advent22 {
     // https://adventofcode.com/2023/day/22
 
-    Map<Brick, Set<Brick>> restsOn = newHashMap();
-    Map<Brick, Set<Brick>> isSupporting = newHashMap();
+    static Map<Brick, Set<Brick>> brickRestsOn = newHashMap();
+    static Map<Brick, Set<Brick>> brickIsSupporting = newHashMap();
     static String brickIDs = "ABCDEFG";
     static int id = 0;
 
@@ -30,9 +30,14 @@ public class Advent22 {
 
         bricks.forEach(brick -> fall(brick, bricks));
 
-        Set<Brick> canDisintegrate = bricks.stream().filter(brick -> !isSupporting.containsKey(brick)).collect(Collectors.toSet());
-        isSupporting.forEach((brick, aboveList) -> {
-            if (aboveList.stream().allMatch(brickAbove -> restsOn.get(brickAbove).size() > 1)) {
+        // can disintegrate all bricks that don't have anything above
+        Set<Brick> canDisintegrate = bricks.stream()
+                .filter(brick -> !brickIsSupporting.containsKey(brick))
+                .collect(Collectors.toSet());
+
+        // can disintegrate a bricks in the case where every other brick that depends on it has at least 1 other support
+        brickIsSupporting.forEach((brick, dependents) -> {
+            if (dependents.stream().allMatch(Brick::hasMoreThanOneSupport)) {
                 canDisintegrate.add(brick);
             }
         });
@@ -45,14 +50,22 @@ public class Advent22 {
 
         bricks.forEach(brick -> fall(brick, bricks));
 
-        Set<Brick> canDisintegrate = bricks.stream().filter(brick -> !isSupporting.containsKey(brick)).collect(Collectors.toSet());
-        isSupporting.forEach((brick, aboveList) -> {
-            if (aboveList.stream().allMatch(brickAbove -> restsOn.get(brickAbove).size() > 1)) {
+        // can disintegrate all bricks that don't have anything above
+        Set<Brick> canDisintegrate = bricks.stream()
+                .filter(brick -> !brickIsSupporting.containsKey(brick))
+                .collect(Collectors.toSet());
+
+        // can disintegrate a bricks in the case where every other brick that rests on it has at least 1 other support
+        brickIsSupporting.forEach((brick, aboveList) -> {
+            if (aboveList.stream().allMatch(Brick::hasMoreThanOneSupport)) {
                 canDisintegrate.add(brick);
             }
         });
 
-        List<Brick> worthDisintegrating = bricks.stream().filter(brick -> !canDisintegrate.contains(brick)).toList();
+        // bricks that will make something fall
+        Set<Brick> worthDisintegrating = bricks.stream()
+                .filter(brick -> !canDisintegrate.contains(brick))
+                .collect(Collectors.toSet());
 
         return (long) worthDisintegrating.stream()
                 .mapToInt(this::getAllBricksRestingOn)
@@ -62,16 +75,19 @@ public class Advent22 {
     private int getAllBricksRestingOn(Brick brick) {
         Set<Brick> willFall = newHashSet();
         Queue<Brick> toProcess = newArrayDeque();
+
         willFall.add(brick);
         toProcess.add(brick);
 
         while (!toProcess.isEmpty()) {
             Brick current = toProcess.poll();
-            Set<Brick> dependOnBrick = isSupporting.get(current);
+            Set<Brick> dependOnBrick = brickIsSupporting.get(current);
 
             if (dependOnBrick != null) {
+                // for each brick, get the other bricks that depend on it
+                // for each of those dependents, check which ones rest on something else that won't fall
                 Set<Brick> toAdd = dependOnBrick.stream()
-                        .filter(testWillFall -> isItRestingOnAnyOtherBrick(testWillFall, willFall))
+                        .filter(dependent -> isRestingOnAnyOtherBrickThatWillNotFall(dependent, willFall))
                         .collect(Collectors.toSet());
 
                 willFall.addAll(toAdd);
@@ -79,48 +95,56 @@ public class Advent22 {
             }
         }
 
+        // remove original brick since that doesn't fall, but gets disintegrated
         return willFall.size() - 1;
     }
 
-    private boolean isItRestingOnAnyOtherBrick(Brick testWillFall, Set<Brick> willFall) {
-        Set<Brick> bricksThisOneRestsOn = newHashSet(restsOn.get(testWillFall));
+    private boolean isRestingOnAnyOtherBrickThatWillNotFall(Brick dependent, Set<Brick> willFall) {
+        Set<Brick> bricksThisOneRestsOn = newHashSet(brickRestsOn.get(dependent));
         bricksThisOneRestsOn.removeAll(willFall);
         return bricksThisOneRestsOn.isEmpty();
     }
 
-    void fall(Brick brick, List<Brick> brickList) {
-        Set<Point> surface = brick.getSurface();
+    void fall(Brick current, List<Brick> brickList) {
+        Set<Point> surface = current.getSurface();
 
-        int minZ = 0;
+        int currentWillFallToZ = 0;
         Set<Brick> willFallOn = newHashSet();
+
         for (Brick other : brickList) {
-            if (brick == other) {
+            // only look at bricks that are under this one since you can't fall down on a brick above you
+            if (current == other) {
                 break;
             }
 
-            Set<Point> otherSurface = other.getSurface();
-            boolean intersects = !disjoint(surface, otherSurface);
-            if (intersects) {
-                int maxZ = other.getMaxZ() + 1;
-                if (maxZ > minZ) {
+            // if points in the projection of the brick overlap, then the falling brick will touch another
+            if (!disjoint(surface, other.getSurface())) {
+                int heightOfTower = other.getMaxZ() + 1;
+
+                // we've discovered an intersecting brick higher than the previously found one
+                // forget about that and start again from the new highest point
+                if (heightOfTower > currentWillFallToZ) {
                     willFallOn.clear();
                     willFallOn.add(other);
-                    minZ = maxZ;
-                } else if (maxZ == minZ) {
-                    willFallOn.add(other); // rests on more than 1 brick
+                    currentWillFallToZ = heightOfTower;
+                } else if (heightOfTower == currentWillFallToZ) {
+                    // there is more than one brick at the top level
+                    // currently falling one will rest on more than one brick
+                    willFallOn.add(other);
                 }
             }
         }
 
-        brick.fall(minZ);
+        current.fallDownTo(currentWillFallToZ);
 
-        restsOn.computeIfAbsent(brick, b -> newHashSet()).addAll(willFallOn);
-        willFallOn.forEach(supporting -> isSupporting.computeIfAbsent(supporting, s -> newHashSet()).add(brick));
+        brickRestsOn.computeIfAbsent(current, b -> newHashSet()).addAll(willFallOn);
+        willFallOn.forEach(supporting -> brickIsSupporting.computeIfAbsent(supporting, s -> newHashSet()).add(current));
     }
 
     private static List<Brick> getBricks(String file, boolean withRandomIds) {
         return fileStream(file)
                 .map(line -> new Brick(line, withRandomIds))
+                // sort bricks by Z-index to ensure lower ones fall first
                 .sorted(Comparator.comparingInt(Brick::getMinZ))
                 .collect(Collectors.toList());
     }
@@ -149,6 +173,12 @@ public class Advent22 {
             }
         }
 
+        public boolean hasMoreThanOneSupport() {
+            return brickRestsOn.get(this).size() > 1;
+        }
+
+        // calculate the projection of the brick looking top-down
+        // this makes it easy to see what bricks would intersect by falling
         public Set<Point> getSurface() {
             return points.stream()
                     .map(point3D -> new Point(point3D.x(), point3D.y(), 0))
@@ -167,19 +197,11 @@ public class Advent22 {
                     .min().orElseThrow();
         }
 
-        public void fall(int minZ) {
-            int deltaZ = getMinZ() - minZ;
+        public void fallDownTo(int fallDownToZ) {
+            int deltaZ = getMinZ() - fallDownToZ;
             points = points.stream()
                     .map(point3D -> new Point3D(point3D.x(), point3D.y(), point3D.z() - deltaZ))
                     .collect(Collectors.toSet());
-        }
-
-        @Override
-        public String toString() {
-            return "Brick{" +
-                    "uuid='" + uuid + '\'' +
-                    ", points=" + points +
-                    '}';
         }
 
         @Override
