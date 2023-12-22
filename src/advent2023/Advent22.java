@@ -136,7 +136,7 @@ public class Advent22 {
             if (withRandomIds) {
                 this.uuid = randomUUID().toString();
             } else {
-                this.uuid = brickIDs.charAt(id++) + "";
+                this.uuid = brickIDs.charAt(id++ % brickIDs.length()) + "";
             }
 
             String[] split = input.split("~");
