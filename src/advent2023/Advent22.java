@@ -24,19 +24,16 @@ public class Advent22 {
     static int id = 0;
 
     public Long runP1(String file, boolean withRandomIds) {
-        return (long) getCanDisintegrate(file, withRandomIds).canDisintegrate.size();
+        return (long) processBricks(file, withRandomIds).canDisintegrate.size();
     }
 
     public Long runP2(String file, boolean withRandomIds) {
-        Result result = getCanDisintegrate(file, withRandomIds);
-        return (long) result.zSortedBricks.stream()
-                // consider only bricks that would cause falling
-                .filter(brick -> !result.canDisintegrate.contains(brick))
+        return (long) processBricks(file, withRandomIds).zSortedBricks.stream()
                 .mapToInt(Brick::getAllBricksRestingOn)
                 .sum();
     }
 
-    private Result getCanDisintegrate(String file, boolean withRandomIds) {
+    private Result processBricks(String file, boolean withRandomIds) {
         List<Brick> bricks = getSnapshotSortedByZ(file, withRandomIds);
         bricks.forEach(brick -> brick.fall(bricks));
 
@@ -51,6 +48,9 @@ public class Advent22 {
                 canDisintegrate.add(brick);
             }
         });
+
+        // consider only bricks that would cause falling
+        bricks.removeAll(canDisintegrate);
         return new Result(canDisintegrate, bricks);
     }
 
