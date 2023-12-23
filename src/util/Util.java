@@ -96,4 +96,8 @@ class Util {
     @With
     public record Point3D(long x, long y, long z) {
     }
+
+    public enum Direction {
+        UP, DOWN, LEFT, RIGHT
+    }
 }
