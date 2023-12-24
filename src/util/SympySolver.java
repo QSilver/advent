@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import com.google.gson.JsonParser;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -74,7 +75,8 @@ public class SympySolver {
     // aggressively extract one solution
     private static Map<String, Long> extractOneSolution(String results) {
         try {
-            return MAPPER.readValue(results, getTypeReference()).getFirst();
+            String canonicalFormat = JsonParser.parseString(results).toString();
+            return MAPPER.readValue(canonicalFormat, getTypeReference()).getFirst();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
