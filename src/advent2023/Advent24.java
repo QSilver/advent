@@ -1,16 +1,16 @@
 package advent2023;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 import lombok.extern.slf4j.Slf4j;
+import util.SympySolver;
+import util.SympySolver.Equation;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Long.parseLong;
+import static util.SympySolver.Equation.build;
 import static util.Util.doubleIsZero;
 import static util.Util.fileStream;
 
@@ -29,88 +29,21 @@ public class Advent24 {
     public Long runP2(String file) {
         List<Vector> vectorList = fileStream(file)
                 .map(line -> extractLine(line, false))
-                .collect(Collectors.toList());
+                .toList();
 
-        String pythonCode = getPythonCode(vectorList);
-        return runPython(pythonCode);
-    }
-
-    private static String getPythonCode(List<Vector> vectorList) {
-        return """
-                from sympy import symbols, Eq, solve
-                                
-                x, y, z, vx, vy, vz, t0, t1, t2 = symbols('x y z vx vy vz t0 t1 t2')
-                equations = (
-                    Eq(%d + %d * t0, x + vx * t0),
-                    Eq(%d + %d * t0, y + vy * t0),
-                    Eq(%d + %d * t0, z + vz * t0),
-                    Eq(%d + %d * t1, x + vx * t1),
-                    Eq(%d + %d * t1, y + vy * t1),
-                    Eq(%d + %d * t1, z + vz * t1),
-                    Eq(%d + %d * t2, x + vx * t2),
-                    Eq(%d + %d * t2, y + vy * t2),
-                    Eq(%d + %d * t2, z + vz * t2)
-                )
-                                
-                print(solve(equations, (x, y, z, vx, vy, vz, t0, t1, t2), dict=True))
-                """.formatted(
-                (long) vectorList.get(0).point.x, (long) vectorList.get(0).direction.x,
-                (long) vectorList.get(0).point.y, (long) vectorList.get(0).direction.y,
-                (long) vectorList.get(0).point.z, (long) vectorList.get(0).direction.z,
-                (long) vectorList.get(1).point.x, (long) vectorList.get(1).direction.x,
-                (long) vectorList.get(1).point.y, (long) vectorList.get(1).direction.y,
-                (long) vectorList.get(1).point.z, (long) vectorList.get(1).direction.z,
-                (long) vectorList.get(2).point.x, (long) vectorList.get(2).direction.x,
-                (long) vectorList.get(2).point.y, (long) vectorList.get(2).direction.y,
-                (long) vectorList.get(2).point.z, (long) vectorList.get(2).direction.z);
-    }
-
-    private static long runPython(String pythonCode) {
-        try {
-            String fileName = "2023advent24p2.py";
-            FileWriter writer = new FileWriter(fileName);
-            writer.write(pythonCode);
-            writer.close();
-
-            Process process = new ProcessBuilder("python", fileName).start();
-            String results = CharStreams.toString(new InputStreamReader(process.getInputStream(), Charsets.UTF_8));
-
-            process.waitFor();
-            String[] split = results.replace(" ", "")
-                    .replace("[", "")
-                    .replace("{", "")
-                    .replace("}", "")
-                    .replace("]", "")
-                    .replace("\r\n", "")
-                    .split(",");
-
-            long tar_x = parseLong(split[6].split(":")[1]);
-            long tar_y = parseLong(split[7].split(":")[1]);
-            long tar_z = parseLong(split[8].split(":")[1]);
-            return tar_x + tar_y + tar_z;
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+        List<String> symbolList = newArrayList("x", "y", "z", "vx", "vy", "vz", "t0", "t1", "t2");
+        List<Equation> equationList = newArrayList();
+        for (int i = 0; i <= 2; i++) {
+            Vector v = vectorList.get(i);
+            equationList.add(build((long) v.point.x, (long) v.direction.x, "y", "vy", "t" + i));
+            equationList.add(build((long) v.point.y, (long) v.direction.y, "z", "vz", "t" + i));
+            equationList.add(build((long) v.point.z, (long) v.direction.z, "x", "vx", "t" + i));
         }
+
+        Map<String, Long> solution = SympySolver.solveGeneric(symbolList, equationList);
+        return solution.get("x") + solution.get("y") + solution.get("z");
     }
 
-    private static Vector extractLine(String line, boolean ignoreZ) {
-        line = line.replace(" ", "");
-        String[] split = line.split("@");
-        String[] first = split[0].split(",");
-        String[] second = split[1].split(",");
-
-        long x = parseLong(first[0]);
-        long y = parseLong(first[1]);
-        long z = ignoreZ ? 0 : parseLong(first[2]);
-        Point3D from = new Point3D(x, y, z);
-
-        long v_x = parseLong(second[0]);
-        long v_y = parseLong(second[1]);
-        long v_z = ignoreZ ? 0 : parseLong(second[2]);
-        Point3D vector = new Point3D(v_x, v_y, v_z);
-
-        return new Vector(from, vector, line);
-    }
 
     // https://stackoverflow.com/questions/2316490/the-algorithm-to-find-the-point-of-intersection-of-two-3d-line-segment
     private static long countIntersectingLinePairs(List<Vector> vectorList, long min, long max) {
@@ -143,6 +76,25 @@ public class Advent24 {
             }
         }
         return count;
+    }
+
+    private static Vector extractLine(String line, boolean ignoreZ) {
+        line = line.replace(" ", "");
+        String[] split = line.split("@");
+        String[] first = split[0].split(",");
+        String[] second = split[1].split(",");
+
+        long x = parseLong(first[0]);
+        long y = parseLong(first[1]);
+        long z = ignoreZ ? 0 : parseLong(first[2]);
+        Point3D from = new Point3D(x, y, z);
+
+        long v_x = parseLong(second[0]);
+        long v_y = parseLong(second[1]);
+        long v_z = ignoreZ ? 0 : parseLong(second[2]);
+        Point3D vector = new Point3D(v_x, v_y, v_z);
+
+        return new Vector(from, vector, line);
     }
 
     record Point3D(double x, double y, double z) {
