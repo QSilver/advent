@@ -1,9 +1,12 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jgrapht.Graph;
+import org.jgrapht.alg.StoerWagnerMinimumCut;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
 
-import java.util.List;
-
+import static java.util.Arrays.stream;
 import static util.Util.lines;
 
 @Slf4j
@@ -11,14 +14,21 @@ public class Advent25 {
     // https://adventofcode.com/2023/day/25
 
     public Long runP1(String file) {
-        List<String> lines = lines(file);
+        Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
 
-        return 0L;
-    }
+        lines(file).forEach(line -> {
+            String[] split = line.split(": ");
+            graph.addVertex(split[0]);
+            stream(split[1].split(" ")).forEach(to -> {
+                graph.addVertex(to);
+                graph.addEdge(split[0], to);
+            });
+        });
 
-    public Long runP2(String file) {
-        List<String> lines = lines(file);
+        StoerWagnerMinimumCut<String, DefaultEdge> minimumCut = new StoerWagnerMinimumCut<>(graph);
+        int minCutSize = minimumCut.minCut().size();
+        int size = graph.vertexSet().size();
 
-        return 0L;
+        return (long) minCutSize * (size - minCutSize);
     }
 }
