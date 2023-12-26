@@ -24,7 +24,7 @@ public class Advent18 {
     }
 
     private long extractPointsAndCalculateArea(String file, Function<String[], Result> coordinateExtractor) {
-        List<Point> points = newArrayList(new Point(0, 0));
+        List<Point> points = newArrayList(new Point(0, 0, 0));
 
         fileStream(file).forEach(line -> {
             Result result = coordinateExtractor.apply(line.split(" "));
@@ -54,16 +54,16 @@ public class Advent18 {
     private static Point getNextPoint(Point last, Direction direction, int digSize) {
         switch (direction) {
             case U -> {
-                return new Point(last.row() - digSize, last.col());
+                return new Point(last.row() - digSize, last.col(), 1);
             }
             case D -> {
-                return new Point(last.row() + digSize, last.col());
+                return new Point(last.row() + digSize, last.col(), 1);
             }
             case L -> {
-                return new Point(last.row(), last.col() - digSize);
+                return new Point(last.row(), last.col() - digSize, 1);
             }
             case R -> {
-                return new Point(last.row(), last.col() + digSize);
+                return new Point(last.row(), last.col() + digSize, 1);
             }
         }
         return null;

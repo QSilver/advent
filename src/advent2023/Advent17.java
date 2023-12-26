@@ -26,7 +26,7 @@ public class Advent17 {
     public Long runP1(String file) {
         parseInput(file);
 
-        Node start = new Node(0, 0, RIGHT, 0, 0, null);
+        Node start = new Node(0, 0, RIGHT, 0, 0);
 
         Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, 1, 3);
         Function<Node, Boolean> endCondition = current -> (current.row == map.length - 1 && current.col == map[0].length - 1);
@@ -38,8 +38,8 @@ public class Advent17 {
     public Long runP2(String file) {
         parseInput(file);
 
-        Node startRight = new Node(0, 0, RIGHT, 0, 0, null);
-        Node startDown = new Node(0, 0, DOWN, 0, 0, null);
+        Node startRight = new Node(0, 0, RIGHT, 0, 0);
+        Node startDown = new Node(0, 0, DOWN, 0, 0);
 
         Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, 4, 10);
         Function<Node, Boolean> endCondition = current -> ((current.row == map.length - 1 && current.col == map[0].length - 1) && current.line >= 4);
@@ -79,15 +79,15 @@ public class Advent17 {
     private List<Node> getNeighbours(Node current, int minStep, int maxStep) {
         List<Node> neighbours = newArrayList();
 
-        final Node up = new Node(current.row - 1, current.col, UP, 1, 0, current);
-        final Node down = new Node(current.row + 1, current.col, DOWN, 1, 0, current);
-        final Node left = new Node(current.row, current.col - 1, LEFT, 1, 0, current);
-        final Node right = new Node(current.row, current.col + 1, RIGHT, 1, 0, current);
+        final Node up = new Node(current.row - 1, current.col, UP, 1, 0);
+        final Node down = new Node(current.row + 1, current.col, DOWN, 1, 0);
+        final Node left = new Node(current.row, current.col - 1, LEFT, 1, 0);
+        final Node right = new Node(current.row, current.col + 1, RIGHT, 1, 0);
 
         switch (current.direction) {
             case UP -> {
                 if (current.line < maxStep) {
-                    neighbours.add(new Node(current.row - 1, current.col, UP, current.line + 1, 0, current));
+                    neighbours.add(new Node(current.row - 1, current.col, UP, current.line + 1, 0));
                 }
                 if (current.line >= minStep) {
                     neighbours.add(left);
@@ -96,7 +96,7 @@ public class Advent17 {
             }
             case DOWN -> {
                 if (current.line < maxStep) {
-                    neighbours.add(new Node(current.row + 1, current.col, DOWN, current.line + 1, 0, current));
+                    neighbours.add(new Node(current.row + 1, current.col, DOWN, current.line + 1, 0));
                 }
                 if (current.line >= minStep) {
                     neighbours.add(left);
@@ -105,7 +105,7 @@ public class Advent17 {
             }
             case LEFT -> {
                 if (current.line < maxStep) {
-                    neighbours.add(new Node(current.row, current.col - 1, LEFT, current.line + 1, 0, current));
+                    neighbours.add(new Node(current.row, current.col - 1, LEFT, current.line + 1, 0));
                 }
                 if (current.line >= minStep) {
                     neighbours.add(up);
@@ -114,7 +114,7 @@ public class Advent17 {
             }
             case RIGHT -> {
                 if (current.line < maxStep) {
-                    neighbours.add(new Node(current.row, current.col + 1, RIGHT, current.line + 1, 0, current));
+                    neighbours.add(new Node(current.row, current.col + 1, RIGHT, current.line + 1, 0));
                 }
                 if (current.line >= minStep) {
                     neighbours.add(up);
@@ -141,7 +141,7 @@ public class Advent17 {
     }
 
     @With
-    record Node(int row, int col, Direction direction, int line, int distance, Node prev) {
+    record Node(int row, int col, Direction direction, int line, int distance) {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;

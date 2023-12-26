@@ -2,19 +2,19 @@ package util;
 
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
+import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Math.abs;
 import static java.util.stream.IntStream.range;
 
@@ -56,6 +56,10 @@ class Util {
         return range(startInclusive, endExclusive).boxed().collect(Collectors.toSet());
     }
 
+    public static boolean doubleIsZero(double val, double precision) {
+        return val >= -precision && val <= precision;
+    }
+
     public static Surface calculateSurface(List<? extends Point> points) {
         long perimeter = 0L;
         long shoelaceArea = 0L;
@@ -65,14 +69,14 @@ class Util {
             Point current = points.get(i);
             Point next = points.get(i + 1);
 
-            perimeter += current.distanceTo(next);
+            perimeter += current.manhattanDistanceTo(next);
             shoelaceArea += ((current.row() * next.col()) - (next.row() * current.col()));
         }
 
         Point last = points.getLast();
         Point first = points.getFirst();
 
-        perimeter += last.distanceTo(first);
+        perimeter += last.manhattanDistanceTo(first);
         shoelaceArea += ((last.row() * first.col()) - (first.row() * last.col()));
         shoelaceArea = abs(shoelaceArea) / 2L;
 
@@ -83,12 +87,41 @@ class Util {
         return new Surface(perimeter, area, insidePoints, shoelaceArea, newArrayList(points));
     }
 
+    long getShortestPath(Point from, Function<Point, Boolean> endCondition,
+                         Function<Point, List<Point>> neighbourFunction,
+                         Comparator<Point> sorting,
+                         Function<Point, Integer> distanceFunction) {
+        PriorityQueue<Point> toVisit = new PriorityQueue<>(sorting);
+        Set<Point> seen = newHashSet();
+
+        toVisit.add(from);
+        Point end = null;
+        while (end == null) {
+            if (toVisit.isEmpty()) {
+                return -1;
+            }
+
+            Point current = toVisit.remove();
+            end = endCondition.apply(current) ? current : null;
+
+            List<Point> neighbours = neighbourFunction.apply(current)
+                    .stream().filter(node -> !seen.contains(node))
+                    .map(node -> node.withDistance(current.distance + distanceFunction.apply(node)))
+                    .toList();
+
+            toVisit.addAll(neighbours);
+            seen.addAll(neighbours);
+        }
+
+        return end.distance;
+    }
+
     public record Surface(long perimeter, long area, long insidePoints, long shoelaceArea, List<Point> points) {
     }
 
-    public record Point(long row, long col) {
-
-        long distanceTo(Point other) {
+    @With
+    public record Point(long row, long col, long distance) {
+        long manhattanDistanceTo(Point other) {
             return abs(row - other.row) + abs(col - other.col);
         }
     }
