@@ -13,8 +13,7 @@ import static java.lang.Long.min;
 import static java.lang.Long.parseLong;
 import static java.util.Arrays.stream;
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.joining;
-import static util.InputUtils.fileStream;
+import static util.InputUtils.readDoubleNewlineBlocks;
 
 @Slf4j
 public class Advent5 {
@@ -70,11 +69,9 @@ public class Advent5 {
     }
 
     private String[] parseInputAndGetSeeds(String file) {
-        String[] split = fileStream(file)
-                .collect(joining("\n"))
-                .split("\n\n");
         types.forEach(s -> conversions.put(s, newArrayList()));
 
+        String[] split = readDoubleNewlineBlocks(file);
         parseConversionBlock(split);
 
         return split[0].split(" ");
