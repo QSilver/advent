@@ -1,17 +1,16 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.SympySolver;
 import util.SympySolver.Equation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Long.parseLong;
 import static util.InputUtils.fileStream;
 import static util.SympySolver.Equation.build;
+import static util.SympySolver.solveGeneric;
 import static util.Util.doubleIsZero;
 
 @Slf4j
@@ -21,7 +20,7 @@ public class Advent24 {
     public Long runP1(String file, long min, long max) {
         List<Vector> vectorList = fileStream(file)
                 .map(line -> extractLine(line, true))
-                .collect(Collectors.toList());
+                .toList();
 
         return countIntersectingLinePairs(vectorList, min, max);
     }
@@ -40,7 +39,7 @@ public class Advent24 {
             equationList.add(build((long) v.point.z, (long) v.direction.z, "x", "vx", "t" + i));
         }
 
-        Map<String, Long> solution = SympySolver.solveGeneric(symbolList, equationList);
+        Map<String, Long> solution = solveGeneric(symbolList, equationList);
         return solution.get("x") + solution.get("y") + solution.get("z");
     }
 

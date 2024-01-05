@@ -1,36 +1,30 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 import static java.lang.Integer.parseInt;
+import static util.InputUtils.getFirstLineSplit;
 
 @Slf4j
 public class Advent15 {
     // https://adventofcode.com/2023/day/15
 
     public Long runP1(String file) {
-        List<String> sequence = Arrays.stream(InputUtils.fileStream(file).toList().getFirst().split(",")).toList();
-
-        return sequence.stream()
+        return getFirstLineSplit(file, ",")
                 .mapToLong(Advent15::calculateHash)
                 .sum();
     }
 
     public Long runP2(String file) {
-        List<String> sequence = Arrays.stream(InputUtils.fileStream(file).toList().getFirst().split(",")).toList();
-
         Map<Long, LinkedHashMap<String, Integer>> hashmap = newHashMap();
 
-        sequence.forEach(s -> {
+        getFirstLineSplit(file, ",").forEach(s -> {
             String[] split = s.split("=");
 
             String label;
@@ -56,7 +50,6 @@ public class Advent15 {
             }
 
         });
-
 
         return hashmap.entrySet().stream().mapToLong(box -> {
             LinkedHashMap<String, Integer> value = box.getValue();

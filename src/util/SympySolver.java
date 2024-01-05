@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.joining;
 
 public class SympySolver {
@@ -52,7 +52,7 @@ public class SympySolver {
     }
 
     private static Map<String, Long> runPython(String pythonCode) {
-        String fileName = UUID.randomUUID().toString();
+        String fileName = randomUUID().toString();
         File file = new File(fileName);
         try {
             FileWriter writer = new FileWriter(file);
@@ -63,7 +63,7 @@ public class SympySolver {
             String results = CharStreams.toString(new InputStreamReader(process.getInputStream(), Charsets.UTF_8));
             process.waitFor();
 
-            return extractOneSolution(results);
+            return extractSolution(results);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
@@ -72,8 +72,7 @@ public class SympySolver {
         }
     }
 
-    // aggressively extract one solution
-    private static Map<String, Long> extractOneSolution(String results) {
+    private static Map<String, Long> extractSolution(String results) {
         try {
             String canonicalFormat = JsonParser.parseString(results).toString();
             return MAPPER.readValue(canonicalFormat, getTypeReference()).getFirst();

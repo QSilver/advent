@@ -86,7 +86,7 @@ public class Advent19 {
         return workflowRules;
     }
 
-    private static Map<String, Workflow> getWorkflowMap(String workflowLines) {
+    private Map<String, Workflow> getWorkflowMap(String workflowLines) {
         Map<String, Workflow> workflowMap = newHashMap();
         Arrays.stream(workflowLines.split("\n")).forEach(workflow -> {
             String[] split1 = workflow.split("\\{");
@@ -110,7 +110,7 @@ public class Advent19 {
         return workflowMap;
     }
 
-    private static List<MachinePart> getMachineParts(String machinePartList) {
+    private List<MachinePart> getMachineParts(String machinePartList) {
         return Arrays.stream(machinePartList.split("\\n")).map(part -> {
             String[] variables = part.replace("{", "")
                     .replace("}", "")

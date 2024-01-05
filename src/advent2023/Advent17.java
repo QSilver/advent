@@ -2,7 +2,6 @@ package advent2023;
 
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -16,6 +15,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.min;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent17 {
@@ -128,7 +128,7 @@ public class Advent17 {
     }
 
     private void parseInput(String file) {
-        List<String> list = InputUtils.fileStream(file).toList();
+        List<String> list = fileStream(file).toList();
 
         map = new int[list.size()][list.getFirst().length()];
         distances = new int[list.size()][list.getFirst().length()];

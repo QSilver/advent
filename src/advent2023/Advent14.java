@@ -1,7 +1,6 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +8,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Comparator.comparingInt;
+import static util.InputUtils.fileStream;
 
 // 98323 - too high
 
@@ -44,7 +44,7 @@ public class Advent14 {
             cycleCount++;
             log.info("Cycle {} complete", cycleCount);
 
-            List<Point> points = new java.util.ArrayList<>(List.copyOf(roundRockList));
+            List<Point> points = newArrayList(roundRockList);
             points.sort(comparingInt(o -> o.row * 100 + o.col));
 
             if (cycleCache.containsKey(points)) {
@@ -162,7 +162,7 @@ public class Advent14 {
     }
 
     private List<String> getRocks(String file) {
-        List<String> list = InputUtils.fileStream(file).toList();
+        List<String> list = fileStream(file).toList();
         map = new char[list.size()][list.getFirst().length()];
 
         for (int row = 0; row < list.size(); row++) {

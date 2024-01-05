@@ -5,29 +5,27 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.nio.file.Files.lines;
+import static java.nio.file.Paths.get;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 
 @Slf4j
 public class InputUtils {
     public static String[] readDoubleNewlineBlocks(String fileName) {
-        return fileStream(fileName).collect(Collectors.joining("\n")).split("\n\n");
-    }
-
-    public static List<String> lines(String fileName) {
-        return fileStream(fileName).collect(Collectors.toList());
+        return fileStream(fileName)
+                .collect(joining("\n"))
+                .split("\n\n");
     }
 
     public static Stream<String> fileStream(String fileName) {
         try {
-            return Files.lines(Paths.get(".\\resources", fileName));
+            return lines(get(".\\resources", fileName));
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -40,11 +38,21 @@ public class InputUtils {
                 .orElseGet(Lists::newArrayList);
     }
 
+
+    public static Stream<String> getFirstLineSplit(String file, String delimiter) {
+        return stream(fileStream(file).findFirst().orElseThrow().split(delimiter));
+    }
+
+
     @SneakyThrows
     public static void clearConsole() {
         new ProcessBuilder("cmd", "/c", "cls").inheritIO()
                 .start()
                 .waitFor();
         log.debug("{}", System.in.read());
+    }
+
+    public static void main(String[] args) {
+        fileStream("advent2023/advent2.in");
     }
 }

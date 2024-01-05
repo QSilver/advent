@@ -2,19 +2,19 @@ package advent2023;
 
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Long.min;
 import static java.lang.Long.parseLong;
+import static java.util.Arrays.stream;
 import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.joining;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent5 {
@@ -70,8 +70,8 @@ public class Advent5 {
     }
 
     private String[] parseInputAndGetSeeds(String file) {
-        String[] split = InputUtils.fileStream(file)
-                .collect(Collectors.joining("\n"))
+        String[] split = fileStream(file)
+                .collect(joining("\n"))
                 .split("\n\n");
         types.forEach(s -> conversions.put(s, newArrayList()));
 
@@ -82,7 +82,7 @@ public class Advent5 {
 
     private void parseConversionBlock(String[] conversionBlock) {
         for (int i = 1; i < conversionBlock.length; i++) {
-            List<String> lines = Arrays.stream(conversionBlock[i].split("\n")).toList();
+            List<String> lines = stream(conversionBlock[i].split("\n")).toList();
             String mapType = lines.getFirst().split(" ")[0].split("-")[2];
 
             lines.subList(1, lines.size())

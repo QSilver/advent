@@ -1,9 +1,9 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
-import java.util.Arrays;
+import static java.util.Arrays.stream;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent9 {
@@ -17,9 +17,9 @@ public class Advent9 {
     }
 
     private int run(String file, boolean isNegative) {
-        return InputUtils.fileStream(file)
+        return fileStream(file)
                 .mapToInt(string -> {
-                    int[] line = Arrays.stream(string.split(" "))
+                    int[] line = stream(string.split(" "))
                             .mapToInt(Integer::parseInt)
                             .toArray();
                     if (isNegative) {

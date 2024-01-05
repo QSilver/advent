@@ -3,37 +3,39 @@ package advent2023;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Math.min;
 import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
-import static util.InputUtils.fileStream;
+import static util.InputUtils.readDoubleNewlineBlocks;
 
 @Slf4j
 public class Advent13 {
     // https://adventofcode.com/2023/day/13
     public Long runP1(String file) {
-        return parseInput(file)
+        return stream(readDoubleNewlineBlocks(file))
                 .mapToLong(this::calculateField)
                 .sum();
     }
 
     public Long runP2(String file) {
-        return parseInput(file).mapToLong(field -> {
-            long original = calculateField(field);
+        return stream(readDoubleNewlineBlocks(file))
+                .mapToLong(field -> {
+                    long original = calculateField(field);
+                    return calculateSmudges(field, original);
+                }).sum();
+    }
 
-            List<String> smudgedFields = generateSmudgedFields(field);
-            for (String smudge : smudgedFields) {
-                long reflection = calculateFieldIgnoringOriginal(smudge, original);
-                if (reflection != 0) {
-                    log.info("Original: {}, Smudged: {}", original, reflection);
-                    return reflection;
-                }
+    private long calculateSmudges(String field, long original) {
+        List<String> smudgedFields = generateSmudgedFields(field);
+        for (String smudge : smudgedFields) {
+            long reflection = calculateFieldIgnoringOriginal(smudge, original);
+            if (reflection != 0) {
+                log.info("Original: {}, Smudged: {}", original, reflection);
+                return reflection;
             }
-            return 0L;
-        }).sum();
+        }
+        return 0L;
     }
 
     private List<String> generateSmudgedFields(String field) {
@@ -109,10 +111,5 @@ public class Advent13 {
             }
         }
         return null;
-    }
-
-    private static Stream<String> parseInput(String file) {
-        String collect = fileStream(file).collect(joining("\n"));
-        return stream(collect.split("\n\n"));
     }
 }

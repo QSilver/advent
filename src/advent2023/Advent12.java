@@ -2,15 +2,14 @@ package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.InputUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static java.util.Arrays.stream;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent12 {
@@ -19,11 +18,9 @@ public class Advent12 {
     Map<Key, Long> cache = newHashMap();
 
     public Long runP1(String file) {
-        List<String> collect = InputUtils.fileStream(file).collect(Collectors.toList());
-
-        collect.forEach(s -> {
+        fileStream(file).forEach(s -> {
             String[] split = s.split(" ");
-            int[] list = Arrays.stream(split[1].split(",")).mapToInt(Integer::parseInt).toArray();
+            int[] list = stream(split[1].split(",")).mapToInt(Integer::parseInt).toArray();
             springs.add(Pair.create(split[0] + ".", list));
         });
 
@@ -31,9 +28,7 @@ public class Advent12 {
     }
 
     public Long runP2(String file) {
-        List<String> collect = InputUtils.fileStream(file).collect(Collectors.toList());
-
-        collect.forEach(s -> {
+        fileStream(file).forEach(s -> {
             String[] split = s.split(" ");
 
             String lineRepeat = (split[0] + "?").repeat(5);
@@ -41,7 +36,7 @@ public class Advent12 {
 
             String blocksRepeat = (split[1] + ",").repeat(5);
             String substring = blocksRepeat.substring(0, blocksRepeat.length() - 1);
-            int[] list = Arrays.stream(substring.split(",")).mapToInt(Integer::parseInt).toArray();
+            int[] list = stream(substring.split(",")).mapToInt(Integer::parseInt).toArray();
 
             springs.add(Pair.create(line, list));
         });

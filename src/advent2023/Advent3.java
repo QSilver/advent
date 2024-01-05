@@ -1,7 +1,6 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
 import java.util.List;
 
@@ -9,6 +8,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Character.isDigit;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent3 {
@@ -16,7 +16,7 @@ public class Advent3 {
     List<String> map = newArrayList();
 
     public Integer runP1(String file) {
-        map = InputUtils.fileStream(file).toList();
+        map = fileStream(file).toList();
 
         int sum = 0;
 
@@ -49,7 +49,7 @@ public class Advent3 {
     }
 
     public Integer runP2(String file) {
-        map = InputUtils.fileStream(file).toList();
+        map = fileStream(file).toList();
 
         List<Point> gears = newArrayList();
         for (int i = 0; i < map.size(); i++) {

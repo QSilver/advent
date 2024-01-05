@@ -4,17 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import util.Util.Point;
 import util.Util.Point3D;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Queues.newArrayDeque;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.disjoint;
+import static java.util.Comparator.comparingInt;
 import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static util.InputUtils.fileStream;
 
 @Slf4j
@@ -40,7 +41,7 @@ public class Advent22 {
         // can disintegrate all bricks that don't have anything above
         Set<Brick> canDisintegrate = bricks.stream()
                 .filter(brick -> brick.above.isEmpty())
-                .collect(Collectors.toSet());
+                .collect(toSet());
 
         // can disintegrate a brick in the case where every other brick directly above has at least 1 other support
         bricks.forEach(brick -> {
@@ -58,8 +59,8 @@ public class Advent22 {
         return fileStream(file)
                 .map(line -> new Brick(line, withRandomIds))
                 // sort bricks by Z-index to ensure lower ones fall first
-                .sorted(Comparator.comparingInt(Brick::getMinZ))
-                .collect(Collectors.toList());
+                .sorted(comparingInt(Brick::getMinZ))
+                .collect(toList());
     }
 
     static class Brick {
@@ -88,7 +89,7 @@ public class Advent22 {
             // this makes it easy to see what bricks would intersect by falling
             surface = points.stream()
                     .map(point3D -> new Point(point3D.x(), point3D.y(), 0))
-                    .collect(Collectors.toSet());
+                    .collect(toSet());
         }
 
         void generateId(boolean withRandomIds) {
@@ -160,7 +161,7 @@ public class Advent22 {
             int deltaZ = getMinZ() - currentWillFallToZ;
             points = points.stream()
                     .map(point3D -> new Point3D(point3D.x(), point3D.y(), point3D.z() - deltaZ))
-                    .collect(Collectors.toSet());
+                    .collect(toSet());
 
             below.addAll(willFallOn);
             willFallOn.forEach(supporting -> supporting.above.add(this));

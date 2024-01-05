@@ -2,18 +2,17 @@ package advent2023;
 
 import com.google.common.base.CharMatcher;
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Integer.compare;
 import static java.lang.Math.pow;
 import static java.util.Arrays.stream;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent7 {
@@ -34,7 +33,9 @@ public class Advent7 {
     private long run(String file, Comparator<String> comparator) {
         Map<String, Long> bids = getBids(file);
 
-        List<String> orderedHands = bids.keySet().stream().sorted(comparator).collect(Collectors.toList());
+        List<String> orderedHands = bids.keySet().stream()
+                .sorted(comparator)
+                .toList();
 
         long pot = 0;
         for (int hand = 0; hand < orderedHands.size(); hand++) {
@@ -46,7 +47,7 @@ public class Advent7 {
 
     private static Map<String, Long> getBids(String file) {
         Map<String, Long> bids = newHashMap();
-        InputUtils.fileStream(file).forEach(s -> {
+        fileStream(file).forEach(s -> {
             String[] split = s.split(" ");
             bids.put(split[0], Long.parseLong(split[1]));
         });

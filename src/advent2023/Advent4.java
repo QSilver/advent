@@ -1,26 +1,26 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent4 {
     // https://adventofcode.com/2023/day/4
     public Integer runP1(String file) {
-        return InputUtils.fileStream(file)
+        return fileStream(file)
                 .mapToInt(this::getMatchesFromTicket)
                 .map(operand -> operand == 0 ? 0 : (int) Math.pow(2, operand - 1))
                 .sum();
     }
 
     public Integer runP2(String file) {
-        List<Integer> list = InputUtils.fileStream(file)
+        List<Integer> list = fileStream(file)
                 .map(this::getMatchesFromTicket)
                 .collect(Collectors.toList());
 

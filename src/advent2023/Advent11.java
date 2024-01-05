@@ -1,7 +1,6 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -10,6 +9,7 @@ import java.util.stream.IntStream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent11 {
@@ -28,7 +28,7 @@ public class Advent11 {
     }
 
     private long run(String file, int expansion) {
-        List<String> list = InputUtils.fileStream(file).toList();
+        List<String> list = fileStream(file).toList();
 
         Set<Integer> columns = newHashSet();
         Set<Integer> rows = newHashSet();

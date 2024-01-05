@@ -2,7 +2,6 @@ package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,7 @@ import static advent2023.Advent16.Direction.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent16 {
@@ -54,7 +54,7 @@ public class Advent16 {
     char[][] mirrorMap;
 
     public Long runP1(String file) {
-        List<String> list = InputUtils.fileStream(file).toList();
+        List<String> list = fileStream(file).toList();
 
         mirrorMap = new char[list.size()][list.getFirst().length()];
         for (int row = 0; row < list.size(); row++) {
@@ -68,7 +68,7 @@ public class Advent16 {
     }
 
     public Long runP2(String file) {
-        List<String> list = InputUtils.fileStream(file).toList();
+        List<String> list = fileStream(file).toList();
 
         mirrorMap = new char[list.size()][list.getFirst().length()];
         for (int row = 0; row < list.size(); row++) {
