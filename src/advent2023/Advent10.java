@@ -1,14 +1,14 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util.Point;
-import util.Util.Surface;
+import util.Util2D.Point;
+import util.Util2D.Surface;
 
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static util.InputUtils.fileStream;
-import static util.Util.calculateSurface;
+import static util.Util2D.calculateSurface;
 
 
 @Slf4j

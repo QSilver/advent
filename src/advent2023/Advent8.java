@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static com.google.common.collect.Maps.newHashMap;
-import static util.InputUtils.fileStream;
+import static java.util.Arrays.stream;
+import static util.InputUtils.readDoubleNewlineBlocks;
+import static util.InputUtils.stringRemove;
 
 @Slf4j
 public class Advent8 {
@@ -55,23 +57,16 @@ public class Advent8 {
     }
 
     private void parseInput(String file) {
-        List<String> list = fileStream(file).toList();
-        instructions = list.getFirst();
-        nodeMap = getNodeMap(list);
+        String[] strings = readDoubleNewlineBlocks(file);
+        instructions = strings[0];
+        nodeMap = getNodeMap(strings[1].split("\n"));
     }
 
-    private Map<String, Node> getNodeMap(List<String> list) {
+    private Map<String, Node> getNodeMap(String[] nodeLines) {
         Map<String, Node> nodeMap = newHashMap();
-        list.subList(2, list.size()).forEach(line -> {
-            line = line.replace(",", "")
-                    .replace("(", "")
-                    .replace(")", "")
-                    .replace(" =", "");
-            String[] split = line.split(" ");
-            String label = split[0];
-            String left = split[1];
-            String right = split[2];
-            nodeMap.put(label, new Node(right, left, label));
+        stream(nodeLines).forEach(line -> {
+            String[] split = stringRemove(line, ",", "(", ")", " =").split(" ");
+            nodeMap.put(split[0], new Node(split[0], split[1], split[2]));
         });
         return nodeMap;
     }
@@ -97,6 +92,6 @@ public class Advent8 {
         return a;
     }
 
-    record Node(String right, String left, String label) {
+    record Node(String label, String left, String right) {
     }
 }

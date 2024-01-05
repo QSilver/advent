@@ -13,9 +13,9 @@ import static advent2023.Advent17.Direction.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Integer.parseInt;
 import static java.lang.Math.min;
-import static util.InputUtils.fileStream;
+import static util.Util2D.initIntMatrix;
+import static util.Util2D.loadIntMatrix;
 
 @Slf4j
 public class Advent17 {
@@ -24,7 +24,8 @@ public class Advent17 {
     int[][] distances;
 
     public Long runP1(String file) {
-        parseInput(file);
+        map = loadIntMatrix(file);
+        distances = initIntMatrix(map.length, map[0].length, MAX_VALUE);
 
         Node start = new Node(0, 0, RIGHT, 0, 0);
 
@@ -36,7 +37,8 @@ public class Advent17 {
     }
 
     public Long runP2(String file) {
-        parseInput(file);
+        map = loadIntMatrix(file);
+        distances = initIntMatrix(map.length, map[0].length, MAX_VALUE);
 
         Node startRight = new Node(0, 0, RIGHT, 0, 0);
         Node startDown = new Node(0, 0, DOWN, 0, 0);
@@ -125,19 +127,6 @@ public class Advent17 {
 
         neighbours.removeIf(node -> !(node.row >= 0 && node.row < map.length && node.col >= 0 && node.col < map[0].length));
         return neighbours;
-    }
-
-    private void parseInput(String file) {
-        List<String> list = fileStream(file).toList();
-
-        map = new int[list.size()][list.getFirst().length()];
-        distances = new int[list.size()][list.getFirst().length()];
-        for (int row = 0; row < list.size(); row++) {
-            for (int col = 0; col < list.get(row).length(); col++) {
-                map[row][col] = parseInt(list.get(row).charAt(col) + "");
-                distances[row][col] = MAX_VALUE;
-            }
-        }
     }
 
     @With

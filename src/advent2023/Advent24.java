@@ -2,6 +2,7 @@ package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
 import util.SympySolver.Equation;
+import util.Util.Point3D;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Long.parseLong;
 import static util.InputUtils.fileStream;
+import static util.InputUtils.stringRemove;
 import static util.SympySolver.Equation.build;
 import static util.SympySolver.solveGeneric;
 import static util.Util.doubleIsZero;
@@ -18,25 +20,21 @@ public class Advent24 {
     // https://adventofcode.com/2023/day/24
 
     public Long runP1(String file, long min, long max) {
-        List<Vector> vectorList = fileStream(file)
-                .map(line -> extractLine(line, true))
-                .toList();
+        List<Vector> vectorList = getVectors(file, true);
 
         return countIntersectingLinePairs(vectorList, min, max);
     }
 
     public Long runP2(String file) {
-        List<Vector> vectorList = fileStream(file)
-                .map(line -> extractLine(line, false))
-                .toList();
+        List<Vector> vectorList = getVectors(file, false);
 
         List<String> symbolList = newArrayList("x", "y", "z", "vx", "vy", "vz", "t0", "t1", "t2");
         List<Equation> equationList = newArrayList();
         for (int i = 0; i <= 2; i++) {
             Vector v = vectorList.get(i);
-            equationList.add(build((long) v.point.x, (long) v.direction.x, "y", "vy", "t" + i));
-            equationList.add(build((long) v.point.y, (long) v.direction.y, "z", "vz", "t" + i));
-            equationList.add(build((long) v.point.z, (long) v.direction.z, "x", "vx", "t" + i));
+            equationList.add(build(v.point.x(), v.direction.x(), "y", "vy", "t" + i));
+            equationList.add(build(v.point.y(), v.direction.y(), "z", "vz", "t" + i));
+            equationList.add(build(v.point.z(), v.direction.z(), "x", "vx", "t" + i));
         }
 
         Map<String, Long> solution = solveGeneric(symbolList, equationList);
@@ -54,18 +52,18 @@ public class Advent24 {
 
                 Point3D d1 = vector1.direction;
                 Point3D d2 = vector2.direction;
-                double denominator = d1.cross(d2).z; // normal vector wrt to Z-plane
+                double denominator = d1.cross(d2).z(); // normal vector wrt to Z-plane
 
                 if (doubleIsZero(denominator, 0.001)) {
                     continue;
                 }
 
                 Point3D perpendicular = vector2.point.minus(vector1.point);
-                double s = (perpendicular.x * d2.y() - perpendicular.y * d2.x()) / denominator;
-                double t = (-1 * perpendicular.x * d1.y() - (-1 * perpendicular.y * d1.x())) / denominator;
+                double s = (perpendicular.x() * d2.y() - perpendicular.y() * d2.x()) / denominator;
+                double t = (-1 * perpendicular.x() * d1.y() - (-1 * perpendicular.y() * d1.x())) / denominator;
 
-                double intersectionX = s * d1.x() + vector1.point.x;
-                double intersectionY = s * d1.y() + vector1.point.y;
+                double intersectionX = s * d1.x() + vector1.point.x();
+                double intersectionY = s * d1.y() + vector1.point.y();
 
                 if (intersectionX >= min && intersectionX <= max && intersectionY >= min && intersectionY <= max) {
                     if (s > 0 && t < 0) {
@@ -77,8 +75,14 @@ public class Advent24 {
         return count;
     }
 
-    private static Vector extractLine(String line, boolean ignoreZ) {
-        line = line.replace(" ", "");
+    private static List<Vector> getVectors(String file, boolean ignoreZ) {
+        return fileStream(file)
+                .map(line -> getVectorFromLine(line, ignoreZ))
+                .toList();
+    }
+
+    private static Vector getVectorFromLine(String line, boolean ignoreZ) {
+        line = stringRemove(line, " ");
         String[] split = line.split("@");
         String[] first = split[0].split(",");
         String[] second = split[1].split(",");
@@ -94,19 +98,6 @@ public class Advent24 {
         Point3D vector = new Point3D(v_x, v_y, v_z);
 
         return new Vector(from, vector, line);
-    }
-
-    record Point3D(double x, double y, double z) {
-        public Point3D cross(Point3D other) {
-            return new Point3D(
-                    this.y * other.z - other.y * this.z,
-                    this.z * other.x - other.z * this.x,
-                    this.x * other.y - other.x * this.y);
-        }
-
-        public Point3D minus(Point3D other) {
-            return new Point3D(x - other.x, y - other.y, z - other.z);
-        }
     }
 
     record Vector(Point3D point, Point3D direction, String text) {

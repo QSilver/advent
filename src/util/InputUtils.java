@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -43,6 +44,11 @@ public class InputUtils {
         return stream(fileStream(file).findFirst().orElseThrow().split(delimiter));
     }
 
+    public static String stringRemove(String string, String... toRemove) {
+        AtomicReference<String> output = new AtomicReference<>(string);
+        stream(toRemove).forEach(s -> output.set(output.get().replace(s, "")));
+        return output.get();
+    }
 
     @SneakyThrows
     public static void clearConsole() {

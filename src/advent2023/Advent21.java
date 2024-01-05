@@ -1,7 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util.Point;
+import util.Util2D.Point;
 
 import java.util.List;
 import java.util.Set;
@@ -38,8 +38,6 @@ public class Advent21 {
         //
         // starting from step 65, every 131 steps, the number of points increases (velocity)
         // every 131 points that increase increases by a constant number (acceleration)
-        //
-        // at step
 
         int start = counts[65];
         int startingSpeed = counts[131 + 65] - start;

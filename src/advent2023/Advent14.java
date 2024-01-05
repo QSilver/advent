@@ -1,6 +1,8 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
+import util.Util2D;
+import util.Util2D.Point2D;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Comparator.comparingInt;
 import static util.InputUtils.fileStream;
+import static util.Util2D.get2DPoints;
 
 // 98323 - too high
 
@@ -17,13 +20,13 @@ public class Advent14 {
     // https://adventofcode.com/2023/day/14
     public static final int CYCLES = 1000000000;
 
-    List<Point> roundRockList = newArrayList();
-    List<Point> squareRockList = newArrayList();
+    List<Point2D> roundRockList = newArrayList();
+    List<Point2D> squareRockList = newArrayList();
 
-    Map<List<Point>, Long> cycleCache = newHashMap();
+    Map<List<Point2D>, Long> cycleCache = newHashMap();
     Long period;
 
-    char[][] map; // TODO - convert to using this array at some point
+    // TODO - this needs a massive performance improvement by using [][]
 
     public Long runP1(String file) {
         List<String> list = getRocks(file);
@@ -31,7 +34,7 @@ public class Advent14 {
         slideNorth();
 
         return roundRockList.stream()
-                .mapToLong(value -> list.size() - value.row)
+                .mapToLong(value -> list.size() - value.row())
                 .sum();
     }
 
@@ -44,8 +47,8 @@ public class Advent14 {
             cycleCount++;
             log.info("Cycle {} complete", cycleCount);
 
-            List<Point> points = newArrayList(roundRockList);
-            points.sort(comparingInt(o -> o.row * 100 + o.col));
+            List<Point2D> points = newArrayList(roundRockList);
+            points.sort(comparingInt(o -> o.row() * 100 + o.col()));
 
             if (cycleCache.containsKey(points)) {
                 period = cycleCount - cycleCache.get(points);
@@ -59,10 +62,13 @@ public class Advent14 {
         long start = cycleCache.size() - period;
         long remainder = (CYCLES - start) % period;
 
-        List<Point> key = cycleCache.entrySet().stream().filter(entry -> entry.getValue() == start + remainder).findFirst().orElseThrow().getKey();
+        List<Point2D> key = cycleCache.entrySet().stream()
+                .filter(entry -> entry.getValue() == start + remainder)
+                .findFirst().orElseThrow()
+                .getKey();
 
         return key.stream()
-                .mapToLong(value -> list.size() - value.row)
+                .mapToLong(value -> list.size() - value.row())
                 .sum();
     }
 
@@ -74,16 +80,16 @@ public class Advent14 {
     }
 
     private void slideNorth() {
-        roundRockList.sort(comparingInt(o -> o.row));
+        roundRockList.sort(comparingInt(Util2D.Point2D::row));
 
         for (int rock = 0; rock < roundRockList.size(); rock++) {
             while (true) {
-                Point current = roundRockList.get(rock);
-                if (current.row == 0) {
+                Point2D current = roundRockList.get(rock);
+                if (current.row() == 0) {
                     break;
                 }
 
-                Point newPos = new Point(current.row - 1, current.col);
+                Point2D newPos = new Point2D(current.row() - 1, current.col());
 
                 if (!roundRockList.contains(newPos) && !squareRockList.contains(newPos)) {
                     roundRockList.remove(current);
@@ -96,16 +102,16 @@ public class Advent14 {
     }
 
     private void slideSouth(int listSize) {
-        roundRockList.sort((o1, o2) -> Integer.compare(o2.row, o1.row));
+        roundRockList.sort((o1, o2) -> Integer.compare(o2.row(), o1.row()));
 
         for (int rock = 0; rock < roundRockList.size(); rock++) {
             while (true) {
-                Point current = roundRockList.get(rock);
-                if (current.row == listSize - 1) {
+                Point2D current = roundRockList.get(rock);
+                if (current.row() == listSize - 1) {
                     break;
                 }
 
-                Point newPos = new Point(current.row + 1, current.col);
+                Point2D newPos = new Point2D(current.row() + 1, current.col());
 
                 if (!roundRockList.contains(newPos) && !squareRockList.contains(newPos)) {
                     roundRockList.remove(current);
@@ -118,16 +124,16 @@ public class Advent14 {
     }
 
     private void slideWest() {
-        roundRockList.sort(comparingInt(o -> o.col));
+        roundRockList.sort(comparingInt(Util2D.Point2D::col));
 
         for (int rock = 0; rock < roundRockList.size(); rock++) {
             while (true) {
-                Point current = roundRockList.get(rock);
-                if (current.col == 0) {
+                Point2D current = roundRockList.get(rock);
+                if (current.col() == 0) {
                     break;
                 }
 
-                Point newPos = new Point(current.row, current.col - 1);
+                Point2D newPos = new Point2D(current.row(), current.col() - 1);
 
                 if (!roundRockList.contains(newPos) && !squareRockList.contains(newPos)) {
                     roundRockList.remove(current);
@@ -140,16 +146,16 @@ public class Advent14 {
     }
 
     private void slideEast(int listSize) {
-        roundRockList.sort((o1, o2) -> Integer.compare(o2.col, o1.col));
+        roundRockList.sort((o1, o2) -> Integer.compare(o2.col(), o1.col()));
 
         for (int rock = 0; rock < roundRockList.size(); rock++) {
             while (true) {
-                Point current = roundRockList.get(rock);
-                if (current.col == listSize - 1) {
+                Point2D current = roundRockList.get(rock);
+                if (current.col() == listSize - 1) {
                     break;
                 }
 
-                Point newPos = new Point(current.row, current.col + 1);
+                Point2D newPos = new Point2D(current.row(), current.col() + 1);
 
                 if (!roundRockList.contains(newPos) && !squareRockList.contains(newPos)) {
                     roundRockList.remove(current);
@@ -163,21 +169,8 @@ public class Advent14 {
 
     private List<String> getRocks(String file) {
         List<String> list = fileStream(file).toList();
-        map = new char[list.size()][list.getFirst().length()];
-
-        for (int row = 0; row < list.size(); row++) {
-            for (int col = 0; col < list.getFirst().length(); col++) {
-                map[row][col] = list.get(row).charAt(col);
-                if (list.get(row).charAt(col) == 'O') {
-                    roundRockList.add(new Point(row, col));
-                } else if (list.get(row).charAt(col) == '#') {
-                    squareRockList.add(new Point(row, col));
-                }
-            }
-        }
+        roundRockList = get2DPoints(file, 'O');
+        squareRockList = get2DPoints(file, '#');
         return list;
-    }
-
-    record Point(int row, int col) {
     }
 }

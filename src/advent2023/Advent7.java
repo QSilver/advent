@@ -10,6 +10,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Integer.compare;
+import static java.lang.Long.parseLong;
 import static java.lang.Math.pow;
 import static java.util.Arrays.stream;
 import static util.InputUtils.fileStream;
@@ -49,7 +50,7 @@ public class Advent7 {
         Map<String, Long> bids = newHashMap();
         fileStream(file).forEach(s -> {
             String[] split = s.split(" ");
-            bids.put(split[0], Long.parseLong(split[1]));
+            bids.put(split[0], parseLong(split[1]));
         });
         return bids;
     }

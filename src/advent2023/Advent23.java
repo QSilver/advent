@@ -12,8 +12,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Queues.newArrayDeque;
 import static com.google.common.collect.Sets.newHashSet;
-import static util.InputUtils.fileStream;
 import static util.Util.Direction.*;
+import static util.Util2D.loadCharMatrix;
 
 @Slf4j
 public class Advent23 {
@@ -139,25 +139,17 @@ public class Advent23 {
     }
 
     private List<Point> parseInput(String file) {
-        List<String> list = fileStream(file).toList();
-
-        map = new char[list.size()][list.getFirst().length()];
-        for (int row = 0; row < list.size(); row++) {
-            for (int col = 0; col < list.get(row).length(); col++) {
-                map[row][col] = list.get(row).charAt(col);
-            }
-        }
+        map = loadCharMatrix(file);
 
         List<Point> intersectionList = newArrayList();
-        for (int row = 0; row < list.size(); row++) {
-            for (int col = 0; col < list.get(row).length(); col++) {
+        for (int row = 0; row < map.length; row++) {
+            for (int col = 0; col < map[0].length; col++) {
                 Point current = new Point(row, col, 0);
                 if (map[row][col] == '.' && getNeighbours(current).size() > 2) {
                     intersectionList.add(new Point(current.row, current.col, 0));
                 }
             }
         }
-
         return intersectionList;
     }
 

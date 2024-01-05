@@ -1,6 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
+import util.Util2D.Point2D;
 
 import java.util.List;
 import java.util.Set;
@@ -10,6 +11,7 @@ import java.util.stream.IntStream;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static util.InputUtils.fileStream;
+import static util.Util2D.get2DPoints;
 
 @Slf4j
 public class Advent11 {
@@ -17,7 +19,7 @@ public class Advent11 {
     Set<Integer> emptyColumns = newHashSet();
     Set<Integer> emptyRows = newHashSet();
 
-    List<Point> points = newArrayList();
+    List<Point2D> points = newArrayList();
 
     public Long runP1(String file) {
         return run(file, 1);
@@ -33,16 +35,12 @@ public class Advent11 {
         Set<Integer> columns = newHashSet();
         Set<Integer> rows = newHashSet();
 
-        for (int row = 0; row < list.size(); row++) {
-            String s = list.get(row);
-            for (int col = 0; col < s.length(); col++) {
-                if (s.charAt(col) == '#') {
-                    points.add(new Point(row, col));
-                    columns.add(col);
-                    rows.add(row);
-                }
-            }
-        }
+        points = get2DPoints(file, '#');
+
+        points.forEach(point2D -> {
+            rows.add(point2D.row());
+            columns.add(point2D.col());
+        });
 
         emptyColumns = IntStream.range(0, list.size())
                 .filter(value -> !columns.contains(value))
@@ -61,11 +59,11 @@ public class Advent11 {
         return pointSums;
     }
 
-    long getDistance(Point p1, Point p2, long expansion) {
-        int minRow = Math.min(p1.row, p2.row);
-        int maxRow = Math.max(p1.row, p2.row);
-        int minCol = Math.min(p1.col, p2.col);
-        int maxCol = Math.max(p1.col, p2.col);
+    long getDistance(Point2D p1, Point2D p2, long expansion) {
+        int minRow = Math.min(p1.row(), p2.row());
+        int maxRow = Math.max(p1.row(), p2.row());
+        int minCol = Math.min(p1.col(), p2.col());
+        int maxCol = Math.max(p1.col(), p2.col());
 
         long rowSum = 0;
         for (int row = minRow; row < maxRow; row++) {
@@ -84,9 +82,5 @@ public class Advent11 {
         }
 
         return rowSum + colSum;
-    }
-
-    record Point(int row, int col) {
-
     }
 }
