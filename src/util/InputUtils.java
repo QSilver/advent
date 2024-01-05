@@ -39,7 +39,6 @@ public class InputUtils {
                 .orElseGet(Lists::newArrayList);
     }
 
-
     public static Stream<String> getFirstLineSplit(String file, String delimiter) {
         return stream(fileStream(file).findFirst().orElseThrow().split(delimiter));
     }
