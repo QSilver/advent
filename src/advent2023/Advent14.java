@@ -1,7 +1,6 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util2D;
 import util.Util2D.Point2D;
 
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.comparingLong;
 import static util.InputUtils.fileStream;
 import static util.Util2D.get2DPoints;
 
@@ -48,7 +48,7 @@ public class Advent14 {
             log.info("Cycle {} complete", cycleCount);
 
             List<Point2D> points = newArrayList(roundRockList);
-            points.sort(comparingInt(o -> o.row() * 100 + o.col()));
+            points.sort(comparingInt(o -> Math.toIntExact(o.row() * 100 + o.col())));
 
             if (cycleCache.containsKey(points)) {
                 period = cycleCount - cycleCache.get(points);
@@ -80,7 +80,7 @@ public class Advent14 {
     }
 
     private void slideNorth() {
-        roundRockList.sort(comparingInt(Util2D.Point2D::row));
+        roundRockList.sort(comparingLong(Point2D::row));
 
         for (int rock = 0; rock < roundRockList.size(); rock++) {
             while (true) {
@@ -102,7 +102,7 @@ public class Advent14 {
     }
 
     private void slideSouth(int listSize) {
-        roundRockList.sort((o1, o2) -> Integer.compare(o2.row(), o1.row()));
+        roundRockList.sort((o1, o2) -> Long.compare(o2.row(), o1.row()));
 
         for (int rock = 0; rock < roundRockList.size(); rock++) {
             while (true) {
@@ -124,7 +124,7 @@ public class Advent14 {
     }
 
     private void slideWest() {
-        roundRockList.sort(comparingInt(Util2D.Point2D::col));
+        roundRockList.sort(comparingLong(Point2D::col));
 
         for (int rock = 0; rock < roundRockList.size(); rock++) {
             while (true) {
@@ -146,7 +146,7 @@ public class Advent14 {
     }
 
     private void slideEast(int listSize) {
-        roundRockList.sort((o1, o2) -> Integer.compare(o2.col(), o1.col()));
+        roundRockList.sort((o1, o2) -> Long.compare(o2.col(), o1.col()));
 
         for (int rock = 0; rock < roundRockList.size(); rock++) {
             while (true) {

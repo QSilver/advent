@@ -67,21 +67,21 @@ public class Util2D {
         return matrix;
     }
 
-    public static Surface calculateSurface(List<? extends Point> points) {
+    public static Surface calculateSurface(List<Point2D> points) {
         long perimeter = 0L;
         long shoelaceArea = 0L;
 
         // https://en.m.wikipedia.org/wiki/Shoelace_formula
         for (int i = 0; i < points.size() - 1; i++) {
-            Point current = points.get(i);
-            Point next = points.get(i + 1);
+            Point2D current = points.get(i);
+            Point2D next = points.get(i + 1);
 
             perimeter += current.manhattanDistanceTo(next);
             shoelaceArea += ((current.row() * next.col()) - (next.row() * current.col()));
         }
 
-        Point last = points.getLast();
-        Point first = points.getFirst();
+        Point2D last = points.getLast();
+        Point2D first = points.getFirst();
 
         perimeter += last.manhattanDistanceTo(first);
         shoelaceArea += ((last.row() * first.col()) - (first.row() * last.col()));
@@ -94,27 +94,27 @@ public class Util2D {
         return new Surface(perimeter, area, insidePoints, shoelaceArea, newArrayList(points));
     }
 
-    public record Surface(long perimeter, long area, long insidePoints, long shoelaceArea, List<Point> points) {
+    public record Surface(long perimeter, long area, long insidePoints, long shoelaceArea, List<Point2D> points) {
     }
 
-    long getShortestPath(Util2D.Point from, Function<Point, Boolean> endCondition,
-                         Function<Util2D.Point, List<Util2D.Point>> neighbourFunction,
-                         Comparator<Point> sorting,
-                         Function<Util2D.Point, Integer> distanceFunction) {
-        PriorityQueue<Point> toVisit = new PriorityQueue<>(sorting);
-        Set<Point> seen = newHashSet();
+    long getShortestPath(PointWithDistance from, Function<PointWithDistance, Boolean> endCondition,
+                         Function<PointWithDistance, List<PointWithDistance>> neighbourFunction,
+                         Comparator<PointWithDistance> sorting,
+                         Function<PointWithDistance, Integer> distanceFunction) {
+        PriorityQueue<PointWithDistance> toVisit = new PriorityQueue<>(sorting);
+        Set<PointWithDistance> seen = newHashSet();
 
         toVisit.add(from);
-        Util2D.Point end = null;
+        PointWithDistance end = null;
         while (end == null) {
             if (toVisit.isEmpty()) {
                 return -1;
             }
 
-            Util2D.Point current = toVisit.remove();
+            PointWithDistance current = toVisit.remove();
             end = endCondition.apply(current) ? current : null;
 
-            List<Util2D.Point> neighbours = neighbourFunction.apply(current)
+            List<PointWithDistance> neighbours = neighbourFunction.apply(current)
                     .stream().filter(node -> !seen.contains(node))
                     .map(node -> node.withDistance(current.distance + distanceFunction.apply(node)))
                     .toList();
@@ -127,13 +127,12 @@ public class Util2D {
     }
 
     @With
-    public record Point(long row, long col, long distance) {
-        long manhattanDistanceTo(Point other) {
-            return abs(row - other.row) + abs(col - other.col);
-        }
+    public record PointWithDistance(Point2D point2D, long distance) {
     }
 
-    public record Point2D(int row, int col) {
-
+    public record Point2D(long row, long col) {
+        long manhattanDistanceTo(Point2D other) {
+            return abs(row - other.row) + abs(col - other.col);
+        }
     }
 }

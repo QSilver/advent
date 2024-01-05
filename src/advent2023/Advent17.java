@@ -14,6 +14,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
+import static java.util.Comparator.comparingInt;
 import static util.Util2D.initIntMatrix;
 import static util.Util2D.loadIntMatrix;
 
@@ -31,9 +32,9 @@ public class Advent17 {
 
         Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, 1, 3);
         Function<Node, Boolean> endCondition = current -> (current.row == map.length - 1 && current.col == map[0].length - 1);
-        Comparator<Node> sorting = Comparator.comparingInt(value -> value.distance);
+        Comparator<Node> sorting = comparingInt(value -> value.distance);
 
-        return getShortestPath(start, endCondition, neighbourFunction, sorting);
+        return getShortestPath(start, endCondition, neighbourFunction, sorting, node -> map[node.row][node.col]);
     }
 
     public Long runP2(String file) {
@@ -45,14 +46,15 @@ public class Advent17 {
 
         Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, 4, 10);
         Function<Node, Boolean> endCondition = current -> ((current.row == map.length - 1 && current.col == map[0].length - 1) && current.line >= 4);
-        Comparator<Node> sorting = Comparator.comparingInt(value -> value.distance);
+        Comparator<Node> sorting = comparingInt(value -> value.distance);
 
-        long pathRight = getShortestPath(startRight, endCondition, neighbourFunction, sorting);
-        long pathDown = getShortestPath(startDown, endCondition, neighbourFunction, sorting);
+        long pathRight = getShortestPath(startRight, endCondition, neighbourFunction, sorting, node -> map[node.row][node.col]);
+        long pathDown = getShortestPath(startDown, endCondition, neighbourFunction, sorting, node -> map[node.row][node.col]);
+
         return min(pathRight, pathDown);
     }
 
-    long getShortestPath(Node from, Function<Node, Boolean> endCondition, Function<Node, List<Node>> neighbourFunction, Comparator<Node> sorting) {
+    long getShortestPath(Node from, Function<Node, Boolean> endCondition, Function<Node, List<Node>> neighbourFunction, Comparator<Node> sorting, Function<Node, Integer> distanceFunction) {
         PriorityQueue<Node> toVisit = new PriorityQueue<>(sorting);
         Set<Node> seen = newHashSet();
 
@@ -68,7 +70,7 @@ public class Advent17 {
 
             List<Node> neighbours = neighbourFunction.apply(current)
                     .stream().filter(node -> !seen.contains(node))
-                    .map(node -> node.withDistance(current.distance + map[node.row][node.col]))
+                    .map(node -> node.withDistance(current.distance + distanceFunction.apply(node)))
                     .toList();
 
             toVisit.addAll(neighbours);

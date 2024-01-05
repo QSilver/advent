@@ -1,7 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util2D.Point;
+import util.Util2D.Point2D;
 
 import java.util.List;
 import java.util.function.Function;
@@ -24,11 +24,11 @@ public class Advent18 {
     }
 
     private long extractPointsAndCalculateArea(String file, Function<String[], Result> coordinateExtractor) {
-        List<Point> points = newArrayList(new Point(0, 0, 0));
+        List<Point2D> points = newArrayList(new Point2D(0, 0));
 
         fileStream(file).forEach(line -> {
             Result result = coordinateExtractor.apply(line.split(" "));
-            Point nextPoint = getNextPoint(points.getLast(), result.direction(), result.digSize);
+            Point2D nextPoint = getNextPoint(points.getLast(), result.direction(), result.digSize);
             points.add(nextPoint);
         });
 
@@ -51,19 +51,19 @@ public class Advent18 {
         return new Result(direction, digSize);
     }
 
-    private static Point getNextPoint(Point last, Direction direction, int digSize) {
+    private static Point2D getNextPoint(Point2D last, Direction direction, int digSize) {
         switch (direction) {
             case U -> {
-                return new Point(last.row() - digSize, last.col(), 1);
+                return new Point2D(last.row() - digSize, last.col());
             }
             case D -> {
-                return new Point(last.row() + digSize, last.col(), 1);
+                return new Point2D(last.row() + digSize, last.col());
             }
             case L -> {
-                return new Point(last.row(), last.col() - digSize, 1);
+                return new Point2D(last.row(), last.col() - digSize);
             }
             case R -> {
-                return new Point(last.row(), last.col() + digSize, 1);
+                return new Point2D(last.row(), last.col() + digSize);
             }
         }
         return null;

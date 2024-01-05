@@ -135,7 +135,7 @@ public class Advent16 {
         final Point2D newPoint = new Point2D(last.row() + delta.row(), last.col() + delta.col());
 
         if (isInBounds(last, from)) {
-            char encounters = mirrorMap[newPoint.row()][newPoint.col()];
+            char encounters = mirrorMap[(int) newPoint.row()][(int) newPoint.col()];
             List<Direction> newDirections = directionRouting.get(Pair.create(from, encounters));
             newDirections.forEach(newDirection -> fireBeam(oldPath, newPoint, resulting, newDirection));
         } else {

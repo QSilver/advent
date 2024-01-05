@@ -1,8 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util2D.Point;
-import util.Util2D.Surface;
+import util.Util2D.Point2D;
 
 import java.util.List;
 
@@ -21,52 +20,46 @@ public class Advent10 {
     char[][] map;
 
     public Long runP1(String file) {
-        PointWithSymbol start = parseInputAndGetStartPoint(file);
-
-        List<PointWithSymbol> path = buildPath((int) start.p.row(), (int) start.p.col());
-        path.addFirst(start);
-
-        return path.size() / 2L;
+        return buildPath(file).size() / 2L;
     }
 
     public Long runP2(String file) {
-        PointWithSymbol start = parseInputAndGetStartPoint(file);
-
-        List<PointWithSymbol> path = buildPath((int) start.p.row(), (int) start.p.col());
-        path.addFirst(start);
-
-        Surface surface = calculateSurface(path.stream().map(pointWithSymbol -> pointWithSymbol.p).toList());
-        return surface.insidePoints();
+        return calculateSurface(buildPath(file)).insidePoints();
     }
 
     private PointWithSymbol parseInputAndGetStartPoint(String file) {
         List<String> list = fileStream(file).toList();
 
-        PointWithSymbol start = new PointWithSymbol(new Point(-1, -1, 0), "#");
+        PointWithSymbol start = new PointWithSymbol(new Point2D(-1, -1), "#");
 
         map = new char[list.size() + 2][list.getFirst().length() + 2];
         for (int row = 0; row < list.size(); row++) {
             for (int col = 0; col < list.get(row).length(); col++) {
                 map[row + 1][col + 1] = list.get(row).charAt(col);
                 if (map[row + 1][col + 1] == 'S') {
-                    start = new PointWithSymbol(new Point(row + 1, col + 1, 0), "S");
+                    start = new PointWithSymbol(new Point2D(row + 1, col + 1), "S");
                 }
             }
         }
         return start;
     }
 
-    List<PointWithSymbol> buildPath(int row, int col) {
+    List<Point2D> buildPath(String file) {
+        PointWithSymbol start = parseInputAndGetStartPoint(file);
+
+        int row = (int) start.p.row();
+        int col = (int) start.p.col();
+
         int initialRow = row;
         int initialCol = col;
         String prev = "S";
 
         List<PointWithSymbol> path = newArrayList();
         do {
-            PointWithSymbol up = new PointWithSymbol(new Point(row - 1, col, 0), map[row - 1][col] + "");
-            PointWithSymbol down = new PointWithSymbol(new Point(row + 1, col, 0), map[row + 1][col] + "");
-            PointWithSymbol left = new PointWithSymbol(new Point(row, col - 1, 0), map[row][col - 1] + "");
-            PointWithSymbol right = new PointWithSymbol(new Point(row, col + 1, 0), map[row][col + 1] + "");
+            PointWithSymbol up = new PointWithSymbol(new Point2D(row - 1, col), map[row - 1][col] + "");
+            PointWithSymbol down = new PointWithSymbol(new Point2D(row + 1, col), map[row + 1][col] + "");
+            PointWithSymbol left = new PointWithSymbol(new Point2D(row, col - 1), map[row][col - 1] + "");
+            PointWithSymbol right = new PointWithSymbol(new Point2D(row, col + 1), map[row][col + 1] + "");
 
             if (UP.contains(up.symbol()) && ("S" + DOWN).contains(prev) && !path.contains(up)) {
                 path.add(up);
@@ -88,10 +81,14 @@ public class Advent10 {
                 break;
             }
         } while (!(row == initialRow && col == initialCol));
-        return path;
+
+        path.addFirst(start);
+        return path.stream()
+                .map(pointWithSymbol -> pointWithSymbol.p)
+                .toList();
     }
 
-    record PointWithSymbol(Point p, String symbol) {
+    record PointWithSymbol(Point2D p, String symbol) {
 
     }
 }

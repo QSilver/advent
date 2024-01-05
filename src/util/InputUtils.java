@@ -59,5 +59,6 @@ public class InputUtils {
 
     public static void main(String[] args) {
         fileStream("advent2023/advent2.in");
+        // TODO - write generic split array parser
     }
 }

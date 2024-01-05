@@ -2,7 +2,7 @@ package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
 import util.Util.Point3D;
-import util.Util2D.Point;
+import util.Util2D.Point2D;
 
 import java.util.List;
 import java.util.Queue;
@@ -68,7 +68,7 @@ public class Advent22 {
         Set<Point3D> points = newHashSet();
         Set<Brick> above = newHashSet();
         Set<Brick> below = newHashSet();
-        Set<Point> surface = newHashSet();
+        Set<Point2D> surface = newHashSet();
 
         public Brick(String input, boolean withRandomIds) {
             generateId(withRandomIds);
@@ -88,7 +88,7 @@ public class Advent22 {
             // calculate the projection of the brick looking top-down
             // this makes it easy to see what bricks would intersect by falling
             surface = points.stream()
-                    .map(point3D -> new Point(point3D.x(), point3D.y(), 0))
+                    .map(point3D -> new Point2D(point3D.x(), point3D.y()))
                     .collect(toSet());
         }
 

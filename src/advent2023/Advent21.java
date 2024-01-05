@@ -1,7 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util2D.Point;
+import util.Util2D.Point2D;
 
 import java.util.List;
 import java.util.Set;
@@ -13,19 +13,19 @@ import static util.InputUtils.fileStream;
 public class Advent21 {
     // https://adventofcode.com/2023/day/21
 
-    Set<Point> points = newHashSet();
+    Set<Point2D> points = newHashSet();
     int max;
 
     int[] counts = new int[131 * 2 + 65 + 1];
 
     public Long runP1(String file, int maxStep) {
-        Point starting = parseInput(file);
+        Point2D starting = parseInput(file);
         points.add(starting);
         return (long) flood(newHashSet(starting), 0, maxStep).size();
     }
 
     public Long runP2(String file) {
-        Point starting = parseInput(file);
+        Point2D starting = parseInput(file);
         points.add(starting);
 
         flood(newHashSet(starting), 0, 131 * 2 + 65);
@@ -53,15 +53,15 @@ public class Advent21 {
         return distance;
     }
 
-    Set<Point> flood(Set<Point> current, int step, int maxStep) {
+    Set<Point2D> flood(Set<Point2D> current, int step, int maxStep) {
         if (step == maxStep) {
             return current;
         }
 
-        Set<Point> visited = newHashSet();
+        Set<Point2D> visited = newHashSet();
 
         current.forEach(point -> {
-            Set<Point> neighbours = getNeighbours(point);
+            Set<Point2D> neighbours = getNeighbours(point);
 
             neighbours.forEach(n -> {
                 if (points.contains(n)) {
@@ -74,25 +74,25 @@ public class Advent21 {
         return flood(visited, step + 1, maxStep);
     }
 
-    Set<Point> getNeighbours(Point point) {
-        Point up = new Point(point.row() - 1, point.col(), 0);
-        Point down = new Point(point.row() + 1, point.col(), 0);
-        Point left = new Point(point.row(), point.col() - 1, 0);
-        Point right = new Point(point.row(), point.col() + 1, 0);
+    Set<Point2D> getNeighbours(Point2D point) {
+        Point2D up = new Point2D(point.row() - 1, point.col());
+        Point2D down = new Point2D(point.row() + 1, point.col());
+        Point2D left = new Point2D(point.row(), point.col() - 1);
+        Point2D right = new Point2D(point.row(), point.col() + 1);
         return newHashSet(up, down, left, right);
     }
 
-    private Point parseInput(String file) {
+    private Point2D parseInput(String file) {
         List<String> lines = fileStream(file).toList();
 
-        Point starting = null;
+        Point2D starting = null;
         for (int row = 0; row < lines.size(); row++) {
             for (int col = 0; col < lines.get(row).length(); col++) {
                 if (lines.get(row).charAt(col) == '.') {
-                    points.add(new Point(row, col, 0));
+                    points.add(new Point2D(row, col));
                 } else if (lines.get(row).charAt(col) == 'S') {
-                    points.add(new Point(row, col, 0));
-                    starting = new Point(row, col, 0);
+                    points.add(new Point2D(row, col));
+                    starting = new Point2D(row, col);
                 }
             }
         }

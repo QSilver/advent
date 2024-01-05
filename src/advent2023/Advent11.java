@@ -38,8 +38,8 @@ public class Advent11 {
         points = get2DPoints(file, '#');
 
         points.forEach(point2D -> {
-            rows.add(point2D.row());
-            columns.add(point2D.col());
+            rows.add((int) point2D.row());
+            columns.add((int) point2D.col());
         });
 
         emptyColumns = IntStream.range(0, list.size())
@@ -60,10 +60,10 @@ public class Advent11 {
     }
 
     long getDistance(Point2D p1, Point2D p2, long expansion) {
-        int minRow = Math.min(p1.row(), p2.row());
-        int maxRow = Math.max(p1.row(), p2.row());
-        int minCol = Math.min(p1.col(), p2.col());
-        int maxCol = Math.max(p1.col(), p2.col());
+        int minRow = (int) Math.min(p1.row(), p2.row());
+        int maxRow = (int) Math.max(p1.row(), p2.row());
+        int minCol = (int) Math.min(p1.col(), p2.col());
+        int maxCol = (int) Math.max(p1.col(), p2.col());
 
         long rowSum = 0;
         for (int row = minRow; row < maxRow; row++) {
