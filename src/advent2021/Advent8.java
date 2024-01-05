@@ -2,7 +2,7 @@ package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -16,7 +16,7 @@ import static com.google.common.collect.Sets.newHashSet;
 @Slf4j
 public class Advent8 {
     public static void main(String[] args) {
-        List<Pair<List<String>, List<String>>> sequence = Util.fileStream("advent2021/advent8")
+        List<Pair<List<String>, List<String>>> sequence = InputUtils.fileStream("advent2021/advent8")
                                                               .map(s -> s.replace("|", "0")
                                                                          .split(" 0 "))
                                                               .map(stringStream -> {

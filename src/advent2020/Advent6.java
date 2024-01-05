@@ -1,12 +1,12 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 @Slf4j
 public class Advent6 {
     public static void main(String[] args) {
-        Long anyone = Util.fileStream("advent2020/advent6")
+        Long anyone = InputUtils.fileStream("advent2020/advent6")
                           .map(line -> line.replace(",", "")
                                            .chars()
                                            .distinct()
@@ -15,7 +15,7 @@ public class Advent6 {
                           .orElse(-1L);
         log.info("{}", anyone);
 
-        Long everyone = Util.fileStream("advent2020/advent6")
+        Long everyone = InputUtils.fileStream("advent2020/advent6")
                             .map(line -> line.chars()
                                              .distinct()
                                              .filter(c -> line.replace((char) c, Character.MIN_VALUE)

@@ -2,7 +2,7 @@ package advent2019;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -123,7 +123,7 @@ class Advent22Helper {
 
     private static ArrayList<ShuffleInstruction> getShuffleInstructions() {
         ArrayList<ShuffleInstruction> shuffleInstructions = newArrayList();
-        Util.fileStream("advent2019/advent22-p1")
+        InputUtils.fileStream("advent2019/advent22-p1")
             .forEach(s -> {
                 String[] splitLine = s.split(" ");
                 try {

@@ -1,7 +1,7 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.function.Function;
@@ -12,7 +12,7 @@ public class Advent18 {
     private static final Function<String, Long> FUNCTION = Advent18::parsePrecedence;
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2020/advent18")
+        List<String> input = InputUtils.fileStream("advent2020/advent18")
                                  .map(line -> line.replace(" ", ""))
                                  .collect(Collectors.toList());
 

@@ -2,7 +2,7 @@ package advent2023;
 
 import com.google.common.base.CharMatcher;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -46,7 +46,7 @@ public class Advent7 {
 
     private static Map<String, Long> getBids(String file) {
         Map<String, Long> bids = newHashMap();
-        Util.fileStream(file).forEach(s -> {
+        InputUtils.fileStream(file).forEach(s -> {
             String[] split = s.split(" ");
             bids.put(split[0], Long.parseLong(split[1]));
         });

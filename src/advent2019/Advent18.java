@@ -1,7 +1,7 @@
 package advent2019;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class Advent18 {
 
     private static final int[][] adjacencyMatrix = new int[123][123];
 
-    private static final List<String> strings = Util.fileStream("advent2019/advent18")
+    private static final List<String> strings = InputUtils.fileStream("advent2019/advent18")
                                                     .collect(Collectors.toList());
 
     public static void main(String[] args) {

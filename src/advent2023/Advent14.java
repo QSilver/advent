@@ -1,7 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -162,7 +162,7 @@ public class Advent14 {
     }
 
     private List<String> getRocks(String file) {
-        List<String> list = Util.fileStream(file).toList();
+        List<String> list = InputUtils.fileStream(file).toList();
         map = new char[list.size()][list.getFirst().length()];
 
         for (int row = 0; row < list.size(); row++) {

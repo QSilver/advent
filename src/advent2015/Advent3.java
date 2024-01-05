@@ -2,7 +2,7 @@ package advent2015;
 
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -17,7 +17,7 @@ public class Advent3 {
     private static final Point STARTING = new Point(0, 0);
 
     public static void main(String[] args) {
-        String moves = Util.fileStream("advent2015/advent3")
+        String moves = InputUtils.fileStream("advent2015/advent3")
                 .toList()
                 .get(0);
 

@@ -1,7 +1,7 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ public class Advent3 {
     private static final List<Integer> rowSkip = newArrayList(1, 1, 1, 1, 2);
 
     public static void main(String[] args) {
-        Util.fileStream("advent2020/advent3")
+        InputUtils.fileStream("advent2020/advent3")
             .forEach(s -> {
                 ArrayList<Boolean> row = newArrayList();
                 Arrays.stream(s.split(""))

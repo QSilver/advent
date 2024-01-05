@@ -1,13 +1,8 @@
 package advent2019;
 
-import util.Util;
+import util.InputUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -20,7 +15,7 @@ public class Advent6 {
     }
 
     private static int solve() {
-        List<String> strings = Util.fileStream("advent2019/advent6")
+        List<String> strings = InputUtils.fileStream("advent2019/advent6")
                                    .collect(Collectors.toList());
 
         Set<Node> danglingRoots = newHashSet();

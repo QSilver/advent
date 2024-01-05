@@ -2,7 +2,7 @@ package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,7 @@ import static com.google.common.collect.Maps.newHashMap;
 @Slf4j
 public class Advent4 {
     public static void main(String[] args) {
-        List<String> collect = Util.fileStream("advent2021/advent4")
+        List<String> collect = InputUtils.fileStream("advent2021/advent4")
                                    .collect(Collectors.toList());
 
         List<Integer> bingoNumbers = Arrays.stream(collect.get(0)

@@ -3,7 +3,7 @@ package advent2022;
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -30,7 +30,7 @@ public class Advent22 {
     public static Facing playerFacing;
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2022/advent22").collect(Collectors.toList());
+        List<String> input = InputUtils.fileStream("advent2022/advent22").collect(Collectors.toList());
 
         parseMapLines(input.subList(0, input.size() - 2));
         List<Instruction> instructionList = getInstructions(input);

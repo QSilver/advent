@@ -2,7 +2,7 @@ package advent2019;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +17,7 @@ public class Advent24 {
     private static ArrayList<Grid> layers = newArrayList();
 
     public static void main(String[] args) {
-        List<String> advent24 = Util.fileStream("advent2019/advent24")
+        List<String> advent24 = InputUtils.fileStream("advent2019/advent24")
                                     .collect(Collectors.toList());
 
         boolean[][] startingMap = new boolean[5][5];

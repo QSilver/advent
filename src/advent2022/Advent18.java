@@ -2,7 +2,7 @@ package advent2022;
 
 import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +19,7 @@ public class Advent18 {
     static int exteriorSides;
 
     public static void main(String[] args) {
-        Map<Point3D, Cube> cubeMap = Util.fileStream("advent2022/advent18")
+        Map<Point3D, Cube> cubeMap = InputUtils.fileStream("advent2022/advent18")
                 .map(Cube::new)
                 .collect(Collectors.toMap(cube -> cube.coords, cube -> cube));
         part1(cubeMap);

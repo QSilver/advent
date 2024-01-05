@@ -2,7 +2,7 @@ package advent2022;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Advent4 {
     public static void main(String[] args) {
-        List<String> pairs = Util.fileStream("advent2022/advent4").collect(Collectors.toList());
+        List<String> pairs = InputUtils.fileStream("advent2022/advent4").collect(Collectors.toList());
 
         long containedCount = pairs.stream().map(ElfPair::new).filter(ElfPair::fullyContains).count();
         log.info("Contained Pairs: {}", containedCount);

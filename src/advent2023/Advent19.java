@@ -13,8 +13,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Integer.parseInt;
 import static java.util.stream.Collectors.toSet;
+import static util.InputUtils.readDoubleNewlineBlocks;
 import static util.Util.rangeToSet;
-import static util.Util.readDoubleNewlineBlocks;
 
 @Slf4j
 public class Advent19 {

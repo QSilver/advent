@@ -3,7 +3,7 @@ package advent2022;
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +21,7 @@ public class Advent14 {
     static int minDown, maxDown, minAcross, maxAcross;
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2022/advent14").collect(Collectors.toList());
+        List<String> input = InputUtils.fileStream("advent2022/advent14").collect(Collectors.toList());
 
         input.forEach(line -> {
             String[] split = line.split(" -> ");

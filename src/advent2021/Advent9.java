@@ -1,7 +1,7 @@
 package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,7 +16,7 @@ public class Advent9 {
     static List<Advent5.Point> lowPoints = newArrayList();
 
     public static void main(String[] args) {
-        List<List<Integer>> map = Util.fileStream("advent2021/advent9")
+        List<List<Integer>> map = InputUtils.fileStream("advent2021/advent9")
                                       .map(s -> Arrays.stream(s.split(""))
                                                       .map(operand -> Integer.parseInt(operand + "")))
                                       .map(intStream -> intStream.collect(Collectors.toList()))

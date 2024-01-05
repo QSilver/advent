@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Long.parseLong;
+import static util.InputUtils.fileStream;
 import static util.SympySolver.Equation.build;
 import static util.Util.doubleIsZero;
-import static util.Util.fileStream;
 
 @Slf4j
 public class Advent24 {

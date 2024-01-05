@@ -1,7 +1,7 @@
 package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Advent7 {
     public static void main(String[] args) {
-        List<Integer> crabs = Util.fileStream("advent2021/advent7")
+        List<Integer> crabs = InputUtils.fileStream("advent2021/advent7")
                                   .map(s -> s.split(","))
                                   .flatMap(Arrays::stream)
                                   .map(Integer::parseInt)

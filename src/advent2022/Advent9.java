@@ -3,7 +3,7 @@ package advent2022;
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -29,7 +29,7 @@ public class Advent9 {
         }
 
         visited.add(new Point(0, 0, null, null));
-        Util.fileStream("advent2022/advent9").forEach(head::move);
+        InputUtils.fileStream("advent2022/advent9").forEach(head::move);
         log.info("Points tail visited: {}", visited.size());
     }
 

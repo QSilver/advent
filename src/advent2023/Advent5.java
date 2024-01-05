@@ -2,7 +2,7 @@ package advent2023;
 
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,7 +70,7 @@ public class Advent5 {
     }
 
     private String[] parseInputAndGetSeeds(String file) {
-        String[] split = Util.fileStream(file)
+        String[] split = InputUtils.fileStream(file)
                 .collect(Collectors.joining("\n"))
                 .split("\n\n");
         types.forEach(s -> conversions.put(s, newArrayList()));

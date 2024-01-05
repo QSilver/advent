@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class Advent23 {
     static Map<Point, Elf> elves = newHashMap();
 
     public static void main(String[] args) {
-        List<String> mapLines = Util.fileStream("advent2022/advent23").collect(Collectors.toList());
+        List<String> mapLines = InputUtils.fileStream("advent2022/advent23").collect(Collectors.toList());
 
         for (int down = 0; down < mapLines.size(); down++) {
             for (int across = 0; across < mapLines.get(down).length(); across++) {

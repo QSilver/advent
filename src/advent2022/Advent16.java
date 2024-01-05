@@ -3,7 +3,7 @@ package advent2022;
 import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +28,7 @@ public class Advent16 {
     static Map<Set<String>, Integer> releasePressureForValveCombination = newHashMap();
 
     public static void main(String[] args) {
-        rooms = Util.fileStream("advent2022/advent16")
+        rooms = InputUtils.fileStream("advent2022/advent16")
                 .map(Room::new).collect(Collectors.toMap(room -> room.label, room -> room));
 
         floydWarshall();

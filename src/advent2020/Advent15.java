@@ -2,7 +2,7 @@ package advent2020;
 
 import com.google.common.collect.HashBiMap;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +15,7 @@ public class Advent15 {
     static HashBiMap<Integer, Integer> numbers = HashBiMap.create();
 
     public static void main(String[] args) {
-        List<Integer> input = Arrays.stream(Util.fileStream("advent2020/advent15")
+        List<Integer> input = Arrays.stream(InputUtils.fileStream("advent2020/advent15")
                                                 .map(s -> s.split(","))
                                                 .findFirst()
                                                 .get())

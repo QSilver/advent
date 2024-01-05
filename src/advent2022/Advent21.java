@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,7 +13,7 @@ public class Advent21 {
     public static final String ROOT = "root";
 
     public static void main(String[] args) {
-        Map<String, Monkey> monkeys = Util.fileStream("advent2022/advent21")
+        Map<String, Monkey> monkeys = InputUtils.fileStream("advent2022/advent21")
                 .map(Monkey::new)
                 .collect(Collectors.toMap(monkey -> monkey.id, monkey -> monkey));
         initializeConnections(monkeys);

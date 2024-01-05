@@ -2,7 +2,7 @@ package advent2020;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +22,7 @@ public class Advent21 {
     private static final List<Food> foods = newArrayList();
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2020/advent21")
+        List<String> input = InputUtils.fileStream("advent2020/advent21")
                                  .collect(Collectors.toList());
 
         input.stream()

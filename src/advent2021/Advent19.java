@@ -3,7 +3,7 @@ package advent2021;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -29,7 +29,7 @@ public class Advent19 {
 
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        List<String> inputs = Util.fileStream("advent2021/advent19")
+        List<String> inputs = InputUtils.fileStream("advent2021/advent19")
                                   .filter(s -> !s.isEmpty())
                                   .collect(Collectors.toList());
         List<Scanner> scanners = getScanners(inputs);

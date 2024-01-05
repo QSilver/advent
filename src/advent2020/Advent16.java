@@ -2,7 +2,7 @@ package advent2020;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,7 @@ public class Advent16 {
     static List<Condition> conditions = newArrayList();
 
     public static void main(String[] args) {
-        Util.fileStream("advent2020/advent16-conditions")
+        InputUtils.fileStream("advent2020/advent16-conditions")
             .forEach(line -> {
                 String[] split = line.split(":");
                 String[] s = split[1].split(" ");
@@ -30,7 +30,7 @@ public class Advent16 {
                 );
             });
 
-        int ticketSum = Util.fileStream("advent2020/advent16-tickets")
+        int ticketSum = InputUtils.fileStream("advent2020/advent16-tickets")
                             .collect(Collectors.toList())
                             .stream()
                             .map(ticket -> checkTicketAndGetInvalid(ticket, 0))
@@ -39,7 +39,7 @@ public class Advent16 {
 
         log.info("Result: {}", ticketSum);
 
-        List<String> validTickets = Util.fileStream("advent2020/advent16-tickets")
+        List<String> validTickets = InputUtils.fileStream("advent2020/advent16-tickets")
                                         .collect(Collectors.toList())
                                         .stream()
                                         .filter(ticket -> checkTicketAndGetInvalid(ticket, -1) == -1)

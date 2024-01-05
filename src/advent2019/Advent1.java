@@ -1,6 +1,6 @@
 package advent2019;
 
-import util.Util;
+import util.InputUtils;
 
 public class Advent1 {
     public static void main(String[] args) {
@@ -8,7 +8,7 @@ public class Advent1 {
     }
 
     private static int solve() {
-        return Util.fileStream("advent2019/advent1")
+        return InputUtils.fileStream("advent2019/advent1")
                    .map(Integer::parseInt)
                    .map(Advent1::getAddedFuel)
                    .mapToInt(Integer::intValue)

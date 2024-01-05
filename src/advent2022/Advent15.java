@@ -3,7 +3,7 @@ package advent2022;
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -17,7 +17,7 @@ public class Advent15 {
     public static final int MAX_COORDS = 4000000;
 
     public static void main(String[] args) {
-        List<Sensor> sensors = Util.fileStream("advent2022/advent15")
+        List<Sensor> sensors = InputUtils.fileStream("advent2022/advent15")
                 .map(Sensor::new).collect(Collectors.toList());
 
         part1(sensors);

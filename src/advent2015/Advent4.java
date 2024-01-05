@@ -3,7 +3,7 @@ package advent2015;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class Advent4 {
     public static void main(String[] args) {
-        String input = Util.fileStream("advent2015/advent4")
+        String input = InputUtils.fileStream("advent2015/advent4")
                 .toList()
                 .get(0);
 

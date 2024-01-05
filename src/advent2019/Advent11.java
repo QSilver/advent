@@ -1,7 +1,7 @@
 package advent2019;
 
 import com.google.common.collect.Lists;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +29,7 @@ public class Advent11 {
     }
 
     private static int solve() {
-        Computer paintingRobot = new Computer(Util.splitLine(Util.fileStream("advent2019/advent11"))
+        Computer paintingRobot = new Computer(InputUtils.splitLine(InputUtils.fileStream("advent2019/advent11"))
                                                   .stream()
                                                   .map(Long::parseLong)
                                                   .collect(Collectors.toCollection(Lists::newArrayList)));

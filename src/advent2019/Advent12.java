@@ -1,7 +1,7 @@
 package advent2019;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +13,7 @@ public class Advent12 {
     }
 
     private static void solve() {
-        List<Moon> starting = Util.fileStream("advent2019/advent12")
+        List<Moon> starting = InputUtils.fileStream("advent2019/advent12")
                                   .map(s -> s.substring(1, s.length() - 1))
                                   .map(s -> s.split(","))
                                   .collect(Collectors.toList())

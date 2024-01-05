@@ -2,7 +2,7 @@ package advent2020;
 
 import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -19,11 +19,11 @@ public class Advent22 {
     private static int game = 1;
 
     public static void main(String[] args) {
-        Queue<Integer> player1 = Util.fileStream("advent2020/advent22-p1")
+        Queue<Integer> player1 = InputUtils.fileStream("advent2020/advent22-p1")
                                      .map(Integer::parseInt)
                                      .collect(Collectors.toCollection(LinkedList::new));
 
-        Queue<Integer> player2 = Util.fileStream("advent2020/advent22-p2")
+        Queue<Integer> player2 = InputUtils.fileStream("advent2020/advent22-p2")
                                      .map(Integer::parseInt)
                                      .collect(Collectors.toCollection(LinkedList::new));
 

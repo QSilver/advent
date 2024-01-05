@@ -1,7 +1,7 @@
 package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +12,7 @@ import static com.google.common.collect.Lists.newArrayList;
 @Slf4j
 public class Advent3 {
     public static void main(String[] args) {
-        List<String> collect = Util.fileStream("advent2021/advent3")
+        List<String> collect = InputUtils.fileStream("advent2021/advent3")
                                    .collect(Collectors.toList());
 
         int length = collect.get(0)

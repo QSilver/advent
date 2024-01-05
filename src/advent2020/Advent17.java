@@ -1,7 +1,7 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,7 @@ public class Advent17 {
     static int[][][][] oldState = new int[SIZE][SIZE][SIZE][SIZE];
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2020/advent17")
+        List<String> input = InputUtils.fileStream("advent2020/advent17")
                                  .collect(Collectors.toList());
 
         for (int i = 0; i < input.size(); i++) {

@@ -1,7 +1,7 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class Advent13 {
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2020/advent13")
+        List<String> input = InputUtils.fileStream("advent2020/advent13")
                                  .collect(Collectors.toList());
 
         List<Integer> busses = Arrays.stream(input.get(1)

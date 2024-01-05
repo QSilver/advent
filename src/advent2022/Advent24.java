@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class Advent24 {
     static int maxDown, maxAcross = 0;
 
     public static void main(String[] args) {
-        List<String> mapLines = Util.fileStream("advent2022/advent24").collect(Collectors.toList());
+        List<String> mapLines = InputUtils.fileStream("advent2022/advent24").collect(Collectors.toList());
         parseMapLines(mapLines);
 
         Point start = map.stream().filter(point -> point.down == 0).findFirst().get();

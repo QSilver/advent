@@ -1,7 +1,7 @@
 package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ import static java.lang.Math.max;
 public class Advent24 {
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        List<String> input = Util.fileStream("advent2021/advent24")
+        List<String> input = InputUtils.fileStream("advent2021/advent24")
                                  .toList();
 
         Map<Integer, Integer> pairs = newHashMap();

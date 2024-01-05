@@ -1,7 +1,7 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.IntSummaryStatistics;
 import java.util.stream.Collectors;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Advent5 {
     public static void main(String[] args) {
-        IntSummaryStatistics seats = Util.fileStream("advent2020/advent5")
+        IntSummaryStatistics seats = InputUtils.fileStream("advent2020/advent5")
                                          .map(line -> line.chars()
                                                           .map(c -> (c / 7) % 2)
                                                           .mapToObj(String::valueOf)

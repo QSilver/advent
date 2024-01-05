@@ -2,7 +2,7 @@ package advent2019;
 
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import static com.google.common.collect.Lists.newArrayList;
 @Slf4j
 public class Advent7 {
     public static void main(String[] args) {
-        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent2019/advent7"))
+        ArrayList<Long> program = InputUtils.splitLine(InputUtils.fileStream("advent2019/advent7"))
                                       .stream()
                                       .map(Long::parseLong)
                                       .collect(Collectors.toCollection(Lists::newArrayList));

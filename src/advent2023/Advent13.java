@@ -9,7 +9,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Math.min;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
-import static util.Util.fileStream;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent13 {

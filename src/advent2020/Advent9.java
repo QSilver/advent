@@ -1,13 +1,9 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -20,7 +16,7 @@ public class Advent9 {
     static long[][] arraySums = new long[1001][1001];
 
     public static void main(String[] args) {
-        List<Long> collect = Util.fileStream("advent2020/advent9")
+        List<Long> collect = InputUtils.fileStream("advent2020/advent9")
                                  .map(Long::parseLong)
                                  .collect(Collectors.toList());
 

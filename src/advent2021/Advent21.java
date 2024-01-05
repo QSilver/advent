@@ -6,7 +6,7 @@ import com.google.common.cache.LoadingCache;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,7 +30,7 @@ public class Advent21 {
 
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        List<String> inputs = Util.fileStream("advent2021/advent21")
+        List<String> inputs = InputUtils.fileStream("advent2021/advent21")
                                   .toList();
 
         int pos1 = Integer.parseInt(inputs.get(0)

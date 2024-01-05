@@ -1,6 +1,6 @@
 package advent2019;
 
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +15,7 @@ public class Advent8 {
     }
 
     private static String solve() {
-        String input = Util.fileStream("advent2019/advent8")
+        String input = InputUtils.fileStream("advent2019/advent8")
                            .findFirst()
                            .get();
 

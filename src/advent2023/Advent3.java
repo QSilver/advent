@@ -1,7 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class Advent3 {
     List<String> map = newArrayList();
 
     public Integer runP1(String file) {
-        map = Util.fileStream(file).toList();
+        map = InputUtils.fileStream(file).toList();
 
         int sum = 0;
 
@@ -49,7 +49,7 @@ public class Advent3 {
     }
 
     public Integer runP2(String file) {
-        map = Util.fileStream(file).toList();
+        map = InputUtils.fileStream(file).toList();
 
         List<Point> gears = newArrayList();
         for (int i = 0; i < map.size(); i++) {

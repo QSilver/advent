@@ -1,7 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -18,7 +18,7 @@ public class Advent15 {
     // https://adventofcode.com/2023/day/15
 
     public Long runP1(String file) {
-        List<String> sequence = Arrays.stream(Util.fileStream(file).toList().getFirst().split(",")).toList();
+        List<String> sequence = Arrays.stream(InputUtils.fileStream(file).toList().getFirst().split(",")).toList();
 
         return sequence.stream()
                 .mapToLong(Advent15::calculateHash)
@@ -26,7 +26,7 @@ public class Advent15 {
     }
 
     public Long runP2(String file) {
-        List<String> sequence = Arrays.stream(Util.fileStream(file).toList().getFirst().split(",")).toList();
+        List<String> sequence = Arrays.stream(InputUtils.fileStream(file).toList().getFirst().split(",")).toList();
 
         Map<Long, LinkedHashMap<String, Integer>> hashmap = newHashMap();
 

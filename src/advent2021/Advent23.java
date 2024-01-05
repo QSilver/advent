@@ -2,20 +2,14 @@ package advent2021;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Math.abs;
+import static util.InputUtils.lines;
 
 @Slf4j
 public class Advent23 {
@@ -43,7 +37,7 @@ public class Advent23 {
 
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        solve(new State(Util.lines("advent2021/advent23"), true));
+        solve(new State(lines("advent2021/advent23"), true));
         log.info("{} ms", System.currentTimeMillis() - start);
     }
 

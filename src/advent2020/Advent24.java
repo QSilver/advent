@@ -2,7 +2,7 @@ package advent2020;
 
 import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class Advent24 {
     private static final int MAX_DEPTH = 2;
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2020/advent24")
+        List<String> input = InputUtils.fileStream("advent2020/advent24")
                                  .collect(Collectors.toList());
 
         input.forEach(string -> {

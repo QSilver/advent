@@ -2,7 +2,7 @@ package advent2020;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +19,7 @@ public class Advent11 {
     @SneakyThrows
     public static void main(String[] args) {
         AtomicInteger row = new AtomicInteger(0);
-        Util.fileStream("advent2020/advent11")
+        InputUtils.fileStream("advent2020/advent11")
             .forEach(line -> {
                 AtomicInteger col = new AtomicInteger(0);
                 line.chars()

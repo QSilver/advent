@@ -3,7 +3,7 @@ package advent2019;
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import util.Util;
+import util.InputUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class Advent3 {
     }
 
     private static int solve() {
-        List<String> wires = Util.fileStream("advent2019/advent3")
+        List<String> wires = InputUtils.fileStream("advent2019/advent3")
                                  .collect(Collectors.toList());
 
         List<Point> wire1 = buildWire(newArrayList(wires.get(0)

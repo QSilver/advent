@@ -2,7 +2,7 @@ package advent2023;
 
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 import util.Util.Direction;
 
 import java.util.*;
@@ -139,7 +139,7 @@ public class Advent23 {
     }
 
     private List<Point> parseInput(String file) {
-        List<String> list = Util.fileStream(file).toList();
+        List<String> list = InputUtils.fileStream(file).toList();
 
         map = new char[list.size()][list.getFirst().length()];
         for (int row = 0; row < list.size(); row++) {

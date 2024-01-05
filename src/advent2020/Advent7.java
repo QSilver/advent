@@ -2,17 +2,9 @@ package advent2020;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -24,7 +16,7 @@ public class Advent7 {
     static Queue<BagPair> available = new LinkedList<>();
 
     public static void main(String[] args) {
-        Util.fileStream("advent2020/advent7")
+        InputUtils.fileStream("advent2020/advent7")
             .forEach(line -> {
                 String[] split = line.replace("bags", "")
                                      .replace("bag", "")

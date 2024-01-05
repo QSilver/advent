@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class Advent14 {
     static Map<Long, Long> memory = newHashMap();
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2020/advent14")
+        List<String> input = InputUtils.fileStream("advent2020/advent14")
                                  .collect(Collectors.toList());
         part2(input);
     }

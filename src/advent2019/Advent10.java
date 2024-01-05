@@ -1,7 +1,7 @@
 package advent2019;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +17,7 @@ public class Advent10 {
     static boolean[][] asteroidMap;
 
     private static int solve() {
-        List<String> advent10 = Util.fileStream("advent2019/advent10")
+        List<String> advent10 = InputUtils.fileStream("advent2019/advent10")
                                     .collect(Collectors.toList());
         asteroidMap = new boolean[advent10.size()][advent10.get(0)
                                                            .length()];

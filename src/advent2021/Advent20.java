@@ -2,7 +2,7 @@ package advent2021;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -17,7 +17,7 @@ public class Advent20 {
 
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        List<String> inputs = Util.fileStream("advent2021/advent20")
+        List<String> inputs = InputUtils.fileStream("advent2021/advent20")
                                   .collect(Collectors.toList());
         enhancementAlgo = inputs.remove(0);
         inputs.remove(0);

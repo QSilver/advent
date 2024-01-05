@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ public class Advent5 {
     public static Map<Point, Integer> board = newHashMap();
 
     public static void main(String[] args) {
-        Util.fileStream("advent2021/advent5")
+        InputUtils.fileStream("advent2021/advent5")
             .map(Line::new)
             .forEach(Advent5::markLine);
 

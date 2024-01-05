@@ -1,7 +1,7 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -13,7 +13,7 @@ import static com.google.common.collect.Maps.newHashMap;
 @Slf4j
 public class Advent4 {
     public static void main(String[] args) {
-        long count = countPassports(Util.fileStream("advent2020/advent4"));
+        long count = countPassports(InputUtils.fileStream("advent2020/advent4"));
         log.info("Valid: {}", count);
     }
 

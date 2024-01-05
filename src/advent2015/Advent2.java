@@ -1,7 +1,7 @@
 package advent2015;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class Advent2 {
     public static void main(String[] args) {
-        List<Box> boxList = Util.fileStream("advent2015/advent2")
+        List<Box> boxList = InputUtils.fileStream("advent2015/advent2")
                 .map(Box::new)
                 .toList();
         int paper = boxList.stream()

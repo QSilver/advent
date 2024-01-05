@@ -2,7 +2,7 @@ package advent2022;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class Advent2 {
             .build();
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2022/advent2").collect(Collectors.toList());
+        List<String> input = InputUtils.fileStream("advent2022/advent2").collect(Collectors.toList());
         int sum = input.stream().map(scoreMap::get).mapToInt(value -> value).sum();
         int modifiedSum = input.stream().map(modifiedScoreMap::get).mapToInt(value -> value).sum();
         log.info("Sum: {}", sum);

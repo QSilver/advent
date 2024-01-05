@@ -8,8 +8,8 @@ import java.util.function.Function;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Integer.parseInt;
+import static util.InputUtils.fileStream;
 import static util.Util.calculateSurface;
-import static util.Util.fileStream;
 
 @Slf4j
 public class Advent18 {

@@ -1,6 +1,6 @@
 package advent2020;
 
-import util.Util;
+import util.InputUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +13,7 @@ public class Advent1 {
     }
 
     private static void solveFor2() {
-        Util.fileStream("advent2020/advent1")
+        InputUtils.fileStream("advent2020/advent1")
             .map(Integer::parseInt)
             .peek(integer -> haveSeen.add(2020 - integer))
             .forEach(integer -> {
@@ -24,7 +24,7 @@ public class Advent1 {
     }
 
     private static void solveFor3() {
-        Util.fileStream("advent2020/advent1")
+        InputUtils.fileStream("advent2020/advent1")
             .map(Integer::parseInt)
             .forEach(integer -> haveSeen.add(integer));
 

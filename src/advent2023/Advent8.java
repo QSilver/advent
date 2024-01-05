@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static com.google.common.collect.Maps.newHashMap;
-import static util.Util.fileStream;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent8 {

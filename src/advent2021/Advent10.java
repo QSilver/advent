@@ -1,7 +1,7 @@
 package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +22,7 @@ public class Advent10 {
         AtomicInteger points = new AtomicInteger();
         List<Long> scores = newArrayList();
 
-        Util.fileStream("advent2021/advent10")
+        InputUtils.fileStream("advent2021/advent10")
             .forEach(line -> {
                 boolean isCorrupted = false;
                 Stack<Character> charStack = new Stack<>();

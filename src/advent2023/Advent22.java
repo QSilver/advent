@@ -15,7 +15,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.disjoint;
 import static java.util.UUID.randomUUID;
-import static util.Util.fileStream;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent22 {

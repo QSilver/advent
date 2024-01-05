@@ -1,7 +1,7 @@
 package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +12,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class Advent18 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        List<String> inputs = Util.fileStream("advent2021/advent18")
+        List<String> inputs = InputUtils.fileStream("advent2021/advent18")
                                   .collect(Collectors.toList());
         List<List<Snailfish>> numbers = inputs.stream()
                                               .map(Advent18::getSnailfish)

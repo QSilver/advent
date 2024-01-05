@@ -3,7 +3,7 @@ package advent2019;
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +41,7 @@ public class Advent20 {
     }
 
     private static void solve() {
-        List<String> strings = Util.fileStream("advent2019/advent20")
+        List<String> strings = InputUtils.fileStream("advent2019/advent20")
                                    .collect(Collectors.toList());
 
         Arrays.stream(map).forEach(chars -> Arrays.fill(chars, '#'));

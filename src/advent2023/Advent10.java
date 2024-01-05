@@ -1,7 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 import util.Util.Point;
 import util.Util.Surface;
 
@@ -40,7 +40,7 @@ public class Advent10 {
     }
 
     private PointWithSymbol parseInputAndGetStartPoint(String file) {
-        List<String> list = Util.fileStream(file).toList();
+        List<String> list = InputUtils.fileStream(file).toList();
 
         PointWithSymbol start = new PointWithSymbol(new Point(-1, -1, 0), "#");
 

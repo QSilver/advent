@@ -7,7 +7,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import static java.util.Arrays.stream;
-import static util.Util.lines;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent25 {
@@ -16,7 +16,7 @@ public class Advent25 {
     public Long runP1(String file) {
         Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
 
-        lines(file).forEach(line -> {
+        fileStream(file).forEach(line -> {
             String[] split = line.split(": ");
             graph.addVertex(split[0]);
             stream(split[1].split(" ")).forEach(to -> {

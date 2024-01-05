@@ -1,7 +1,7 @@
 package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.Queue;
@@ -17,7 +17,7 @@ public class Advent11 {
 
     public static void main(String[] args) {
         AtomicInteger row = new AtomicInteger();
-        Util.fileStream("advent2021/advent11")
+        InputUtils.fileStream("advent2021/advent11")
             .forEach(s -> {
                 String[] split = s.split("");
                 AtomicInteger col = new AtomicInteger();

@@ -10,7 +10,7 @@ import java.util.Queue;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Queues.newArrayDeque;
-import static util.Util.fileStream;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent20 {

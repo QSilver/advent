@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,7 +18,7 @@ public class Advent10 {
     static StringBuffer crt = new StringBuffer();
 
     public static void main(String[] args) {
-        Util.fileStream("advent2022/advent10").forEach(Advent10::processInstruction);
+        InputUtils.fileStream("advent2022/advent10").forEach(Advent10::processInstruction);
         log.info("Sum Signal Strength: {}", signalStrength);
         log.info("{}", crt.toString());
     }

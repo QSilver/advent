@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.stream.Collectors;
 
@@ -11,7 +11,7 @@ import static java.lang.Math.pow;
 public class Advent25 {
 
     public static void main(String[] args) {
-        long sum = Util.fileStream("advent2022/advent25")
+        long sum = InputUtils.fileStream("advent2022/advent25")
                 .collect(Collectors.toList()).stream()
                 .map(Advent25::fromSNAFU)
                 .mapToLong(value -> value).sum();

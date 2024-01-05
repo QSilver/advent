@@ -1,7 +1,7 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,7 @@ public class Advent2 {
     }
 
     private static void solve(Predicate<String[]> function) {
-        long nrOfPasswords = Util.fileStream("advent2020/advent2")
+        long nrOfPasswords = InputUtils.fileStream("advent2020/advent2")
                                  .map(s -> s.split(" "))
                                  .filter(function)
                                  .count();

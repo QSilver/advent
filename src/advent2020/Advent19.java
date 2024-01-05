@@ -3,7 +3,7 @@ package advent2020;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -16,10 +16,10 @@ public class Advent19 {
     private static final Map<Integer, Rule> ruleMap = newHashMap();
 
     public static void main(String[] args) {
-        List<String> ruleInput = Util.fileStream("advent2020/advent19-rules")
+        List<String> ruleInput = InputUtils.fileStream("advent2020/advent19-rules")
                                      .collect(Collectors.toList());
 
-        List<String> textInput = Util.fileStream("advent2020/advent19-text")
+        List<String> textInput = InputUtils.fileStream("advent2020/advent19-text")
                                      .collect(Collectors.toList());
 
         List<Rule> rules = ruleInput.stream()

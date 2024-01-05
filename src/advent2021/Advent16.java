@@ -3,7 +3,7 @@ package advent2021;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -17,7 +17,7 @@ public class Advent16 {
     static int VERSION_SUM = 0;
 
     public static void main(String[] args) {
-        List<String> hexStrings = Util.fileStream("advent2021/advent16")
+        List<String> hexStrings = InputUtils.fileStream("advent2021/advent16")
                                       .collect(Collectors.toList());
 
         String result = hexToBin(hexStrings.get(0)

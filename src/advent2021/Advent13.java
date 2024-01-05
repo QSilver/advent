@@ -2,7 +2,7 @@ package advent2021;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -13,14 +13,14 @@ import static com.google.common.collect.Sets.newHashSet;
 @Slf4j
 public class Advent13 {
     public static void main(String[] args) {
-        Set<Advent5.Point> points = Util.fileStream("advent2021/advent13-map")
+        Set<Advent5.Point> points = InputUtils.fileStream("advent2021/advent13-map")
                                         .map(s -> {
                                             String[] split = s.split(",");
                                             return new Advent5.Point(Integer.parseInt(split[1]), Integer.parseInt(split[0]));
                                         })
                                         .collect(Collectors.toSet());
 
-        List<Fold> folds = Util.fileStream("advent2021/advent13-fold")
+        List<Fold> folds = InputUtils.fileStream("advent2021/advent13-fold")
                                .map(s -> {
                                    String[] split = s.split(" ")[2].split("=");
                                    return new Fold(Integer.parseInt(split[1]), "y".equals(split[0]));

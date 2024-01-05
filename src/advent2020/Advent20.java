@@ -2,7 +2,7 @@ package advent2020;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,7 +22,7 @@ public class Advent20 {
     public static final Tile[][] MAP = new Tile[SIZE][SIZE];
 
     public static void main(String[] args) {
-        List<String> strings = Util.fileStream("advent2020/advent20")
+        List<String> strings = InputUtils.fileStream("advent2020/advent20")
                                    .collect(Collectors.toList());
 
         for (int i = 0; i < strings.size(); i++) {

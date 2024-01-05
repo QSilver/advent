@@ -3,7 +3,7 @@ package advent2022;
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +23,7 @@ public class Advent19 {
             465, 496, 528};
 
     public static void main(String[] args) {
-        List<Blueprint> blueprints = Util.fileStream("advent2022/advent19")
+        List<Blueprint> blueprints = InputUtils.fileStream("advent2022/advent19")
                 .map(Blueprint::new)
                 .collect(Collectors.toList());
 

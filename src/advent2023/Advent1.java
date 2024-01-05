@@ -1,7 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,14 +18,14 @@ public class Advent1 {
     private final List<String> modded = newArrayList("o1e", "t2o", "t3e", "f4r", "f5e", "s6x", "s7n", "e8t", "n9e", "z0o");
 
     public Integer runP1(String file) {
-        return Util.fileStream(file)
+        return InputUtils.fileStream(file)
                 .map(this::extractFirstAndLastDigit)
                 .mapToInt(Integer::parseInt)
                 .sum();
     }
 
     public Integer runP2(String file) {
-        return Util.fileStream(file)
+        return InputUtils.fileStream(file)
                 .map(s -> {
                     String string = s;
                     AtomicBoolean stop = new AtomicBoolean(false);

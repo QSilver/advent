@@ -1,7 +1,7 @@
 package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class Advent1 {
     public static void main(String[] args) {
-        List<Integer> depth = Util.fileStream("advent2021/advent1")
+        List<Integer> depth = InputUtils.fileStream("advent2021/advent1")
                                   .map(Integer::valueOf)
                                   .collect(Collectors.toList());
 

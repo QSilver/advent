@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static util.Util.lines;
+import static util.InputUtils.lines;
 
 @Slf4j
 public class Advent21 {

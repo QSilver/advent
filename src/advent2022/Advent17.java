@@ -3,7 +3,7 @@ package advent2022;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -24,7 +24,7 @@ public class Advent17 {
     static Map<Pair<String, Integer>, String> state = newHashMap();
 
     public static void main(String[] args) {
-        List<Character> directions = Util.fileStream("advent2022/advent17")
+        List<Character> directions = InputUtils.fileStream("advent2022/advent17")
                 .collect(Collectors.toList()).get(0)
                 .chars().mapToObj(e -> (char) e)
                 .collect(Collectors.toList());

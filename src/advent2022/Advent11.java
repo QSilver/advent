@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ public class Advent11 {
     static List<Integer> divisibleBy = newArrayList();
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2022/advent11").collect(Collectors.toList());
+        List<String> input = InputUtils.fileStream("advent2022/advent11").collect(Collectors.toList());
 
         for (int i = 0; i < input.size(); i += 7) {
             int id = Integer.parseInt(input.get(i).split(" ")[1].split(":")[0]);

@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ import static com.google.common.collect.Queues.newArrayDeque;
 @Slf4j
 public class Advent7 {
     public static void main(String[] args) {
-        List<String> commands = Util.fileStream("advent2022/advent7").collect(Collectors.toList());
+        List<String> commands = InputUtils.fileStream("advent2022/advent7").collect(Collectors.toList());
 
         Node root = new Node("/", null, true, 0);
         AtomicReference<Node> current = new AtomicReference<>(root);

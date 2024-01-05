@@ -4,7 +4,7 @@ import advent2021.Advent5.Point;
 import com.google.common.base.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ import static com.google.common.collect.Maps.newHashMap;
 public class Advent25 {
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        List<String> input = Util.fileStream("advent2021/advent25")
+        List<String> input = InputUtils.fileStream("advent2021/advent25")
                                  .toList();
 
         int sizeX = input.size();

@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +13,7 @@ public class Advent8 {
     static int[][] trees;
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2022/advent8").collect(Collectors.toList());
+        List<String> input = InputUtils.fileStream("advent2022/advent8").collect(Collectors.toList());
         trees = new int[input.size()][input.get(0).length()];
 
         for (int i = 0; i < input.size(); i++) {

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -17,7 +17,7 @@ import static com.google.common.collect.Sets.newHashSet;
 public class Advent22 {
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        List<Cuboid> cuboids = Util.fileStream("advent2021/advent22")
+        List<Cuboid> cuboids = InputUtils.fileStream("advent2021/advent22")
                                    .map(Cuboid::new)
                                    .collect(Collectors.toList());
 

@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +14,7 @@ public class Advent1 {
         List<List<Integer>> elves = newArrayList();
         elves.add(newArrayList());
 
-        Util.fileStream("advent2022/advent1").forEach(s -> {
+        InputUtils.fileStream("advent2022/advent1").forEach(s -> {
             if (s.isBlank()) {
                 elves.add(newArrayList());
             } else {

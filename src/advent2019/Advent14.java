@@ -2,14 +2,9 @@ package advent2019;
 
 import com.google.common.base.Objects;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalLong;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -109,7 +104,7 @@ public class Advent14 {
     }
 
     private static void setUp() {
-        List<Reaction> reactions = Util.fileStream("advent2019/advent14")
+        List<Reaction> reactions = InputUtils.fileStream("advent2019/advent14")
                                        .map(Reaction::new)
                                        .collect(Collectors.toList());
 

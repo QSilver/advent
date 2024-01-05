@@ -2,7 +2,7 @@ package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +19,7 @@ public class Advent12 {
     Map<Key, Long> cache = newHashMap();
 
     public Long runP1(String file) {
-        List<String> collect = Util.fileStream(file).collect(Collectors.toList());
+        List<String> collect = InputUtils.fileStream(file).collect(Collectors.toList());
 
         collect.forEach(s -> {
             String[] split = s.split(" ");
@@ -31,7 +31,7 @@ public class Advent12 {
     }
 
     public Long runP2(String file) {
-        List<String> collect = Util.fileStream(file).collect(Collectors.toList());
+        List<String> collect = InputUtils.fileStream(file).collect(Collectors.toList());
 
         collect.forEach(s -> {
             String[] split = s.split(" ");

@@ -2,7 +2,7 @@ package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -18,7 +18,7 @@ public class Advent20 {
 
     public static void main(String[] args) {
         AtomicReference<Node> zero = new AtomicReference<>();
-        List<Node> nodes = Util.fileStream("advent2022/advent20")
+        List<Node> nodes = InputUtils.fileStream("advent2022/advent20")
                 .map(Long::parseLong)
                 .map(value -> {
                     Node node = new Node(value);

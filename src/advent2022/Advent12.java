@@ -2,7 +2,7 @@ package advent2022;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -18,7 +18,7 @@ public class Advent12 {
 
 
     public static void main(String[] args) {
-        String[][] map = Util.fileStream("advent2022/advent12")
+        String[][] map = InputUtils.fileStream("advent2022/advent12")
                 .map(s -> Arrays.stream(s.split(""))
                         .toArray(String[]::new))
                 .toArray(String[][]::new);

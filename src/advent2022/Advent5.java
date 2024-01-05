@@ -2,7 +2,7 @@ package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.commons.util.StringUtils;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +16,7 @@ public class Advent5 {
     static List<Stack<Character>> stacks = newArrayList();
 
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2022/advent5").collect(Collectors.toList());
+        List<String> input = InputUtils.fileStream("advent2022/advent5").collect(Collectors.toList());
         int splitter = 0;
         for (int i = 0; i < input.size(); i++) {
             if (input.get(i).contains("1")) {

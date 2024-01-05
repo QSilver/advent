@@ -3,7 +3,7 @@ package advent2019;
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class Advent13 {
     }
 
     private static void solve() {
-        ArrayList<Long> program = Util.splitLine(Util.fileStream("advent2019/advent13"))
+        ArrayList<Long> program = InputUtils.splitLine(InputUtils.fileStream("advent2019/advent13"))
                                       .stream()
                                       .map(Long::parseLong)
                                       .collect(Collectors.toCollection(Lists::newArrayList));
@@ -120,6 +120,6 @@ public class Advent13 {
             }
             System.out.println();
         }
-        Util.clearConsole();
+        InputUtils.clearConsole();
     }
 }

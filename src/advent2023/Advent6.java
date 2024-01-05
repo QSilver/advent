@@ -1,7 +1,7 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 public class Advent6 {
     // https://adventofcode.com/2023/day/6
     public Long runP1(String file) {
-        List<String> list = Util.fileStream(file).toList();
+        List<String> list = InputUtils.fileStream(file).toList();
 
         String timesString = list.get(0).split(":")[1];
         String distanceString = list.get(1).split(":")[1];
@@ -33,7 +33,7 @@ public class Advent6 {
     }
 
     public Long runP2(String file) {
-        List<String> list = Util.fileStream(file).toList();
+        List<String> list = InputUtils.fileStream(file).toList();
 
         String timesString = list.get(0).split(":")[1];
         String distanceString = list.get(1).split(":")[1];

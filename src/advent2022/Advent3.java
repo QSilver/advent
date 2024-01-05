@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Advent3 {
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2022/advent3").collect(Collectors.toList());
+        List<String> input = InputUtils.fileStream("advent2022/advent3").collect(Collectors.toList());
 
         int sum = part1(input);
         log.info("Item Sum: {}", sum);

@@ -2,7 +2,7 @@ package advent2021;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Advent2 {
     public static void main(String[] args) {
-        List<Move> moves = Util.fileStream("advent2021/advent2")
+        List<Move> moves = InputUtils.fileStream("advent2021/advent2")
                                .map(s -> {
                                    String[] s1 = s.split(" ");
                                    return new Move(s1[0], Integer.parseInt(s1[1]));

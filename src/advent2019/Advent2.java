@@ -1,7 +1,7 @@
 package advent2019;
 
 import com.google.common.collect.Lists;
-import util.Util;
+import util.InputUtils;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -18,7 +18,7 @@ public class Advent2 {
     }
 
     private static int solve(int value1, int value2) {
-        ArrayList<Integer> strings = Util.splitLine(Util.fileStream("advent2019/advent2"))
+        ArrayList<Integer> strings = InputUtils.splitLine(InputUtils.fileStream("advent2019/advent2"))
                                          .stream()
                                          .map(Integer::parseInt)
                                          .collect(Collectors.toCollection(Lists::newArrayList));

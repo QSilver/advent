@@ -2,7 +2,7 @@ package advent2021;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,7 +15,7 @@ public class Advent17 {
     static Set<Pair<Integer, Integer>> solutions = newHashSet();
 
     public static void main(String[] args) {
-        String collect = Util.fileStream("advent2021/advent17")
+        String collect = InputUtils.fileStream("advent2021/advent17")
                              .collect(Collectors.toList())
                              .get(0);
 

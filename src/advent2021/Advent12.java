@@ -2,7 +2,7 @@ package advent2021;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.Map;
 import java.util.Set;
@@ -17,14 +17,14 @@ public class Advent12 {
 
     public static void main(String[] args) {
         Map<String, Node> nodes = newHashMap();
-        Util.fileStream("advent2021/advent12")
+        InputUtils.fileStream("advent2021/advent12")
             .forEach(s -> {
                 String[] split = s.split("-");
                 nodes.put(split[0], new Node(split[0], newHashSet()));
                 nodes.put(split[1], new Node(split[1], newHashSet()));
             });
 
-        Util.fileStream("advent2021/advent12")
+        InputUtils.fileStream("advent2021/advent12")
             .forEach(s -> {
                 String[] split = s.split("-");
                 nodes.get(split[0]).adjacent.add(nodes.get(split[1]));

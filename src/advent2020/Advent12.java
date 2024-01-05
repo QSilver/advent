@@ -2,7 +2,7 @@ package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Pair;
-import util.Util;
+import util.InputUtils;
 
 import java.util.stream.Collectors;
 
@@ -14,7 +14,7 @@ public class Advent12 {
     static int wy = 1;
 
     public static void main(String[] args) {
-        Util.fileStream("advent2020/advent12")
+        InputUtils.fileStream("advent2020/advent12")
             .collect(Collectors.toList())
             .forEach(line -> {
                 int value = Integer.parseInt(line.substring(1));

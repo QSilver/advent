@@ -1,7 +1,7 @@
 package advent2020;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class Advent8 {
     static List<String> commands = newArrayList();
 
     public static void main(String[] args) {
-        commands = Util.fileStream("advent2020/advent8")
+        commands = InputUtils.fileStream("advent2020/advent8")
                        .collect(Collectors.toList());
 
         for (int i = 0; i < commands.size(); i++) {

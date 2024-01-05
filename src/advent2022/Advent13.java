@@ -1,7 +1,7 @@
 package advent2022;
 
 import lombok.extern.slf4j.Slf4j;
-import util.Util;
+import util.InputUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import static com.google.common.collect.Lists.newArrayList;
 @Slf4j
 public class Advent13 {
     public static void main(String[] args) {
-        List<String> input = Util.fileStream("advent2022/advent13").collect(Collectors.toList());
+        List<String> input = InputUtils.fileStream("advent2022/advent13").collect(Collectors.toList());
         List<List> packets = newArrayList();
 
         int indexSum = 0;
