@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Math.abs;
-import static util.InputUtils.lines;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent23 {
@@ -37,7 +37,8 @@ public class Advent23 {
 
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        solve(new State(lines("advent2021/advent23"), true));
+        List<String> input = fileStream("advent2021/advent23").toList();
+        solve(new State(input, true));
         log.info("{} ms", System.currentTimeMillis() - start);
     }
 
@@ -92,8 +93,8 @@ public class Advent23 {
             rooms.put('C', getCharacters(row3.charAt(7), row2.charAt(7), isPart2));
             rooms.put('D', getCharacters(row3.charAt(9), row2.charAt(9), isPart2));
             hallway = "-..x.x.x.x..".chars()
-                                    .mapToObj(value -> ((char) value))
-                                    .collect(Collectors.toList());
+                    .mapToObj(value -> ((char) value))
+                    .collect(Collectors.toList());
             STACK_SIZE = isPart2 ? 4 : 2;
         }
 
@@ -114,9 +115,9 @@ public class Advent23 {
 
         private boolean isRoomDone(Character c) {
             return rooms.get(c)
-                        .stream()
-                        .filter(character -> character == c)
-                        .count() == STACK_SIZE;
+                    .stream()
+                    .filter(character -> character == c)
+                    .count() == STACK_SIZE;
         }
 
         private boolean canGoIntoRoom(Character c, int newPos) {
@@ -133,13 +134,13 @@ public class Advent23 {
 
         private boolean canFitInRoom(Character c, int position) {
             if (rooms.get(HALLWAY_MAPPING.get(position))
-                     .isEmpty()) {
+                    .isEmpty()) {
                 return true;
             }
             // return false if any char in the room doesn't belong there
             return rooms.get(HALLWAY_MAPPING.get(position))
-                        .stream()
-                        .noneMatch(character -> character != c);
+                    .stream()
+                    .noneMatch(character -> character != c);
         }
 
         List<State> getPossibleMoves() {
@@ -242,10 +243,10 @@ public class Advent23 {
             StringBuilder string = new StringBuilder();
             string.append("\n");
             string.append(hallway.stream()
-                                 .map(String::valueOf)
-                                 .collect(Collectors.joining())
-                                 .substring(1)
-                                 .replace('x', '.'));
+                    .map(String::valueOf)
+                    .collect(Collectors.joining())
+                    .substring(1)
+                    .replace('x', '.'));
             string.append("\n ");
             for (int i = 3; i >= 0; i--) {
                 string.append(" ");
@@ -260,8 +261,8 @@ public class Advent23 {
 
         private String getString(Character room, int pos) {
             return rooms.get(room)
-                        .size() >= pos + 1 ? String.valueOf(rooms.get(room)
-                                                                 .get(pos)) : ".";
+                    .size() >= pos + 1 ? String.valueOf(rooms.get(room)
+                    .get(pos)) : ".";
         }
     }
 }

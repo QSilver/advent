@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static util.InputUtils.lines;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent21 {
@@ -85,7 +85,7 @@ public class Advent21 {
     }
 
     private Point parseInput(String file) {
-        List<String> lines = lines(file);
+        List<String> lines = fileStream(file).toList();
 
         Point starting = null;
         for (int row = 0; row < lines.size(); row++) {

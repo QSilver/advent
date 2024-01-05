@@ -1,7 +1,6 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -9,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent1 {
@@ -18,25 +18,28 @@ public class Advent1 {
     private final List<String> modded = newArrayList("o1e", "t2o", "t3e", "f4r", "f5e", "s6x", "s7n", "e8t", "n9e", "z0o");
 
     public Integer runP1(String file) {
-        return InputUtils.fileStream(file)
+        return fileStream(file)
                 .map(this::extractFirstAndLastDigit)
                 .mapToInt(Integer::parseInt)
                 .sum();
     }
 
     public Integer runP2(String file) {
-        return InputUtils.fileStream(file)
-                .map(s -> {
-                    String string = s;
-                    AtomicBoolean stop = new AtomicBoolean(false);
-
-                    while (!stop.get()) {
-                        string = replaceDigits(string, stop);
-                    }
-
-                    return extractFirstAndLastDigit(string);
-                }).mapToInt(Integer::parseInt)
+        return fileStream(file)
+                .map(this::replaceDigitsNondestructive)
+                .mapToInt(Integer::parseInt)
                 .sum();
+    }
+
+    private String replaceDigitsNondestructive(String s) {
+        String string = s;
+        AtomicBoolean stop = new AtomicBoolean(false);
+
+        while (!stop.get()) {
+            string = replaceDigits(string, stop);
+        }
+
+        return extractFirstAndLastDigit(string);
     }
 
     private String extractFirstAndLastDigit(String s) {

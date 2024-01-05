@@ -2,11 +2,11 @@ package advent2023;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import util.InputUtils;
 
 import java.util.function.Function;
 
 import static java.lang.Integer.parseInt;
+import static util.InputUtils.fileStream;
 
 @Slf4j
 public class Advent2 {
@@ -20,7 +20,7 @@ public class Advent2 {
     }
 
     private static int run(String file, Function<Stats, Integer> RGBMult) {
-        return InputUtils.fileStream(file)
+        return fileStream(file)
                 .map(Advent2::getGameStats)
                 .map(RGBMult)
                 .mapToInt(value -> value)
