@@ -35,8 +35,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>1.21</source>
-                    <target>1.21</target>
+                    <source>21</source>
+                    <target>21</target>
+                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
