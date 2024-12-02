@@ -25,7 +25,8 @@ public class Advent2 {
     public Integer runP2(String file) {
         return fileStream(file)
                 .map(Advent2::buildSequence)
-                .map(Advent2::checkAllSubsequences)
+                .map(Advent2::buildAllSubsequences)
+                .map(Advent2::isAnySubsequenceSafe)
                 .mapToInt(value -> value ? 1 : 0)
                 .sum();
     }
@@ -56,15 +57,18 @@ public class Advent2 {
         return true;
     }
 
-    private static Boolean checkAllSubsequences(int[] s) {
-        List<Integer> list = Arrays.stream(s).boxed().toList();
+    private static boolean isAnySubsequenceSafe(List<int[]> subsequences) {
+        return subsequences.stream().map(Advent2::isSequenceSafe).anyMatch(e -> e);
+    }
+
+    private static List<int[]> buildAllSubsequences(int[] sequence) {
+        List<int[]> subsequences = newArrayList();
+
+        List<Integer> list = Arrays.stream(sequence).boxed().toList();
         for (int i = 0; i < list.size(); i++) {
-            int[] subsequence = buildSubsequence(list, i);
-            if (isSequenceSafe(subsequence)) {
-                return true;
-            }
+            subsequences.add(buildSubsequence(list, i));
         }
-        return false;
+        return subsequences;
     }
 
     private static int[] buildSubsequence(List<Integer> s, int i) {
