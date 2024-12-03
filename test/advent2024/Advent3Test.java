@@ -10,7 +10,7 @@ class Advent3Test {
     @Test
     void testPart1() {
         Integer run = underTest.runP1("advent2024/advent3_ex1.in");
-        assertEquals(2, run);
+        assertEquals(161, run);
     }
 
     @Test
@@ -21,8 +21,8 @@ class Advent3Test {
 
     @Test
     void testPart2() {
-        Integer run = underTest.runP2("advent2024/advent3_ex1.in");
-        assertEquals(4, run);
+        Integer run = underTest.runP2("advent2024/advent3_ex2.in");
+        assertEquals(48, run);
     }
 
     @Test
