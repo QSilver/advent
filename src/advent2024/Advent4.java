@@ -52,7 +52,7 @@ public class Advent4 {
         int count = 0;
         for (int row = 0; row < chars.length; row++) {
             for (int col = 0; col < chars[row].length; col++) {
-                count = count + identificationAlgorithm.apply(new Coord(chars, new Point2D(row, col)));
+                count += identificationAlgorithm.apply(new Coord(chars, new Point2D(row, col)));
             }
         }
 
@@ -63,28 +63,26 @@ public class Advent4 {
 
     }
 
-    private Function<Coord, Integer> identify(List<List<Point2D>> deltas, String matcher) {
+    private Function<Coord, Integer> identify(List<List<Point2D>> deltas, String pattern) {
         return (coord) -> {
-            Point2D point = coord.current;
-            char[][] chars = coord.matrix;
-
             AtomicInteger count = new AtomicInteger();
-            if (chars[(int) point.row()][(int) point.col()] == matcher.charAt(0)) {
-                deltas.forEach(direction -> {
-                    try {
-                        for (int c = 0; c < direction.size(); c++) {
-                            if (chars[(int) point.row() + (int) direction.get(c).row()][(int) point.col() + (int) direction.get(c).col()] != matcher.charAt(c + 1)) {
-                                throw new Exception();
-                            }
-                        }
-                        count.getAndIncrement();
-                    } catch (Exception _) {
-
-                    }
-                });
+            if (coord.matrix[(int) coord.current.row()][(int) coord.current.col()] == pattern.charAt(0)) {
+                deltas.forEach(direction -> matchRestOfPattern(pattern, coord, direction, count));
             }
-
             return count.get();
         };
+    }
+
+    private static void matchRestOfPattern(String matcher, Coord coord, List<Point2D> direction, AtomicInteger count) {
+        try {
+            for (int c = 0; c < direction.size(); c++) {
+                if (coord.matrix[(int) coord.current.row() + (int) direction.get(c).row()][(int) coord.current.col() + (int) direction.get(c).col()] != matcher.charAt(c + 1)) {
+                    throw new Exception();
+                }
+            }
+            count.getAndIncrement();
+        } catch (Exception _) {
+
+        }
     }
 }
