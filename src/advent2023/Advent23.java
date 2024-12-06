@@ -19,7 +19,7 @@ import static util.Util2D.loadCharMatrix;
 public class Advent23 {
     // https://adventofcode.com/2023/day/23
 
-    char[][] map;
+    Character[][] map;
     List<Integer> pathDistances = newArrayList();
 
     public Long runP1(String file) {
@@ -207,11 +207,11 @@ public class Advent23 {
 
     @With
     record Point(int row, int col, int distance) {
-        boolean isInMap(char[][] map) {
+        boolean isInMap(Character[][] map) {
             return row >= 0 && row < map.length && col >= 0 && col < map[0].length;
         }
 
-        boolean isNotWall(char[][] map) {
+        boolean isNotWall(Character[][] map) {
             return map[row][col] != '#';
         }
 

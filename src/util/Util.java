@@ -34,6 +34,18 @@ class Util {
     }
 
     public enum Direction {
-        UP, DOWN, LEFT, RIGHT
+        UP, RIGHT, DOWN, LEFT;
+
+        public Direction clockwise() {
+            Direction[] values = Direction.values();
+            int next = (this.ordinal() + 1) % values.length;
+            return values[next];
+        }
+
+        public Direction counterclockwise() {
+            Direction[] values = Direction.values();
+            int next = (this.ordinal() - 1) % values.length;
+            return values[next];
+        }
     }
 }

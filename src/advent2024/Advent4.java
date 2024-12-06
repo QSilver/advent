@@ -47,7 +47,7 @@ public class Advent4 {
     }
 
     public Integer run(String file, Function<Coord, Integer> identificationAlgorithm) {
-        char[][] chars = loadCharMatrix(file);
+        Character[][] chars = loadCharMatrix(file);
 
         int count = 0;
         for (int row = 0; row < chars.length; row++) {
@@ -59,7 +59,7 @@ public class Advent4 {
         return count;
     }
 
-    private record Coord(char[][] matrix, Point2D current) {
+    private record Coord(Character[][] matrix, Point2D current) {
 
     }
 

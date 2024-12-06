@@ -1,7 +1,9 @@
 package advent2024;
 
 import lombok.NonNull;
+import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import util.Extensions;
 import util.Util.Direction;
 import util.Util2D.Point2D;
 
@@ -13,18 +15,19 @@ import static com.google.common.collect.Sets.newHashSet;
 import static util.Util2D.loadCharMatrix;
 
 @Slf4j
+@ExtensionMethod({Extensions.class})
 public class Advent6 {
     // https://adventofcode.com/2024/day/6
 
     public Integer runP1(String file) {
-        char[][] map = loadCharMatrix(file);
+        Character[][] map = loadCharMatrix(file);
         Point2D guard = findGuard(map);
 
         return tracePath(map, guard).visited.size();
     }
 
     public Integer runP2(String file) {
-        char[][] map = loadCharMatrix(file);
+        Character[][] map = loadCharMatrix(file);
         Point2D guard = findGuard(map);
 
         return (int) generatePossibleObstacles(map).stream()
@@ -33,7 +36,7 @@ public class Advent6 {
                 .count();
     }
 
-    private static PathResult tracePath(char[][] matrix, Point2D guard) {
+    private static PathResult tracePath(Character[][] map, Point2D guard) {
         Set<Point2D> visited = newHashSet();
         visited.add(guard);
 
@@ -46,36 +49,10 @@ public class Advent6 {
             }
 
             try {
-                if (direction == Direction.UP) {
-                    if (matrix[(int) (guard.row() - 1)][(int) (guard.col())] != '#') {
-                        guard = new Point2D(guard.row() - 1, guard.col());
-                    } else {
-                        direction = Direction.RIGHT;
-                    }
-                }
-
-                if (direction == Direction.RIGHT) {
-                    if (matrix[(int) (guard.row())][(int) (guard.col() + 1)] != '#') {
-                        guard = new Point2D(guard.row(), guard.col() + 1);
-                    } else {
-                        direction = Direction.DOWN;
-                    }
-                }
-
-                if (direction == Direction.DOWN) {
-                    if (matrix[(int) (guard.row() + 1)][(int) (guard.col())] != '#') {
-                        guard = new Point2D(guard.row() + 1, guard.col());
-                    } else {
-                        direction = Direction.LEFT;
-                    }
-                }
-
-                if (direction == Direction.LEFT) {
-                    if (matrix[(int) (guard.row())][(int) (guard.col() - 1)] != '#') {
-                        guard = new Point2D(guard.row(), guard.col() - 1);
-                    } else {
-                        direction = Direction.UP;
-                    }
+                if (map.neighbour(guard.neighbour(direction)) != '#') {
+                    guard = guard.neighbour(direction);
+                } else {
+                    direction = direction.clockwise();
                 }
 
                 visited.add(new Point2D(guard.row(), guard.col()));
@@ -87,8 +64,8 @@ public class Advent6 {
         return new PathResult(visited, false);
     }
 
-    private static List<char[][]> generatePossibleObstacles(char[][] matrix) {
-        List<char[][]> copies = newArrayList();
+    private static List<Character[][]> generatePossibleObstacles(Character[][] matrix) {
+        List<Character[][]> copies = newArrayList();
         for (int row = 0; row < matrix.length; row++) {
             for (int col = 0; col < matrix[row].length; col++) {
                 // only place on empty spots
@@ -96,7 +73,7 @@ public class Advent6 {
                     continue;
                 }
 
-                char[][] copy = new char[matrix.length][];
+                Character[][] copy = new Character[matrix.length][];
                 for (int i = 0; i < matrix.length; i++) {
                     copy[i] = matrix[i].clone();
                 }
@@ -108,7 +85,7 @@ public class Advent6 {
     }
 
     @NonNull
-    private static Point2D findGuard(char[][] matrix) {
+    private static Point2D findGuard(Character[][] matrix) {
         for (int row = 0; row < matrix.length; row++) {
             for (int col = 0; col < matrix[row].length; col++) {
                 if (matrix[row][col] == '^') {

@@ -1,6 +1,7 @@
 package util;
 
 import lombok.With;
+import util.Util.Direction;
 
 import java.util.Comparator;
 import java.util.List;
@@ -44,10 +45,10 @@ public class Util2D {
         return matrix;
     }
 
-    public static char[][] loadCharMatrix(String file) {
+    public static Character[][] loadCharMatrix(String file) {
         List<String> list = fileStream(file).toList();
 
-        char[][] matrix = new char[list.size()][list.getFirst().length()];
+        Character[][] matrix = new Character[list.size()][list.getFirst().length()];
         for (int row = 0; row < list.size(); row++) {
             String s = list.get(row);
             for (int col = 0; col < s.length(); col++) {
@@ -131,6 +132,40 @@ public class Util2D {
     }
 
     public record Point2D(long row, long col) {
+        public Point2D neighbour(Direction direction) {
+            switch (direction) {
+                case UP -> {
+                    return UP();
+                }
+                case RIGHT -> {
+                    return RIGHT();
+                }
+                case DOWN -> {
+                    return DOWN();
+                }
+                case LEFT -> {
+                    return LEFT();
+                }
+            }
+            throw new RuntimeException("Impossible Direction");
+        }
+
+        public Point2D UP() {
+            return new Point2D(row - 1, col);
+        }
+
+        public Point2D DOWN() {
+            return new Point2D(row + 1, col);
+        }
+
+        public Point2D LEFT() {
+            return new Point2D(row, col - 1);
+        }
+
+        public Point2D RIGHT() {
+            return new Point2D(row, col + 1);
+        }
+
         long manhattanDistanceTo(Point2D other) {
             return abs(row - other.row) + abs(col - other.col);
         }

@@ -52,7 +52,7 @@ public class Advent16 {
         directionRouting.put(Pair.create(RIGHT, '/'), newArrayList(UP));
     }
 
-    char[][] mirrorMap;
+    Character[][] mirrorMap;
 
     public Long runP1(String file) {
         mirrorMap = loadCharMatrix(file);
