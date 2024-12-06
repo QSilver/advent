@@ -31,7 +31,7 @@ public class Advent6 {
         Point2D guard = findGuard(map);
 
         return (int) generatePossibleObstacles(map).stream()
-                .map(copy -> tracePath(copy, new Point2D(guard.row(), guard.col())))
+                .map(copy -> tracePath(copy, guard.copy()))
                 .filter(pathResult -> pathResult.isLoop)
                 .count();
     }
@@ -49,7 +49,7 @@ public class Advent6 {
             }
 
             try {
-                if (map.neighbour(guard.neighbour(direction)) != '#') {
+                if (map.atPos(guard.neighbour(direction)) != '#') {
                     guard = guard.neighbour(direction);
                 } else {
                     direction = direction.clockwise();

@@ -150,6 +150,10 @@ public class Util2D {
             throw new RuntimeException("Impossible Direction");
         }
 
+        public List<Point2D> neighbours4() {
+            return newArrayList(UP(), RIGHT(), DOWN(), LEFT());
+        }
+
         public Point2D UP() {
             return new Point2D(row - 1, col);
         }
@@ -168,6 +172,14 @@ public class Util2D {
 
         long manhattanDistanceTo(Point2D other) {
             return abs(row - other.row) + abs(col - other.col);
+        }
+
+        public Point2D withDelta(Point2D delta) {
+            return new Point2D(row + delta.row, col + delta.col);
+        }
+
+        public Point2D copy() {
+            return new Point2D(row, col);
         }
     }
 }
