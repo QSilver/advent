@@ -64,14 +64,14 @@ public class Advent4 {
         return count;
     }
 
-    private record Coord(Character[][] matrix, Point2D current) {
+    private record Coord(Character[][] map, Point2D current) {
 
     }
 
     private Function<Coord, Integer> identify(List<List<Point2D>> deltas, String pattern) {
         return (coord) -> {
             AtomicInteger count = new AtomicInteger();
-            if (coord.matrix.atPos(coord.current) == pattern.charAt(0)) {
+            if (coord.map.atPos(coord.current) == pattern.charAt(0)) {
                 deltas.forEach(direction -> matchRestOfPattern(pattern, coord, direction, count));
             }
             return count.get();
@@ -81,7 +81,7 @@ public class Advent4 {
     private static void matchRestOfPattern(String matcher, Coord coord, List<Point2D> direction, AtomicInteger count) {
         try {
             for (int c = 0; c < direction.size(); c++) {
-                if (coord.matrix.atPos(coord.current.withDelta(direction.get(c))) != matcher.charAt(c + 1)) {
+                if (coord.map.atPos(coord.current.withDelta(direction.get(c))) != matcher.charAt(c + 1)) {
                     throw new Exception();
                 }
             }
