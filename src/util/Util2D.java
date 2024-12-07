@@ -154,6 +154,10 @@ public class Util2D {
             return newArrayList(UP(), RIGHT(), DOWN(), LEFT());
         }
 
+        public List<Point2D> neighbours8() {
+            return newArrayList(UP(), UP().RIGHT(), RIGHT(), RIGHT().DOWN(), DOWN(), DOWN().LEFT(), LEFT(), LEFT().UP());
+        }
+
         public Point2D UP() {
             return new Point2D(row - 1, col);
         }

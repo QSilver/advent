@@ -6,9 +6,12 @@ import util.Extensions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.Long.parseLong;
+import static org.springframework.data.util.StreamUtils.zip;
 import static util.InputUtils.fileStream;
 import static util.Util.generateCombinations;
 
@@ -42,24 +45,25 @@ public class Advent7 {
     }
 
     private static long evaluate(List<Long> operands, List<String> operators) {
-        long runningTotal = operands.getFirst();
-        for (int i = 0; i < operators.size(); i++) {
-            if ("+".equals(operators.get(i))) {
-                runningTotal += operands.get(i + 1);
-            } else if ("*".equals(operators.get(i))) {
-                runningTotal *= operands.get(i + 1);
-            } else if ("|".equals(operators.get(i))) {
-                runningTotal = Long.parseLong(STR."\{runningTotal}\{operands.get(i + 1)}");
-            }
+        AtomicLong runningTotal = new AtomicLong(operands.removeFirst());
+        zip(operands.stream(), operators.stream(), (operand, operator) -> apply(operand, operator, runningTotal));
+        return runningTotal.get();
+    }
+
+    private static int apply(Long operand, String operator, AtomicLong runningTotal) {
+        switch (operator) {
+            case "+" -> runningTotal.addAndGet(operand);
+            case "*" -> runningTotal.updateAndGet(v -> v * operand);
+            case "|" -> runningTotal.set(parseLong(STR."\{runningTotal}\{operand}"));
         }
-        return runningTotal;
+        return 0;
     }
 
     private record Equation(long result, List<Long> operands) {
         public static Equation parse(String line) {
             String[] split = line.split(": ");
             List<Long> operands = split[1].split(" ").stream().mapToLong(Long::parseLong).boxed().toList();
-            return new Equation(Long.parseLong(split[0]), operands);
+            return new Equation(parseLong(split[0]), operands);
         }
     }
 }
