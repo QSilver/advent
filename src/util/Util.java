@@ -1,11 +1,15 @@
 package util;
 
+import com.google.common.collect.Lists;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.IntStream.range;
 
 @Slf4j
@@ -31,6 +35,26 @@ class Util {
         public Point3D minus(Point3D other) {
             return new Point3D(x - other.x, y - other.y, z - other.z);
         }
+    }
+
+    public static <T> List<List<T>> generateCombinations(int number, List<T> values) {
+        List<List<T>> combinations = values.stream()
+                .map(Lists::newArrayList)
+                .collect(Collectors.toList());
+
+        for (int i = 1; i < number; i++) {
+            List<List<T>> newValues = newArrayList();
+            for (List<T> combination : combinations) {
+                for (T value : values) {
+                    ArrayList<T> temp = newArrayList(combination);
+                    temp.add(value);
+                    newValues.add(temp);
+                }
+            }
+            combinations = newValues;
+        }
+
+        return combinations;
     }
 
     public enum Direction {
