@@ -6,6 +6,7 @@ import util.Extensions;
 import util.Util2D.Point2D;
 import util.Util2D.PointWithLabel;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +37,12 @@ public class Advent8 {
         Map<Character, List<Point2D>> antennasByFrequency = get2DPointsIgnore(file, '.').stream()
                 .collect(groupingBy(PointWithLabel::label, mapping(PointWithLabel::point2D, toList())));
 
-        antennasByFrequency.forEach((frequency, antennas) -> {
+        antennasByFrequency.values().forEach((antennas) -> {
+            // sort by row so we can ignore row comparison when calculating antinodes
+            antennas = antennas.stream()
+                    .sorted(Comparator.comparingLong(Point2D::row))
+                    .toList();
+
             for (int first = 0; first < antennas.size() - 1; first++) {
                 for (int second = first + 1; second < antennas.size(); second++) {
                     for (int resonance = (withResonance ? 0 : 1); resonance < (withResonance ? 100 : 2); resonance++) {
@@ -58,22 +64,12 @@ public class Advent8 {
         long deltaRow = abs(first.row() - second.row());
         long deltaCol = abs(first.col() - second.col());
 
-        if (first.row() < second.row()) {
-            if (first.col() < second.col()) {
-                toAdd.add(new Point2D(first.row() - (deltaRow * resonance), first.col() - (deltaCol * resonance)));
-                toAdd.add(new Point2D(second.row() + (deltaRow * resonance), second.col() + (deltaCol * resonance)));
-            } else {
-                toAdd.add(new Point2D(first.row() - (deltaRow * resonance), first.col() + (deltaCol * resonance)));
-                toAdd.add(new Point2D(second.row() + (deltaRow * resonance), second.col() - (deltaCol * resonance)));
-            }
+        if (first.col() < second.col()) {
+            toAdd.add(new Point2D(first.row() - (deltaRow * resonance), first.col() - (deltaCol * resonance)));
+            toAdd.add(new Point2D(second.row() + (deltaRow * resonance), second.col() + (deltaCol * resonance)));
         } else {
-            if (first.col() < second.col()) {
-                toAdd.add(new Point2D(first.row() + (deltaRow * resonance), first.col() - (deltaCol * resonance)));
-                toAdd.add(new Point2D(second.row() - (deltaRow * resonance), second.col() + (deltaCol * resonance)));
-            } else {
-                toAdd.add(new Point2D(first.row() + (deltaRow * resonance), first.col() + (deltaCol * resonance)));
-                toAdd.add(new Point2D(second.row() - (deltaRow * resonance), second.col() - (deltaCol * resonance)));
-            }
+            toAdd.add(new Point2D(first.row() - (deltaRow * resonance), first.col() + (deltaCol * resonance)));
+            toAdd.add(new Point2D(second.row() + (deltaRow * resonance), second.col() - (deltaCol * resonance)));
         }
         return toAdd;
     }
