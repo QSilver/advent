@@ -32,6 +32,21 @@ public class Util2D {
         return points;
     }
 
+    public static List<PointWithLabel> get2DPointsIgnore(String file, char ignore) {
+        List<String> list = fileStream(file).toList();
+
+        List<PointWithLabel> points = newArrayList();
+        for (int row = 0; row < list.size(); row++) {
+            String s = list.get(row);
+            for (int col = 0; col < s.length(); col++) {
+                if (s.charAt(col) != ignore) {
+                    points.add(new PointWithLabel(new Point2D(row, col), s.charAt(col)));
+                }
+            }
+        }
+        return points;
+    }
+
     public static int[][] loadIntMatrix(String file) {
         List<String> list = fileStream(file).toList();
 
@@ -129,6 +144,10 @@ public class Util2D {
 
     @With
     public record PointWithDistance(Point2D point2D, long distance) {
+    }
+
+    @With
+    public record PointWithLabel(Point2D point2D, char label) {
     }
 
     public record Point2D(long row, long col) {
