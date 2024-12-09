@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Integer.parseInt;
@@ -51,20 +53,7 @@ public class Advent9 {
     }
 
     public Long runP2(String file) {
-        String collect = fileStream(file).collect(joining());
-
-
-        List<DiskBlock> diskBlocks = newArrayList();
-
-        int id = 0;
-        for (int i = 0; i < collect.length(); i++) {
-            int blockSize = parseInt(valueOf(collect.charAt(i)));
-            if (i % 2 == 0) {
-                diskBlocks.add(new DiskBlock(blockSize, id++));
-            } else {
-                diskBlocks.add(new DiskBlock(blockSize, -1));
-            }
-        }
+        List<DiskBlock> diskBlocks = parseInput(file);
 
         for (int i = diskBlocks.size() - 1; i >= 0; i--) {
             DiskBlock element = diskBlocks.get(i);
@@ -89,19 +78,30 @@ public class Advent9 {
             }
         }
 
-        long sum = 0;
-        int pos = 0;
-        for (DiskBlock block : diskBlocks) {
-            for (int j = 0; j < block.size; j++) {
-                if (block.label != -1) {
-                    long temp = (long) pos * block.label;
-                    sum += temp;
-                }
-                pos++;
-            }
-        }
+        AtomicInteger pos = new AtomicInteger();
+        return diskBlocks.stream().mapToLong(block -> {
+            long checksum = blockChecksum(block, pos.get());
+            pos.addAndGet(block.size);
+            return checksum;
+        }).sum();
+    }
 
-        return sum;
+    public Long blockChecksum(DiskBlock block, int position) {
+        int sum = IntStream.range(position, position + block.size).sum();
+        return (long) (block.label == -1 ? 0 : block.label) * sum;
+    }
+
+    private static List<DiskBlock> parseInput(String file) {
+        String collect = fileStream(file).collect(joining());
+
+        List<DiskBlock> diskBlocks = newArrayList();
+
+        int id = 0;
+        for (int i = 0; i < collect.length(); i++) {
+            int blockSize = parseInt(valueOf(collect.charAt(i)));
+            diskBlocks.add(new DiskBlock(blockSize, i % 2 == 0 ? id++ : -1));
+        }
+        return diskBlocks;
     }
 
     public record DiskBlock(int size, int label) {
