@@ -4,15 +4,13 @@ import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.counting;
-import static java.util.stream.Collectors.joining;
-import static util.InputUtils.fileStream;
+import static java.util.stream.Collectors.*;
+import static util.InputUtils.readSplitLineNumbers;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})
@@ -28,35 +26,32 @@ public class Advent11 {
     }
 
     private static long run(String file, int blinks) {
-        Map<Long, Long> numberCounts = Arrays.stream(fileStream(file)
-                        .collect(joining())
-                        .split(" "))
-                .mapToLong(Long::parseLong).boxed()
-                .collect(Collectors.groupingBy(identity(), counting()));
+        Map<Long, Long> stoneCounts = readSplitLineNumbers(file)
+                .collect(groupingBy(identity(), counting()));
 
-        for (int blink = 1; blink <= blinks; blink++) {
+        IntStream.range(0, blinks).forEach(_ -> {
             Map<Long, Long> next = newHashMap();
+            stoneCounts.keySet().forEach(stone -> blinkStone(stone, stoneCounts, next));
+            stoneCounts.clear();
+            stoneCounts.putAll(next);
+        });
 
-            numberCounts.keySet().forEach(value -> {
-                String stringValue = String.valueOf(value);
+        return stoneCounts.values().stream()
+                .collect(summingLong(value -> value));
+    }
 
-                if (value == 0) {
-                    next.merge(1L, numberCounts.get(value), Long::sum);
-                } else if (stringValue.length() % 2 == 0) {
-                    int midpoint = stringValue.length() / 2;
-                    next.merge(Long.parseLong(stringValue.substring(0, midpoint)), numberCounts.get(value), Long::sum);
-                    next.merge(Long.parseLong(stringValue.substring(midpoint)), numberCounts.get(value), Long::sum);
-                } else {
-                    next.merge(value * 2024, numberCounts.get(value), Long::sum);
-                }
-            });
+    private static void blinkStone(Long value, Map<Long, Long> numberCounts, Map<Long, Long> next) {
+        String stringValue = String.valueOf(value);
+        Long count = numberCounts.get(value);
 
-            numberCounts.clear();
-            numberCounts.putAll(next);
+        if (value == 0) {
+            next.merge(1L, count, Long::sum);
+        } else if (stringValue.length() % 2 == 0) {
+            int midpoint = stringValue.length() / 2;
+            next.merge(Long.parseLong(stringValue.substring(0, midpoint)), count, Long::sum);
+            next.merge(Long.parseLong(stringValue.substring(midpoint)), count, Long::sum);
+        } else {
+            next.merge(value * 2024, count, Long::sum);
         }
-
-        return numberCounts.values().stream()
-                .mapToLong(value -> value)
-                .sum();
     }
 }

@@ -2,6 +2,7 @@ package util;
 
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
+import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 
 @Slf4j
+@ExtensionMethod({Extensions.class})
 public class InputUtils {
     public static String[] readDoubleNewlineBlocks(String fileName) {
         return fileStream(fileName)
@@ -31,6 +33,14 @@ public class InputUtils {
             log.error(e.getMessage());
         }
         return newArrayList("").stream();
+    }
+
+    public static Stream<String> readSplitLine(String fileName) {
+        return fileStream(fileName).collect(joining()).split(" ").stream();
+    }
+
+    public static Stream<Long> readSplitLineNumbers(String fileName) {
+        return readSplitLine(fileName).mapToLong(Long::parseLong).boxed();
     }
 
     public static ArrayList<String> splitLine(Stream<String> stream) {
