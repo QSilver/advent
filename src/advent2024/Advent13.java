@@ -4,9 +4,11 @@ import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
 
-import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import static java.lang.Integer.parseInt;
+import static java.util.regex.Pattern.compile;
 import static util.InputUtils.fileStream;
 
 @Slf4j
@@ -14,78 +16,60 @@ import static util.InputUtils.fileStream;
 public class Advent13 {
     // https://adventofcode.com/2024/day/13
 
+    private static long extra = 0L;
+
     public Long runP1(String file) {
         return fileStream(file).collect(Collectors.joining("SEPARATOR")).split("SEPARATORSEPARATOR").stream()
-                .mapToLong(clawMachine -> {
-                    String[] split = clawMachine.split("SEPARATOR");
-
-                    Pattern pattern = Pattern.compile("\\d+");
-
-                    String[] string = split[0].split(" ");
-                    int ax = Integer.parseInt(string[2].substring(2, string[2].length() - 1));
-                    int ay = Integer.parseInt(string[3].substring(2, string[3].length()));
-
-                    string = split[1].split(" ");
-                    int bx = Integer.parseInt(string[2].substring(2, string[2].length() - 1));
-                    int by = Integer.parseInt(string[3].substring(2, string[3].length()));
-
-                    string = split[2].split(" ");
-                    int px = Integer.parseInt(string[1].substring(2, string[1].length() - 1));
-                    int py = Integer.parseInt(string[2].substring(2, string[2].length()));
-
-                    for (int buttonA = 0; buttonA < 100; buttonA++) {
-                        for (int buttonB = 0; buttonB < 100; buttonB++) {
-                            if (buttonA * ax + buttonB * bx == px && buttonA * ay + buttonB * by == py) {
-                                System.out.println(STR."Winning in A:\{buttonA} B:\{buttonB}");
-                                return 3 * buttonA + buttonB;
-                            }
-                        }
-                    }
-
-                    return 0;
-                }).sum();
+                .mapToLong(Advent13::calculateButtons)
+                .sum();
     }
 
     public Long runP2(String file) {
+        extra = 10000000000000L;
         return fileStream(file).collect(Collectors.joining("SEPARATOR")).split("SEPARATORSEPARATOR").stream()
-                .mapToLong(clawMachine -> {
-                    String[] split = clawMachine.split("SEPARATOR");
+                .mapToLong(Advent13::calculateButtons)
+                .sum();
+    }
 
-                    Pattern pattern = Pattern.compile("\\d+");
+    private static long calculateButtons(String clawMachine) {
+        Matcher matcher = compile("\\d+").matcher(clawMachine);
+        matcher.find();
+        long ax = parseInt(matcher.group());
+        matcher.find();
+        long ay = parseInt(matcher.group());
+        matcher.find();
+        long bx = parseInt(matcher.group());
+        matcher.find();
+        long by = parseInt(matcher.group());
+        matcher.find();
+        long px = parseInt(matcher.group()) + extra;
+        matcher.find();
+        long py = parseInt(matcher.group()) + extra;
+        Result result = new Result(ax, ay, bx, by, px, py);
 
-                    String[] string = split[0].split(" ");
-                    long ax = Integer.parseInt(string[2].substring(2, string[2].length() - 1));
-                    long ay = Integer.parseInt(string[3].substring(2, string[3].length()));
+        /*
+         ax A + bx B = px
+         ay A + by B = py
 
-                    string = split[1].split(" ");
-                    long bx = Integer.parseInt(string[2].substring(2, string[2].length() - 1));
-                    long by = Integer.parseInt(string[3].substring(2, string[3].length()));
+         ax A = px - bx B
+         A = (px - bx B) / ax
 
-                    string = split[2].split(" ");
-                    long px = Integer.parseInt(string[1].substring(2, string[1].length() - 1)) + 10000000000000L;
-                    long py = Integer.parseInt(string[2].substring(2, string[2].length())) + 10000000000000L;
+         ay (px - bx B) / ax + by B = py
+         ay (px - bx B) + ax by B = py ax
+         ay px - ay bx B + ax by B = py ax
+         B (ax by - ay bx) = py ax - px ay
+         B = (py ax - px ay) / (ax by - ay bx)
+         */
 
-                    /*
-                     ax A + bx B = px
-                     ay A + by B = py
+        long B = (result.py() * result.ax() - result.px() * result.ay()) / (result.ax() * result.by() - result.ay() * result.bx());
+        long A = (result.px() - result.bx() * B) / result.ax();
 
-                     ax A = px - bx B
-                     A = (px - bx B) / ax
+        if (result.ax() * A + result.bx() * B != result.px() || result.ay() * A + result.by() * B != result.py()) {
+            return 0;
+        }
+        return A * 3 + B;
+    }
 
-                     ay (px - bx B) / ax + by B = py
-                     ay (px - bx B) + ax by B = py ax
-                     ay px - ay bx B + ax by B = py ax
-                     B (ax by - ay bx) = py ax - px ay
-                     B = (py ax - px ay) / (ax by - ay bx)
-                    */
-
-                    long B = (py * ax - px * ay) / (ax * by - bx * ay);
-                    long A = (px - bx * B) / ax;
-
-                    if (ax * A + bx * B != px || ay * A + by * B != py) {
-                        return 0;
-                    }
-                    return A * 3 + B;
-                }).sum();
+    private record Result(long ax, long ay, long bx, long by, long px, long py) {
     }
 }

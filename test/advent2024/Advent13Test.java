@@ -20,7 +20,7 @@ class Advent13Test {
 
     @Test
     void testPart2() {
-        assertEquals(480, underTest.runP2("advent2024/advent13_ex1.in"));
+        assertEquals(875318608908L, underTest.runP2("advent2024/advent13_ex1.in"));
     }
 
     @Test
