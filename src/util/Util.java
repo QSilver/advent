@@ -13,8 +13,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.IntStream.range;
 
 @Slf4j
-public
-class Util {
+public class Util {
     public static Set<Integer> rangeToSet(int startInclusive, int endExclusive) {
         return range(startInclusive, endExclusive).boxed().collect(Collectors.toSet());
     }
@@ -55,6 +54,33 @@ class Util {
         }
 
         return combinations;
+    }
+
+    public static EQSystemResult solve2System(long ax, long ay, long bx, long by, long px, long py) {
+        /*
+         ax A + bx B = px
+         ay A + by B = py
+
+         ax A = px - bx B
+         A = (px - bx B) / ax
+
+         ay (px - bx B) / ax + by B = py
+         ay (px - bx B) + ax by B = py ax
+         ay px - ay bx B + ax by B = py ax
+         B (ax by - ay bx) = py ax - px ay
+         B = (py ax - px ay) / (ax by - ay bx)
+         */
+
+        long B = (py * ax - px * ay) / (ax * by - ay * bx);
+        long A = (px - bx * B) / ax;
+
+        if (ax * A + bx * B != px || ay * A + by * B != py) {
+            return new EQSystemResult(false, 0, 0);
+        }
+        return new EQSystemResult(true, A, B);
+    }
+
+    public record EQSystemResult(boolean solvable, long A, long B) {
     }
 
     public enum Direction {

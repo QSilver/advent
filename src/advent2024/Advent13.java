@@ -3,12 +3,14 @@ package advent2024;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
+import util.Util.EQSystemResult;
 
 import java.util.regex.Matcher;
 
 import static java.lang.Integer.parseInt;
 import static java.util.regex.Pattern.compile;
 import static util.InputUtils.readDoubleNewlineBlocks;
+import static util.Util.solve2System;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})
@@ -47,26 +49,10 @@ public class Advent13 {
         long px = parseInt(matcher.group(5)) + extra;
         long py = parseInt(matcher.group(6)) + extra;
 
-        /*
-         ax A + bx B = px
-         ay A + by B = py
-
-         ax A = px - bx B
-         A = (px - bx B) / ax
-
-         ay (px - bx B) / ax + by B = py
-         ay (px - bx B) + ax by B = py ax
-         ay px - ay bx B + ax by B = py ax
-         B (ax by - ay bx) = py ax - px ay
-         B = (py ax - px ay) / (ax by - ay bx)
-         */
-
-        long B = (py * ax - px * ay) / (ax * by - ay * bx);
-        long A = (px - bx * B) / ax;
-
-        if (ax * A + bx * B != px || ay * A + by * B != py) {
+        EQSystemResult result = solve2System(ax, ay, bx, by, px, py);
+        if (!result.solvable()) {
             return 0;
         }
-        return A * 3 + B;
+        return 3 * result.A() + result.B();
     }
 }
