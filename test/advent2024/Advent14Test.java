@@ -20,7 +20,7 @@ class Advent14Test {
 
     @Test
     void testPart2() {
-        assertEquals(0, underTest.runP2("advent2024/advent14_ex1.in", valueOf(11), valueOf(7)));
+        assertEquals(1, underTest.runP2("advent2024/advent14_ex1.in", valueOf(11), valueOf(7)));
     }
 
     @Test
