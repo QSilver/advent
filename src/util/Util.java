@@ -1,9 +1,9 @@
 package util;
 
-import advent2024.Advent16;
 import com.google.common.collect.Lists;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
+import util.Util2D.Point2D;
 
 import java.util.*;
 import java.util.function.Function;
@@ -84,7 +84,7 @@ public class Util {
     }
 
     @With
-    public record Node(int row, int col, Direction direction, long distance, Node previous) {
+    public record Node(Point2D point, Direction direction, long distance, Node previous) {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -92,15 +92,15 @@ public class Util {
 
             Node node = (Node) o;
 
-            if (row != node.row) return false;
-            if (col != node.col) return false;
+            if (point.row() != node.point.row()) return false;
+            if (point.col() != node.point.col()) return false;
             return direction == node.direction;
         }
 
         @Override
         public int hashCode() {
-            int result = row;
-            result = 151 * result + col;
+            int result = (int) point.row();
+            result = (int) (151 * result + point.col());
             result = 151 * result + direction.hashCode();
             return result;
         }
