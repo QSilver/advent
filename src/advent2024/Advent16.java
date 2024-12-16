@@ -107,6 +107,6 @@ public class Advent16 {
     }
 
     private static boolean isWall(Node node) {
-        return map[(int) node.point().row()][(int) node.point().col()] == '#';
+        return map.atPos(node.point()) == '#';
     }
 }
