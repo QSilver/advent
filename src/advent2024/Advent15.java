@@ -18,7 +18,7 @@ import static util.InputUtils.readDoubleNewlineBlocks;
 @Slf4j
 @ExtensionMethod({Extensions.class})
 public class Advent15 {
-    // https://adventofcode.com/2024/day/14
+    // https://adventofcode.com/2024/day/15
 
     public Long runP1(String file) {
         String[] strings = readDoubleNewlineBlocks(file);
