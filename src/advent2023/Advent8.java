@@ -1,6 +1,8 @@
 package advent2023;
 
+import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import util.Extensions;
 
 import java.util.List;
 import java.util.Map;
@@ -9,9 +11,9 @@ import java.util.function.Function;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Arrays.stream;
 import static util.InputUtils.readDoubleNewlineBlocks;
-import static util.InputUtils.stringRemove;
 
 @Slf4j
+@ExtensionMethod({Extensions.class})
 public class Advent8 {
     // https://adventofcode.com/2023/day/8
     static String instructions;
@@ -65,7 +67,7 @@ public class Advent8 {
     private Map<String, Node> getNodeMap(String[] nodeLines) {
         Map<String, Node> nodeMap = newHashMap();
         stream(nodeLines).forEach(line -> {
-            String[] split = stringRemove(line, ",", "(", ")", " =").split(" ");
+            String[] split = line.stringRemove(",", "(", ")", " =").split(" ");
             nodeMap.put(split[0], new Node(split[0], split[1], split[2]));
         });
         return nodeMap;

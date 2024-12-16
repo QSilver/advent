@@ -1,6 +1,8 @@
 package advent2023;
 
+import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import util.Extensions;
 import util.SympySolver.Equation;
 import util.Util.Point3D;
 
@@ -10,12 +12,12 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Long.parseLong;
 import static util.InputUtils.fileStream;
-import static util.InputUtils.stringRemove;
 import static util.SympySolver.Equation.build;
 import static util.SympySolver.solveGeneric;
 import static util.Util.doubleIsZero;
 
 @Slf4j
+@ExtensionMethod({Extensions.class})
 public class Advent24 {
     // https://adventofcode.com/2023/day/24
 
@@ -82,7 +84,7 @@ public class Advent24 {
     }
 
     private static Vector getVectorFromLine(String line, boolean ignoreZ) {
-        line = stringRemove(line, " ");
+        line = line.stringRemove(" ");
         String[] split = line.split("@");
         String[] first = split[0].split(",");
         String[] second = split[1].split(",");
