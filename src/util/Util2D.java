@@ -1,78 +1,18 @@
 package util;
 
 import lombok.With;
-import util.Util.Direction;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Set;
 import java.util.function.Function;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
-import static java.lang.Integer.parseInt;
+import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Math.abs;
-import static java.lang.String.valueOf;
-import static util.InputUtils.fileStream;
 
 public class Util2D {
-    public static List<Point2D> get2DPoints(String file, char point) {
-        List<String> list = fileStream(file).toList();
-
-        List<Point2D> points = newArrayList();
-        for (int row = 0; row < list.size(); row++) {
-            String s = list.get(row);
-            for (int col = 0; col < s.length(); col++) {
-                if (s.charAt(col) == point) {
-                    points.add(new Point2D(row, col));
-                }
-            }
-        }
-        return points;
-    }
-
-    public static List<PointWithLabel> get2DPointsIgnore(String file, char ignore) {
-        List<String> list = fileStream(file).toList();
-
-        List<PointWithLabel> points = newArrayList();
-        for (int row = 0; row < list.size(); row++) {
-            String s = list.get(row);
-            for (int col = 0; col < s.length(); col++) {
-                if (s.charAt(col) != ignore) {
-                    points.add(new PointWithLabel(new Point2D(row, col), s.charAt(col)));
-                }
-            }
-        }
-        return points;
-    }
-
-    public static int[][] loadIntMatrix(String file) {
-        List<String> list = fileStream(file).toList();
-
-        int[][] matrix = new int[list.size()][list.getFirst().length()];
-        for (int row = 0; row < list.size(); row++) {
-            String s = list.get(row);
-            for (int col = 0; col < s.length(); col++) {
-                matrix[row][col] = parseInt(valueOf(s.charAt(col)));
-            }
-        }
-        return matrix;
-    }
-
-    public static Character[][] loadCharMatrix(String file) {
-        List<String> list = fileStream(file).toList();
-
-        Character[][] matrix = new Character[list.size()][list.getFirst().length()];
-        for (int row = 0; row < list.size(); row++) {
-            String s = list.get(row);
-            for (int col = 0; col < s.length(); col++) {
-                matrix[row][col] = s.charAt(col);
-            }
-        }
-        return matrix;
-    }
-
     public static int[][] initIntMatrix(int rows, int cols, int value) {
         int[][] matrix = new int[rows][cols];
         for (int row = 0; row < rows; row++) {
@@ -113,37 +53,54 @@ public class Util2D {
     public record Surface(long perimeter, long area, long insidePoints, long shoelaceArea, List<Point2D> points) {
     }
 
-    long getShortestPath(PointWithDistance from, Function<PointWithDistance, Boolean> endCondition,
-                         Function<PointWithDistance, List<PointWithDistance>> neighbourFunction,
-                         Comparator<PointWithDistance> sorting,
-                         Function<PointWithDistance, Integer> distanceFunction) {
-        PriorityQueue<PointWithDistance> toVisit = new PriorityQueue<>(sorting);
-        Set<PointWithDistance> seen = newHashSet();
+
+    public static List<Node> getAllPaths(Node from, Function<Node, Boolean> endCondition, Function<Node, List<Node>> neighbourFunction, Comparator<Node> sorting) {
+        List<Node> paths = newArrayList();
+
+        PriorityQueue<Node> toVisit = new PriorityQueue<>(sorting);
+        Map<Node, Long> seen = newHashMap();
 
         toVisit.add(from);
-        PointWithDistance end = null;
-        while (end == null) {
-            if (toVisit.isEmpty()) {
-                return -1;
+        while (!toVisit.isEmpty()) {
+            Node current = toVisit.remove();
+
+            if (endCondition.apply(current)) {
+                paths.add(current);
             }
 
-            PointWithDistance current = toVisit.remove();
-            end = endCondition.apply(current) ? current : null;
-
-            List<PointWithDistance> neighbours = neighbourFunction.apply(current)
-                    .stream().filter(node -> !seen.contains(node))
-                    .map(node -> node.withDistance(current.distance + distanceFunction.apply(node)))
+            List<Node> apply = neighbourFunction.apply(current);
+            List<Node> neighbours = apply
+                    .stream().filter(node -> seen.getOrDefault(node, Long.MAX_VALUE) > current.distance)
                     .toList();
 
             toVisit.addAll(neighbours);
-            seen.addAll(neighbours);
+            neighbours.forEach(node -> seen.put(node, node.distance));
         }
 
-        return end.distance;
+        return paths;
     }
 
     @With
-    public record PointWithDistance(Point2D point2D, long distance) {
+    public record Node(Point2D point, Direction direction, long distance, Node previous) {
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Node node = (Node) o;
+
+            if (point.row() != node.point.row()) return false;
+            if (point.col() != node.point.col()) return false;
+            return direction == node.direction;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = (int) point.row();
+            result = (int) (151 * result + point.col());
+            result = 151 * result + direction.hashCode();
+            return result;
+        }
     }
 
     @With
@@ -203,6 +160,22 @@ public class Util2D {
 
         public Point2D copy() {
             return new Point2D(row, col);
+        }
+    }
+
+    public enum Direction {
+        UP, RIGHT, DOWN, LEFT;
+
+        public Direction clockwise() {
+            Direction[] values = Direction.values();
+            int next = (this.ordinal() + 1) % values.length;
+            return values[next];
+        }
+
+        public Direction counterclockwise() {
+            Direction[] values = Direction.values();
+            int next = (this.ordinal() - 1) % values.length;
+            return values[next];
         }
     }
 }

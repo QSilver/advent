@@ -4,7 +4,7 @@ import lombok.NonNull;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
-import util.Util.Direction;
+import util.Util2D.Direction;
 import util.Util2D.Point2D;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
-import static util.Util2D.loadCharMatrix;
+import static util.InputUtils.loadCharMatrix;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})

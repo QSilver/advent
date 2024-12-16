@@ -7,13 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.Integer.parseInt;
+import static java.lang.String.valueOf;
 import static java.nio.file.Files.lines;
 import static java.nio.file.Paths.get;
-import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 
 @Slf4j
@@ -49,7 +51,63 @@ public class InputUtils {
     }
 
     public static Stream<String> getFirstLineSplit(String file, String delimiter) {
-        return stream(fileStream(file).findFirst().orElseThrow().split(delimiter));
+        return fileStream(file).findFirst().orElseThrow().split(delimiter).stream();
+    }
+
+    public static List<Util2D.Point2D> get2DPoints(String file, char point) {
+        List<String> list = fileStream(file).toList();
+
+        List<Util2D.Point2D> points = newArrayList();
+        for (int row = 0; row < list.size(); row++) {
+            String s = list.get(row);
+            for (int col = 0; col < s.length(); col++) {
+                if (s.charAt(col) == point) {
+                    points.add(new Util2D.Point2D(row, col));
+                }
+            }
+        }
+        return points;
+    }
+
+    public static List<Util2D.PointWithLabel> get2DPointsIgnore(String file, char ignore) {
+        List<String> list = fileStream(file).toList();
+
+        List<Util2D.PointWithLabel> points = newArrayList();
+        for (int row = 0; row < list.size(); row++) {
+            String s = list.get(row);
+            for (int col = 0; col < s.length(); col++) {
+                if (s.charAt(col) != ignore) {
+                    points.add(new Util2D.PointWithLabel(new Util2D.Point2D(row, col), s.charAt(col)));
+                }
+            }
+        }
+        return points;
+    }
+
+    public static int[][] loadIntMatrix(String file) {
+        List<String> list = fileStream(file).toList();
+
+        int[][] matrix = new int[list.size()][list.getFirst().length()];
+        for (int row = 0; row < list.size(); row++) {
+            String s = list.get(row);
+            for (int col = 0; col < s.length(); col++) {
+                matrix[row][col] = parseInt(valueOf(s.charAt(col)));
+            }
+        }
+        return matrix;
+    }
+
+    public static Character[][] loadCharMatrix(String file) {
+        List<String> list = fileStream(file).toList();
+
+        Character[][] matrix = new Character[list.size()][list.getFirst().length()];
+        for (int row = 0; row < list.size(); row++) {
+            String s = list.get(row);
+            for (int col = 0; col < s.length(); col++) {
+                matrix[row][col] = s.charAt(col);
+            }
+        }
+        return matrix;
     }
 
     @SneakyThrows

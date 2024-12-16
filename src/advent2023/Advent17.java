@@ -15,8 +15,8 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
 import static java.util.Comparator.comparingInt;
+import static util.InputUtils.loadIntMatrix;
 import static util.Util2D.initIntMatrix;
-import static util.Util2D.loadIntMatrix;
 
 @Slf4j
 public class Advent17 {

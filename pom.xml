@@ -110,5 +110,11 @@
             <artifactId>jgrapht-core</artifactId>
             <version>1.5.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>4.2.29</version>
+        </dependency>
     </dependencies>
 </project>

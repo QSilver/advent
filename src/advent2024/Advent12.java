@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
+import static util.InputUtils.get2DPointsIgnore;
+import static util.InputUtils.loadCharMatrix;
 import static util.Util2D.*;
 
 @Slf4j

@@ -16,7 +16,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Math.abs;
 import static java.util.stream.Collectors.*;
 import static util.InputUtils.fileStream;
-import static util.Util2D.get2DPointsIgnore;
+import static util.InputUtils.get2DPointsIgnore;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})

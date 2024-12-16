@@ -11,7 +11,7 @@ import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Comparator.comparingInt;
 import static java.util.Comparator.comparingLong;
 import static util.InputUtils.fileStream;
-import static util.Util2D.get2DPoints;
+import static util.InputUtils.get2DPoints;
 
 // 98323 - too high
 

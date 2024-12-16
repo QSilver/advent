@@ -12,7 +12,7 @@ import static advent2023.Advent16.Direction.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
-import static util.Util2D.loadCharMatrix;
+import static util.InputUtils.loadCharMatrix;
 
 @Slf4j
 public class Advent16 {

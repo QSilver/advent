@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static util.Util2D.loadIntMatrix;
+import static util.InputUtils.loadIntMatrix;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})

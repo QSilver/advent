@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static util.InputUtils.fileStream;
-import static util.Util2D.get2DPoints;
+import static util.InputUtils.get2DPoints;
 
 @Slf4j
 public class Advent11 {

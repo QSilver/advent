@@ -2,7 +2,7 @@ package advent2023;
 
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
-import util.Util.Direction;
+import util.Util2D.Direction;
 
 import java.util.*;
 import java.util.function.Function;
@@ -12,8 +12,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Queues.newArrayDeque;
 import static com.google.common.collect.Sets.newHashSet;
-import static util.Util.Direction.*;
-import static util.Util2D.loadCharMatrix;
+import static util.InputUtils.loadCharMatrix;
+import static util.Util2D.Direction.*;
 
 @Slf4j
 public class Advent23 {

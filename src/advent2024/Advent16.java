@@ -3,8 +3,6 @@ package advent2024;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
-import util.Util.Node;
-import util.Util2D.Point2D;
 
 import java.util.Comparator;
 import java.util.List;
@@ -15,10 +13,10 @@ import java.util.stream.Stream;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Comparator.comparingLong;
-import static util.Util.Direction.*;
-import static util.Util.getAllPaths;
-import static util.Util2D.get2DPoints;
-import static util.Util2D.loadCharMatrix;
+import static util.InputUtils.get2DPoints;
+import static util.InputUtils.loadCharMatrix;
+import static util.Util2D.Direction.*;
+import static util.Util2D.*;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})

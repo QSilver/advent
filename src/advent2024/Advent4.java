@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static util.Util2D.loadCharMatrix;
+import static util.InputUtils.loadCharMatrix;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})
