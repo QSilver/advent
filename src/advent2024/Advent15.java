@@ -214,13 +214,7 @@ public class Advent15 {
                     Point2D finalTrack = track;
                     cratesOnSameRow.stream()
                             .filter(crate -> crate.col() > robot[0].col() && crate.col() < finalTrack.col())
-                            .forEach(crate -> {
-                                cratesLeft.remove(crate);
-                                cratesLeft.add(crate.RIGHT());
-
-                                cratesRight.remove(crate.RIGHT());
-                                cratesRight.add(crate.RIGHT().RIGHT());
-                            });
+                            .forEach(crate -> moveCrate(cratesLeft, cratesRight, crate, crate.RIGHT()));
                     robot[0] = robot[0].RIGHT();
                 }
             }
@@ -244,13 +238,7 @@ public class Advent15 {
                     Point2D finalTrack = track;
                     cratesOnSameRow.stream()
                             .filter(crate -> crate.col() < robot[0].col() && crate.col() > finalTrack.col())
-                            .forEach(crate -> {
-                                cratesLeft.remove(crate);
-                                cratesLeft.add(crate.LEFT());
-
-                                cratesRight.remove(crate.RIGHT());
-                                cratesRight.add(crate.RIGHT().LEFT());
-                            });
+                            .forEach(crate -> moveCrate(cratesLeft, cratesRight, crate, crate.LEFT()));
                     robot[0] = robot[0].LEFT();
                 }
             }
@@ -279,20 +267,14 @@ public class Advent15 {
                                     toProcess.add(current.UP().LEFT());
                                 }
                                 if (cratesLeft.contains(current.RIGHT().UP())) {
-                                    toProcess.add(current.RIGHT().UP());
+                                    toProcess.add(current.UP().RIGHT());
                                 }
                             } else if (cratesRight.contains(current)) {
                                 toProcess.add(current.LEFT());
                             }
                         }
 
-                        toMove.forEach(crate -> {
-                            cratesLeft.remove(crate);
-                            cratesLeft.add(crate.UP());
-
-                            cratesRight.remove(crate.RIGHT());
-                            cratesRight.add(crate.RIGHT().UP());
-                        });
+                        toMove.forEach(crate -> moveCrate(cratesLeft, cratesRight, crate, crate.UP()));
                         robot[0] = robot[0].UP();
                     }
                 }
@@ -321,21 +303,15 @@ public class Advent15 {
                                 } else if (cratesRight.contains(current.DOWN())) {
                                     toProcess.add(current.DOWN().LEFT());
                                 }
-                                if (cratesLeft.contains(current.RIGHT().DOWN())) {
-                                    toProcess.add(current.RIGHT().DOWN());
+                                if (cratesLeft.contains(current.DOWN().RIGHT())) {
+                                    toProcess.add(current.DOWN().RIGHT());
                                 }
                             } else if (cratesRight.contains(current)) {
                                 toProcess.add(current.LEFT());
                             }
                         }
 
-                        toMove.forEach(crate -> {
-                            cratesLeft.remove(crate);
-                            cratesLeft.add(crate.DOWN());
-
-                            cratesRight.remove(crate.RIGHT());
-                            cratesRight.add(crate.RIGHT().DOWN());
-                        });
+                        toMove.forEach(crate -> moveCrate(cratesLeft, cratesRight, crate, crate.DOWN()));
                         robot[0] = robot[0].DOWN();
                     }
                 }
@@ -347,6 +323,14 @@ public class Advent15 {
         return cratesLeft.stream()
                 .mapToLong(crate -> crate.row() * 100 + crate.col())
                 .sum();
+    }
+
+    private static void moveCrate(List<Point2D> cratesLeft, List<Point2D> cratesRight, Point2D crate, Point2D newCrate) {
+        cratesLeft.remove(crate);
+        cratesLeft.add(newCrate);
+
+        cratesRight.remove(crate.RIGHT());
+        cratesRight.add(newCrate.RIGHT());
     }
 
     private void display(char move, List<Point2D> walls, List<Point2D> cratesLeft, Point2D robot, boolean displayOn) {
