@@ -55,7 +55,7 @@ public class Advent6 {
                     direction = direction.clockwise();
                 }
 
-                visited.add(new Point2D(guard.row(), guard.col()));
+                visited.add(guard.copy());
             } catch (ArrayIndexOutOfBoundsException _) {
                 break;
             }

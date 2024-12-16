@@ -53,7 +53,6 @@ public class Util2D {
     public record Surface(long perimeter, long area, long insidePoints, long shoelaceArea, List<Point2D> points) {
     }
 
-
     public static List<Node> getAllPaths(Node from, Function<Node, Boolean> endCondition, Function<Node, List<Node>> neighbourFunction, Comparator<Node> sorting) {
         List<Node> paths = newArrayList();
 
