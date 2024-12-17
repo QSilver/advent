@@ -4,10 +4,15 @@ import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
 
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static java.lang.Math.pow;
+import static java.lang.String.join;
 import static util.InputUtils.readDoubleNewlineBlocks;
+import static util.Util.generateCombinations;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})
@@ -26,21 +31,49 @@ public class Advent17 {
     }
 
     public Long runP2(String file) {
-        String[] strings = readDoubleNewlineBlocks(file);
+        List<List<String>> combinations = generateCombinations(5, newArrayList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"));
 
-        long A = parseLong(strings[0].split("\n")[0].split(" ")[2]);
-        long B = parseLong(strings[0].split("\n")[1].split(" ")[2]);
-        long C = parseLong(strings[0].split("\n")[2].split(" ")[2]);
-        String[] program = strings[1].split(" ")[1].split(",");
+        List<Long> valids = newArrayList();
+        combinations.forEach(combination -> {
+            long a1 = (long) (parseLong(join("", combination)) * 1e10);
+            String output = executeP2(a1);
+            if (output.endsWith("3,5,5,3,0")) {
+                System.out.println(STR."\{a1} = \{output}");
+                valids.add(a1);
+            }
+        });
+        System.out.println();
 
-        for (long i = (long) pow(8, 3); i < pow(8, 4); i += 1) {
-            System.out.println(STR."\{i}: \{executeP2(program, i, B, C)}");
-        }
+        List<Long> valids2 = newArrayList();
+        valids.forEach(a1 -> combinations.forEach(combination -> {
+            long a2 = (long) (a1 + (parseLong(join("", combination)) * 1e5));
 
-        return -1L;
+            String output = executeP2(a2);
+            if (output.endsWith("4,1,4,0,3,5,5,3,0")) {
+                System.out.println(STR."\{a2} = \{output}");
+                valids2.add(a2);
+            }
+        }));
+        System.out.println();
+
+        List<Long> valids3 = newArrayList();
+        valids2.forEach(a2 -> combinations.forEach(combination -> {
+            long a3 = (long) (a2 + (parseLong(join("", combination)) * 1e0));
+
+            String output = executeP2(a3);
+            if (output.endsWith("2,4,1,1,7,5,4,4,1,4,0,3,5,5,3,0")) {
+                System.out.println(STR."\{a3} = \{output}");
+                valids3.add(a3);
+            }
+        }));
+        System.out.println();
+
+        return valids3.getFirst();
     }
 
-    private static String executeP2(String[] program, long A, long B, long C) {
+
+    private static String executeP2(long A) {
+        if (A == 0) return "";
         /*
             B = A % 8
             B = B ^ 1
@@ -53,7 +86,7 @@ public class Advent17 {
          */
         StringBuilder output = new StringBuilder();
         while (A != 0) {
-            B = (A % 8) ^ 1;
+            long B = (A % 8) ^ 1;
             B = (B ^ (long) (A / pow(2, B))) ^ 4;
             A = A / 8;
             output.append(STR."\{B % 8},");
