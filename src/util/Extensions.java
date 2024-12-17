@@ -13,10 +13,6 @@ public class Extensions {
         return map[(int) current.row()][(int) current.col()];
     }
 
-    public static void print(Object toPrint) {
-        System.out.println(toPrint);
-    }
-
     public static <T> Stream<T> stream(T[] toStream) {
         return Arrays.stream(toStream);
     }
