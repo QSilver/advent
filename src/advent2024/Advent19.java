@@ -43,13 +43,8 @@ public class Advent19 {
             return 1L;
         }
         return towels.stream()
-                .mapToLong(towel -> {
-                    if (design.startsWith(towel)) {
-                        return combinationCache.getUnchecked(design.substring(towel.length()));
-                    }
-                    return 0;
-                })
+                .filter(design::startsWith)
+                .mapToLong(towel -> combinationCache.getUnchecked(design.substring(towel.length())))
                 .sum();
     }
-
 }
