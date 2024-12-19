@@ -2,14 +2,13 @@ package util;
 
 import lombok.With;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.Long.parseLong;
 import static java.lang.Math.abs;
 
 public class Util2D {
@@ -51,6 +50,30 @@ public class Util2D {
     }
 
     public record Surface(long perimeter, long area, long insidePoints, long shoelaceArea, List<Point2D> points) {
+    }
+
+    public static Node getShortestPath(Node from, Function<Node, Boolean> endCondition, Function<Node, List<Node>> neighbourFunction, Comparator<Node> sorting) {
+        PriorityQueue<Node> toVisit = new PriorityQueue<>(sorting);
+        Set<Point2D> seen = newHashSet();
+
+        toVisit.add(from);
+        while (!toVisit.isEmpty()) {
+            Node current = toVisit.remove();
+
+            if (endCondition.apply(current)) {
+                return current;
+            }
+
+            List<Node> apply = neighbourFunction.apply(current);
+            List<Node> neighbours = apply
+                    .stream().filter(node -> !seen.contains(node.point))
+                    .toList();
+
+            toVisit.addAll(neighbours);
+            neighbours.forEach(node -> seen.add(node.point));
+        }
+
+        return null;
     }
 
     public static List<Node> getAllPaths(Node from, Function<Node, Boolean> endCondition, Function<Node, List<Node>> neighbourFunction, Comparator<Node> sorting) {
@@ -107,6 +130,11 @@ public class Util2D {
     }
 
     public record Point2D(long row, long col) {
+        public static Point2D fromCoords(String coords) {
+            String[] split = coords.split(",");
+            return new Point2D(parseLong(split[0]), parseLong(split[1]));
+        }
+
         public Point2D neighbour(Direction direction) {
             switch (direction) {
                 case UP -> {
@@ -159,6 +187,11 @@ public class Util2D {
 
         public Point2D copy() {
             return new Point2D(row, col);
+        }
+
+        @Override
+        public String toString() {
+            return STR."\{row},\{col}";
         }
     }
 
