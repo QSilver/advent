@@ -3,7 +3,6 @@ package advent2024;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
-import util.Util2D;
 import util.Util2D.Direction;
 import util.Util2D.Node;
 import util.Util2D.Point2D;
@@ -12,18 +11,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
-import static java.lang.Integer.parseInt;
-import static java.lang.Long.parseLong;
-import static java.lang.String.join;
 import static java.util.Comparator.comparingLong;
 import static util.InputUtils.fileStream;
-import static util.Util2D.Direction.*;
-import static util.Util2D.Direction.RIGHT;
-import static util.Util2D.getShortestPath;
+import static util.Util2D.Direction.DOWN;
+import static util.Util2D.getPaths;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})
@@ -45,7 +38,7 @@ public class Advent18 {
         List<Point2D> currentBits = bits.subList(0, bitsFallen);
         Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, newHashSet(currentBits), size);
 
-        return getShortestPath(startNode, endCondition, neighbourFunction, sorting).distance();
+        return getPaths(startNode, endCondition, neighbourFunction, sorting, false).getFirst().distance();
     }
 
     public String runP2(String file, int size) {
@@ -53,12 +46,8 @@ public class Advent18 {
                 .map(Point2D::fromCoords)
                 .toList();
 
-        Point2D start = new Point2D(0, 0);
-        Point2D end = new Point2D(size, size);
-
-        Node startNode = new Node(start, DOWN, 0, null);
-        Function<Node, Boolean> endCondition = current -> current.point().equals(end);
-        Comparator<Node> sorting = comparingLong(Node::distance);
+        Node startNode = new Node(new Point2D(0, 0), DOWN, 0, null);
+        Function<Node, Boolean> endCondition = current -> current.point().equals(new Point2D(size, size));
 
         int min = 0;
         int max = bits.size();
@@ -72,14 +61,14 @@ public class Advent18 {
             }
 
             Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, newHashSet(currentBits), size);
-            Node shortestPath = getShortestPath(startNode, endCondition, neighbourFunction, sorting);
+            List<Node> paths = getPaths(startNode, endCondition, neighbourFunction, comparingLong(Node::distance), false);
 
-            if (shortestPath == null) {
+            if (paths.isEmpty()) {
                 max = fallen;
                 System.out.println(STR."After \{fallen} walls, found no path");
             } else {
                 min = fallen;
-                System.out.println(STR."After \{fallen} walls, found path of length \{shortestPath.distance()}");
+                System.out.println(STR."After \{fallen} walls, found path of length \{paths.getFirst().distance()}");
             }
         }
     }

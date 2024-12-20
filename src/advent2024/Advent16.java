@@ -4,7 +4,6 @@ import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -26,11 +25,11 @@ public class Advent16 {
     private static Character[][] map;
 
     public Long runP1(String file) {
-        return getPaths(file).getFirst().distance();
+        return getPathsFromFile(file).getFirst().distance();
     }
 
     public Long runP2(String file) {
-        List<Node> paths = getPaths(file);
+        List<Node> paths = getPathsFromFile(file);
 
         long minDistance = paths.getFirst().distance();
         return paths.stream()
@@ -40,18 +39,13 @@ public class Advent16 {
                 .count();
     }
 
-    private List<Node> getPaths(String file) {
+    private List<Node> getPathsFromFile(String file) {
         map = loadCharMatrix(file);
-        Point2D start = get2DPoints(file, 'S').getFirst();
-        Point2D end = get2DPoints(file, 'E').getFirst();
 
-        Node startRightNode = new Node(start, RIGHT, 0, null);
+        Node startRightNode = new Node(get2DPoints(file, 'S').getFirst(), RIGHT, 0, null);
+        Function<Node, Boolean> endCondition = current -> current.point().equals(get2DPoints(file, 'E').getFirst());
 
-        Function<Node, List<Node>> neighbourFunction = this::getNeighbours;
-        Function<Node, Boolean> endCondition = current -> current.point().equals(end);
-        Comparator<Node> sorting = comparingLong(Node::distance);
-
-        return getAllPaths(startRightNode, endCondition, neighbourFunction, sorting);
+        return getPaths(startRightNode, endCondition, this::getNeighbours, comparingLong(Node::distance), true);
     }
 
     private static Stream<Point2D> traverse(Node node) {

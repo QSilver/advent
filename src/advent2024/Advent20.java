@@ -3,11 +3,10 @@ package advent2024;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
-import util.Util2D;
+import util.Util2D.Direction;
 import util.Util2D.Node;
 import util.Util2D.Point2D;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -17,6 +16,7 @@ import static java.util.Comparator.comparingLong;
 import static util.InputUtils.get2DPoints;
 import static util.InputUtils.loadCharMatrix;
 import static util.Util2D.Direction.RIGHT;
+import static util.Util2D.getPaths;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})
@@ -34,7 +34,7 @@ public class Advent20 {
     }
 
     private long run(String file, int maxCheat) {
-        Node shortestPath = getShortestPath(file);
+        Node shortestPath = getPathsFromFile(file).getFirst();
         Map<Point2D, Long> distanceMap = getDistanceAlongPath(shortestPath);
 
         Map<Long, Long> cheatFrequencies = newHashMap();
@@ -66,23 +66,17 @@ public class Advent20 {
         return distanceMap;
     }
 
-    private Node getShortestPath(String file) {
+    private List<Node> getPathsFromFile(String file) {
         map = loadCharMatrix(file);
 
-        Point2D start = get2DPoints(file, 'S').getFirst();
-        Point2D end = get2DPoints(file, 'E').getFirst();
+        Node startRightNode = new Node(get2DPoints(file, 'S').getFirst(), RIGHT, 0, null);
+        Function<Node, Boolean> endCondition = current -> current.point().equals(get2DPoints(file, 'E').getFirst());
 
-        Node startNode = new Node(start, RIGHT, 0, null);
-
-        Function<Node, List<Node>> neighbourFunction = this::getNeighbours;
-        Function<Node, Boolean> endCondition = current -> current.point().equals(end);
-        Comparator<Node> sorting = comparingLong(Node::distance);
-
-        return Util2D.getShortestPath(startNode, endCondition, neighbourFunction, sorting);
+        return getPaths(startRightNode, endCondition, this::getNeighbours, comparingLong(Node::distance), true);
     }
 
     private List<Node> getNeighbours(Node current) {
-        return Util2D.Direction.values().stream()
+        return Direction.values().stream()
                 .map(direction -> new Node(current.point().neighbour(direction), direction, current.distance() + 1, current))
                 .filter(node -> node.point().row() >= 0 && node.point().col() >= 0 && node.point().row() < map.length && node.point().col() < map[0].length)
                 .filter(node -> !isWall(node))
