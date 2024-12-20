@@ -24,21 +24,7 @@ public class Advent18 {
     // https://adventofcode.com/2024/day/18
 
     public Long runP1(String file, int size, int bitsFallen) {
-        List<Point2D> bits = fileStream(file)
-                .map(Point2D::fromCoords)
-                .toList();
-
-        Point2D start = new Point2D(0, 0);
-        Point2D end = new Point2D(size, size);
-
-        Node startNode = new Node(start, DOWN, 0, null);
-        Function<Node, Boolean> endCondition = current -> current.point().equals(end);
-        Comparator<Node> sorting = comparingLong(Node::distance);
-
-        List<Point2D> currentBits = bits.subList(0, bitsFallen);
-        Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, newHashSet(currentBits), size);
-
-        return getPaths(startNode, endCondition, neighbourFunction, sorting, false).getFirst().distance();
+        return getPathsFromFile(file, size, bitsFallen).getFirst().distance();
     }
 
     public String runP2(String file, int size) {
@@ -46,23 +32,17 @@ public class Advent18 {
                 .map(Point2D::fromCoords)
                 .toList();
 
-        Node startNode = new Node(new Point2D(0, 0), DOWN, 0, null);
-        Function<Node, Boolean> endCondition = current -> current.point().equals(new Point2D(size, size));
-
         int min = 0;
         int max = bits.size();
         while (true) {
             int fallen = (min + max) / 2;
-            List<Point2D> currentBits = bits.subList(0, fallen);
 
             if (min == max - 1) {
                 System.out.println(STR."\{max}th wall blocks any path");
                 return bits.get(min).toString();
             }
 
-            Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, newHashSet(currentBits), size);
-            List<Node> paths = getPaths(startNode, endCondition, neighbourFunction, comparingLong(Node::distance), false);
-
+            List<Node> paths = getPathsFromFile(file, size, fallen);
             if (paths.isEmpty()) {
                 max = fallen;
                 System.out.println(STR."After \{fallen} walls, found no path");
@@ -71,6 +51,21 @@ public class Advent18 {
                 System.out.println(STR."After \{fallen} walls, found path of length \{paths.getFirst().distance()}");
             }
         }
+    }
+
+    private List<Node> getPathsFromFile(String file, int size, int bitsFallen) {
+        List<Point2D> bits = fileStream(file)
+                .map(Point2D::fromCoords)
+                .toList();
+
+        Node startNode = new Node(new Point2D(0, 0), DOWN, 0, null);
+        Function<Node, Boolean> endCondition = current -> current.point().equals(new Point2D(size, size));
+        Comparator<Node> sorting = comparingLong(Node::distance);
+
+        List<Point2D> currentBits = bits.subList(0, bitsFallen);
+        Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, newHashSet(currentBits), size);
+
+        return getPaths(startNode, endCondition, neighbourFunction, sorting, false);
     }
 
     private List<Node> getNeighbours(Node current, Set<Point2D> bits, int size) {
