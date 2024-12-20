@@ -15,7 +15,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Comparator.comparingLong;
 import static util.InputUtils.get2DPoints;
 import static util.InputUtils.loadCharMatrix;
-import static util.Util2D.Direction.*;
+import static util.Util2D.Direction.RIGHT;
 import static util.Util2D.*;
 
 @Slf4j
@@ -67,40 +67,20 @@ public class Advent16 {
     private List<Node> getNeighbours(Node current) {
         List<Node> neighbours = newArrayList();
 
-        final Node moveUp = new Node(current.point().UP(), UP, current.distance() + 1, current);
-        final Node turnUp = new Node(current.point().UP(), UP, current.distance() + 1001, current);
-
-        final Node moveDown = new Node(current.point().DOWN(), DOWN, current.distance() + 1, current);
-        final Node turnDown = new Node(current.point().DOWN(), DOWN, current.distance() + 1001, current);
-
-        final Node moveLeft = new Node(current.point().LEFT(), LEFT, current.distance() + 1, current);
-        final Node turnLeft = new Node(current.point().LEFT(), LEFT, current.distance() + 1001, current);
-
-        final Node moveRight = new Node(current.point().RIGHT(), RIGHT, current.distance() + 1, current);
-        final Node turnRight = new Node(current.point().RIGHT(), RIGHT, current.distance() + 1001, current);
-
-        switch (current.direction()) {
-            case UP -> {
-                neighbours.add(moveUp);
-                neighbours.add(turnLeft);
-                neighbours.add(turnRight);
-            }
-            case DOWN -> {
-                neighbours.add(moveDown);
-                neighbours.add(turnLeft);
-                neighbours.add(turnRight);
-            }
-            case LEFT -> {
-                neighbours.add(moveLeft);
-                neighbours.add(turnUp);
-                neighbours.add(turnDown);
-            }
-            case RIGHT -> {
-                neighbours.add(moveRight);
-                neighbours.add(turnUp);
-                neighbours.add(turnDown);
-            }
-        }
+        final Node forward = new Node(current.point().neighbour(current.direction()), current.direction(), current.distance() + 1, current);
+        final Node clockwise = current
+                .withPoint(current.point().neighbour(current.direction().clockwise()))
+                .withDirection(current.direction().clockwise())
+                .withDistance(current.distance() + 1001)
+                .withPrevious(current);
+        final Node counterclockwise = current
+                .withPoint(current.point().neighbour(current.direction().counterclockwise()))
+                .withDirection(current.direction().counterclockwise())
+                .withDistance(current.distance() + 1001)
+                .withPrevious(current);
+        neighbours.add(forward);
+        neighbours.add(clockwise);
+        neighbours.add(counterclockwise);
 
         neighbours.removeIf(Advent16::isWall);
         return neighbours;

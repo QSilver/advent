@@ -161,6 +161,16 @@ public class Util2D {
             return newArrayList(UP(), UP().RIGHT(), RIGHT(), RIGHT().DOWN(), DOWN(), DOWN().LEFT(), LEFT(), LEFT().UP());
         }
 
+        public List<Point2D> getNAround(int n) {
+            List<Point2D> around = newArrayList();
+            for (long deltaRow = -n; deltaRow <= n; deltaRow++) {
+                for (long deltaCol = -n; deltaCol <= n; deltaCol++) {
+                    around.add(this.withDelta(new Point2D(deltaRow, deltaCol)));
+                }
+            }
+            return around;
+        }
+
         public Point2D UP() {
             return new Point2D(row - 1, col);
         }
@@ -177,7 +187,7 @@ public class Util2D {
             return new Point2D(row, col + 1);
         }
 
-        long manhattanDistanceTo(Point2D other) {
+        public long manhattanDistanceTo(Point2D other) {
             return abs(row - other.row) + abs(col - other.col);
         }
 
@@ -207,7 +217,7 @@ public class Util2D {
         public Direction counterclockwise() {
             Direction[] values = Direction.values();
             int next = (this.ordinal() - 1) % values.length;
-            return values[next];
+            return values[next >= 0 ? next : next + values.length];
         }
     }
 }
