@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
-import static java.util.Comparator.comparingLong;
 import static util.InputUtils.get2DPoints;
 import static util.InputUtils.loadCharMatrix;
 import static util.Util2D.Direction.RIGHT;
@@ -45,7 +44,7 @@ public class Advent16 {
         Node startRightNode = new Node(get2DPoints(file, 'S').getFirst(), RIGHT, 0, null);
         Function<Node, Boolean> endCondition = current -> current.point().equals(get2DPoints(file, 'E').getFirst());
 
-        return getPaths(startRightNode, endCondition, this::getNeighbours, comparingLong(Node::distance), true);
+        return getPaths(startRightNode, endCondition, this::getNeighbours, true);
     }
 
     private static Stream<Point2D> traverse(Node node) {

@@ -65,7 +65,7 @@ public class Advent18 {
         List<Point2D> currentBits = bits.subList(0, bitsFallen);
         Function<Node, List<Node>> neighbourFunction = node -> getNeighbours(node, newHashSet(currentBits), size);
 
-        return getPaths(startNode, endCondition, neighbourFunction, sorting, false);
+        return getPaths(startNode, endCondition, neighbourFunction, false);
     }
 
     private List<Node> getNeighbours(Node current, Set<Point2D> bits, int size) {
