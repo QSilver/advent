@@ -4,6 +4,7 @@ import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Comparator.comparingLong;
 import static util.InputUtils.get2DPoints;
 import static util.InputUtils.loadCharMatrix;
 import static util.Util2D.Direction.RIGHT;
@@ -43,8 +45,9 @@ public class Advent16 {
 
         Node startRightNode = new Node(get2DPoints(file, 'S').getFirst(), RIGHT, 0, null);
         Function<Node, Boolean> endCondition = current -> current.point().equals(get2DPoints(file, 'E').getFirst());
+        Comparator<Node> sorting = comparingLong(Node::distance);
 
-        return getPaths(startRightNode, endCondition, this::getNeighbours, true);
+        return getPaths(startRightNode, endCondition, this::getNeighbours, sorting, true);
     }
 
     private static Stream<Point2D> traverse(Node node) {
@@ -61,16 +64,9 @@ public class Advent16 {
         List<Node> neighbours = newArrayList();
 
         final Node forward = new Node(current.point().neighbour(current.direction()), current.direction(), current.distance() + 1, current);
-        final Node clockwise = current
-                .withPoint(current.point().neighbour(current.direction().clockwise()))
-                .withDirection(current.direction().clockwise())
-                .withDistance(current.distance() + 1001)
-                .withPrevious(current);
-        final Node counterclockwise = current
-                .withPoint(current.point().neighbour(current.direction().counterclockwise()))
-                .withDirection(current.direction().counterclockwise())
-                .withDistance(current.distance() + 1001)
-                .withPrevious(current);
+        final Node clockwise = new Node(current.point().neighbour(current.direction().clockwise()), current.direction().clockwise(), current.distance() + 1001, current);
+        final Node counterclockwise = new Node(current.point().neighbour(current.direction().counterclockwise()), current.direction().counterclockwise(), current.distance() + 1001, current);
+
         neighbours.add(forward);
         neighbours.add(clockwise);
         neighbours.add(counterclockwise);

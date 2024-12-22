@@ -7,11 +7,13 @@ import util.Util2D.Direction;
 import util.Util2D.Node;
 import util.Util2D.Point2D;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static java.util.Comparator.comparingLong;
 import static util.InputUtils.get2DPoints;
 import static util.InputUtils.loadCharMatrix;
 import static util.Util2D.Direction.RIGHT;
@@ -70,8 +72,9 @@ public class Advent20 {
 
         Node startRightNode = new Node(get2DPoints(file, 'S').getFirst(), RIGHT, 0, null);
         Function<Node, Boolean> endCondition = current -> current.point().equals(get2DPoints(file, 'E').getFirst());
+        Comparator<Node> sorting = comparingLong(Node::distance);
 
-        return getPaths(startRightNode, endCondition, this::getNeighbours, true);
+        return getPaths(startRightNode, endCondition, this::getNeighbours, sorting, true);
     }
 
     private List<Node> getNeighbours(Node current) {

@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import util.Util2D.Point2D;
+import util.Util2D.PointWithLabel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,30 +56,30 @@ public class InputUtils {
         return fileStream(file).findFirst().orElseThrow().split(delimiter).stream();
     }
 
-    public static List<Util2D.Point2D> get2DPoints(String file, char point) {
+    public static List<Point2D> get2DPoints(String file, char point) {
         List<String> list = fileStream(file).toList();
 
-        List<Util2D.Point2D> points = newArrayList();
+        List<Point2D> points = newArrayList();
         for (int row = 0; row < list.size(); row++) {
             String s = list.get(row);
             for (int col = 0; col < s.length(); col++) {
                 if (s.charAt(col) == point) {
-                    points.add(new Util2D.Point2D(row, col));
+                    points.add(new Point2D(row, col));
                 }
             }
         }
         return points;
     }
 
-    public static List<Util2D.PointWithLabel> get2DPointsIgnore(String file, char ignore) {
+    public static List<PointWithLabel> get2DPointsIgnore(String file, char ignore) {
         List<String> list = fileStream(file).toList();
 
-        List<Util2D.PointWithLabel> points = newArrayList();
+        List<PointWithLabel> points = newArrayList();
         for (int row = 0; row < list.size(); row++) {
             String s = list.get(row);
             for (int col = 0; col < s.length(); col++) {
                 if (s.charAt(col) != ignore) {
-                    points.add(new Util2D.PointWithLabel(new Util2D.Point2D(row, col), s.charAt(col)));
+                    points.add(new PointWithLabel(new Point2D(row, col), s.charAt(col)));
                 }
             }
         }
