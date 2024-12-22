@@ -66,6 +66,9 @@ public class Util2D {
 
             if (endCondition.apply(current)) {
                 paths.add(current);
+                if (!exhaustive) {
+                    return newArrayList(current);
+                }
             }
 
             List<Node> apply = neighbourFunction.apply(current);

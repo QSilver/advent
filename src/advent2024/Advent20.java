@@ -74,7 +74,7 @@ public class Advent20 {
         Function<Node, Boolean> endCondition = current -> current.point().equals(get2DPoints(file, 'E').getFirst());
         Comparator<Node> sorting = comparingLong(Node::distance);
 
-        return getPaths(startRightNode, endCondition, this::getNeighbours, sorting, true);
+        return getPaths(startRightNode, endCondition, this::getNeighbours, sorting, false);
     }
 
     private List<Node> getNeighbours(Node current) {
