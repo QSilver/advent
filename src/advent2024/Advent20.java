@@ -2,10 +2,10 @@ package advent2024;
 
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import util.Direction;
 import util.Extensions;
-import util.Util2D.Direction;
+import util.Point2D;
 import util.Util2D.Node;
-import util.Util2D.Point2D;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,9 +14,9 @@ import java.util.function.Function;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Comparator.comparingLong;
+import static util.Direction.RIGHT;
 import static util.InputUtils.get2DPoints;
 import static util.InputUtils.loadCharMatrix;
-import static util.Util2D.Direction.RIGHT;
 import static util.Util2D.getPaths;
 
 @Slf4j

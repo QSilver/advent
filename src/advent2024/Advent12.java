@@ -3,6 +3,7 @@ package advent2024;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
+import util.Point2D;
 
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +15,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static util.InputUtils.get2DPointsIgnore;
 import static util.InputUtils.loadCharMatrix;
-import static util.Util2D.*;
+import static util.Util2D.PointWithLabel;
+import static util.Util2D.Surface;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})

@@ -13,10 +13,11 @@ import java.util.stream.Stream;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Comparator.comparingLong;
+import static util.Direction.RIGHT;
 import static util.InputUtils.get2DPoints;
 import static util.InputUtils.loadCharMatrix;
-import static util.Util2D.Direction.RIGHT;
-import static util.Util2D.*;
+import static util.Util2D.Node;
+import static util.Util2D.getPaths;
 
 @Slf4j
 @ExtensionMethod({Extensions.class})

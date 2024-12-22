@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 public class Extensions {
-    public static <T> T atPos(T[][] map, Util2D.Point2D current) {
+    public static <T> T atPos(T[][] map, Point2D current) {
         return map[(int) current.row()][(int) current.col()];
     }
 
