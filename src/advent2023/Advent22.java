@@ -1,8 +1,8 @@
 package advent2023;
 
 import lombok.extern.slf4j.Slf4j;
+import util.Point2D;
 import util.Util.Point3D;
-import util.Util2D.Point2D;
 
 import java.util.List;
 import java.util.Queue;

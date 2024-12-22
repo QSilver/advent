@@ -3,7 +3,7 @@ package advent2024;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
-import util.Util2D.Point2D;
+import util.Point2D;
 import util.Util2D.PointWithLabel;
 
 import java.util.Comparator;
