@@ -31,7 +31,7 @@ public class Advent7 {
     private static long run(String file, ArrayList<String> values) {
         return fileStream(file)
                 .map(Equation::parse)
-                .collect(Collectors.toMap(equation -> equation, equation -> generateCombinations(equation.operands.size() - 1, values)))
+                .collect(Collectors.toMap(equation -> equation, equation -> generateCombinations(equation.operands.size() - 1, values, true)))
                 .entrySet().stream()
                 .mapToLong(entry -> isEquationValid(entry.getKey(), entry.getValue()))
                 .sum();

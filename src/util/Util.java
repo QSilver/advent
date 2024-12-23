@@ -5,11 +5,13 @@ import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 import static java.util.stream.IntStream.range;
 
 @Slf4j
@@ -36,7 +38,7 @@ public class Util {
         }
     }
 
-    public static <T> List<List<T>> generateCombinations(int number, List<T> values) {
+    public static <T> List<List<T>> generateCombinations(int number, List<T> values, boolean withRepeats) {
         List<List<T>> combinations = values.stream()
                 .map(Lists::newArrayList)
                 .collect(Collectors.toList());
@@ -47,13 +49,39 @@ public class Util {
                 for (T value : values) {
                     ArrayList<T> temp = newArrayList(combination);
                     temp.add(value);
-                    newValues.add(temp);
+                    if (withRepeats || !combination.contains(value)) {
+                        newValues.add(temp);
+                    }
                 }
             }
             combinations = newValues;
         }
 
         return combinations;
+    }
+
+    public static <T> Set<Set<T>> generateSubsets(int number, Collection<T> values) {
+        Set<Set<T>> combinations = values.stream()
+                .map(t -> {
+                    Set<T> objects = newHashSet();
+                    objects.add(t);
+                    return objects;
+                })
+                .collect(Collectors.toSet());
+
+        for (int i = 1; i < number; i++) {
+            Set<Set<T>> newValues = newHashSet();
+            for (Set<T> combination : combinations) {
+                for (T value : values) {
+                    Set<T> temp = newHashSet(combination);
+                    temp.add(value);
+                    newValues.add(temp);
+                }
+            }
+            combinations = newValues;
+        }
+
+        return combinations.stream().filter(set -> set.size() == number).collect(Collectors.toSet());
     }
 
     public static EQSystemResult solve2System(long ax, long ay, long bx, long by, long px, long py) {
