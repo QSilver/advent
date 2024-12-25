@@ -21,35 +21,38 @@ public class Advent25 {
     Map<Character[][], int[]> keys = newHashMap();
 
     public Long runP1(String file) {
-        stream(readDoubleNewlineBlocks(file)).forEach(block -> {
-            List<String> list = stream(block.split("\n")).toList();
+        stream(readDoubleNewlineBlocks(file)).forEach(this::parseBlock);
+        return countMatching();
+    }
 
-            Character[][] matrix = new Character[list.size()][list.getFirst().length()];
-            for (int row = 0; row < list.size(); row++) {
-                String s = list.get(row);
-                for (int col = 0; col < s.length(); col++) {
-                    matrix[row][col] = s.charAt(col);
-                }
-            }
-
-            int[] count = count(matrix);
-            if (stream(matrix[0]).anyMatch(character -> character == '#')) {
-                locks.put(matrix, count);
-            } else {
-                keys.put(matrix, count);
-            }
-        });
-
+    private long countMatching() {
         AtomicLong count = new AtomicLong();
-        locks.keySet().forEach(lock -> {
-            keys.keySet().forEach(key -> {
-                if (fit(locks.get(lock), keys.get(key))) {
-                    count.getAndIncrement();
-                }
-            });
-        });
-
+        locks.keySet().forEach(lock ->
+                keys.keySet().forEach(key -> {
+                    if (fit(locks.get(lock), keys.get(key))) {
+                        count.getAndIncrement();
+                    }
+                }));
         return count.get();
+    }
+
+    private void parseBlock(String block) {
+        List<String> list = stream(block.split("\n")).toList();
+
+        Character[][] matrix = new Character[list.size()][list.getFirst().length()];
+        for (int row = 0; row < list.size(); row++) {
+            String s = list.get(row);
+            for (int col = 0; col < s.length(); col++) {
+                matrix[row][col] = s.charAt(col);
+            }
+        }
+
+        int[] count = count(matrix);
+        if (stream(matrix[0]).anyMatch(character -> character == '#')) {
+            locks.put(matrix, count);
+        } else {
+            keys.put(matrix, count);
+        }
     }
 
     private static boolean fit(int[] lock, int[] key) {
