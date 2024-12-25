@@ -112,7 +112,7 @@ public class Advent24 {
                     if (xor.isEmpty()) {
                         System.out.println("in XOR not connected to another XOR");
                         System.out.println(gate);
-                        Gate downStream = gates.stream().filter(other -> other.hasInput(gate.output)).findFirst().get();
+                        Gate downStream = gates.stream().filter(other -> other.hasInput(gate.output)).findFirst().orElse(null);
                         System.out.println(downStream);
                         System.out.println(STR."==================== WRONG GATE: \{gate}");
                         wrongGates.add(gate);
