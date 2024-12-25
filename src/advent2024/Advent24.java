@@ -140,9 +140,6 @@ public class Advent24 {
                         wrongGates.add(gate);
                         System.out.println();
                     }
-                } else {
-                    // xy inputs should never be connected directly to OR gate
-                    System.out.println(gate);
                 }
             }
 
