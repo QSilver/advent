@@ -35,6 +35,9 @@ public class Advent24 {
     public String runP2(String file) {
         parseInput(file);
 
+        run();
+        printGateErrors();
+
         // swap z21 and gds
         gates.remove(new Gate("x21", "AND", "y21", "z21"));
         gates.add(new Gate("x21", "AND", "y21", "gds"));
