@@ -35,21 +35,8 @@ public class Advent24 {
     public String runP2(String file) {
         parseInput(file);
 
-        run();
-        printGateErrors();
-
-        // swap z21 and gds
-        gates.remove(new Gate("x21", "AND", "y21", "z21"));
-        gates.add(new Gate("x21", "AND", "y21", "gds"));
-        gates.remove(new Gate("nsp", "XOR", "tqh", "gds"));
-        gates.add(new Gate("nsp", "XOR", "tqh", "z21"));
-
-        // swap wrk and jrs
-        gates.remove(new Gate("y30", "AND", "x30", "wrk"));
-        gates.add(new Gate("y30", "AND", "x30", "jrs"));
-        gates.remove(new Gate("y30", "XOR", "x30", "jrs"));
-        gates.add(new Gate("y30", "XOR", "x30", "wrk"));
-
+//        seedBinaryNumberAndRun();
+//        printGateErrors();
 
         // swap fph and z15
         gates.remove(new Gate("ccp", "XOR", "hhw", "fph"));
@@ -57,19 +44,31 @@ public class Advent24 {
         gates.remove(new Gate("snp", "OR", "mnh", "z15"));
         gates.add(new Gate("snp", "OR", "mnh", "fph"));
 
+        // swap z21 and gds
+        gates.remove(new Gate("x21", "AND", "y21", "z21"));
+        gates.add(new Gate("x21", "AND", "y21", "gds"));
+        gates.remove(new Gate("nsp", "XOR", "tqh", "gds"));
+        gates.add(new Gate("nsp", "XOR", "tqh", "z21"));
+
         // swap cqk and z34
         gates.remove(new Gate("ksm", "XOR", "fcv", "cqk"));
         gates.add(new Gate("ksm", "XOR", "fcv", "z34"));
         gates.remove(new Gate("ksm", "AND", "fcv", "z34"));
         gates.add(new Gate("ksm", "AND", "fcv", "cqk"));
 
-        run();
+        // swap wrk and jrs
+        gates.remove(new Gate("y30", "AND", "x30", "wrk"));
+        gates.add(new Gate("y30", "AND", "x30", "jrs"));
+        gates.remove(new Gate("y30", "XOR", "x30", "jrs"));
+        gates.add(new Gate("y30", "XOR", "x30", "wrk"));
+
+        seedBinaryNumberAndRun();
         printGateErrors();
 
         return "";
     }
 
-    private void run() {
+    private void seedBinaryNumberAndRun() {
         StringBuilder x = new StringBuilder("0".repeat(44));
         StringBuilder y = new StringBuilder("0".repeat(44));
 
@@ -98,68 +97,76 @@ public class Advent24 {
         System.out.println();
     }
 
+    Set<Gate> wrongGates = newHashSet();
+
     private void printGateErrors() {
-        Set<Gate> wrongGates = newHashSet();
         gates.forEach(gate -> {
             if (gate.hasInput("x00")) {
                 return;
             }
 
-            if ((gate.left.startsWith("x") && gate.right.startsWith("y")) || (gate.left.startsWith("y") && gate.right.startsWith("x"))) {
-                if (gate.symbol.equals("XOR")) {
-                    // if xy enter a XOR gate, this should follow into another XOR gate and into Z
-                    List<Gate> xor = gates.stream().filter(other -> other.hasInput(gate.output) && other.symbol.equals("XOR")).toList();
-                    if (xor.isEmpty()) {
-                        System.out.println("in XOR not connected to another XOR");
-                        System.out.println(gate);
-                        Gate downStream = gates.stream().filter(other -> other.hasInput(gate.output)).findFirst().orElse(null);
-                        System.out.println(downStream);
-                        System.out.println(STR."==================== WRONG GATE: \{gate}");
-                        wrongGates.add(gate);
-                        System.out.println();
-                    } else if (!xor.getFirst().output.startsWith("z")) {
-                        System.out.println("in XOR connected to another XOR without Z output");
-                        System.out.println(gate);
-                        System.out.println(xor.getFirst());
-                        Gate wrong = gates.stream().filter(other -> other.output.substring(1).equals(gate.left.substring(1))).findFirst().orElse(null);
-                        System.out.println(STR."==================== WRONG GATE: \{xor.getFirst()}");
-                        System.out.println(STR."==================== WRONG GATE: \{wrong}");
-                        wrongGates.add(xor.getFirst());
-                        wrongGates.add(wrong);
-                        System.out.println();
-                    }
-                } else if (gate.symbol.equals("AND")) {
-                    // if xy enter an AND gate, this should follow into another OR gate and into Carry
-                    List<Gate> or = gates.stream().filter(other -> other.hasInput(gate.output) && other.symbol.equals("OR")).toList();
-                    if (or.isEmpty()) {
-                        System.out.println("in AND not connected to an OR");
-                        System.out.println(gate);
-                        Gate downStream = gates.stream().filter(other -> other.hasInput(gate.output)).findFirst().orElse(null);
-                        System.out.println(downStream);
-                        System.out.println(STR."==================== WRONG GATE: \{gate}");
-                        wrongGates.add(gate);
-                        System.out.println();
-                    }
-                }
-            }
-
-            if (gate.symbol.equals("OR")) {
-                // OR gate should have 2 ANDs as input
-                List<Gate> list = gates.stream().filter(other -> other.output.equals(gate.left) || other.output.equals(gate.right)).toList();
-                List<Gate> and = list.stream().filter(other -> !other.symbol.equals("AND")).toList();
-                if (!and.isEmpty()) {
-                    System.out.println("OR gate does not have 2 AND inputs");
-                    System.out.println(and.getFirst());
-                    System.out.println(gate);
-                    System.out.println(STR."==================== WRONG GATE: \{and.getFirst()}");
-                    wrongGates.add(and.getFirst());
-                    System.out.println();
-                }
-            }
+            // https://upload.wikimedia.org/wikipedia/commons/5/57/Fulladder.gif
+//            checkOR(gate);
+//            checkAND(gate);
+//            checkXOR(gate);
         });
-        String collect = wrongGates.stream().map(gate -> gate.output).sorted().collect(joining(","));
-        System.out.println();
-        System.out.println(collect);
+        String output = wrongGates.stream().map(gate -> gate.output).sorted().collect(joining(","));
+        System.out.println(output);
+    }
+
+    private void checkOR(Gate gate) {
+        // OR gate should have 2 AND as input
+        if (gate.symbol.equals("OR")) {
+            List<Gate> inputGates = gates.stream()
+                    .filter(other -> other.output.equals(gate.left) || other.output.equals(gate.right))
+                    .filter(other -> !other.symbol.equals("AND")).toList();
+
+            if (!inputGates.isEmpty()) {
+                System.out.println(STR."OR gate does not have 2 AND inputs: \{gate}");
+                System.out.println(STR."==================== WRONG GATE: \{inputGates.getFirst()}");
+                wrongGates.add(inputGates.getFirst());
+                System.out.println();
+            }
+        }
+    }
+
+    private void checkAND(Gate gate) {
+        // if XY enter an AND gate, this should follow into another OR gate
+        if (gate.symbol.equals("AND") && gate.hasInputsXY()) {
+            List<Gate> or = gates.stream().filter(other -> other.hasInput(gate.output) && other.symbol.equals("OR")).toList();
+            if (or.isEmpty()) {
+                System.out.println(STR."in AND not connected to an OR: \{gate}");
+                Gate downStream = gates.stream().filter(other -> other.hasInput(gate.output)).findFirst().orElse(null);
+                System.out.println(downStream);
+                System.out.println(STR."==================== WRONG GATE: \{gate}");
+                wrongGates.add(gate);
+                System.out.println();
+            }
+        }
+    }
+
+    private void checkXOR(Gate gate) {
+        // if XY enters an XOR gate, this should follow into another XOR gate and into Z
+        if (gate.symbol.equals("XOR") && gate.hasInputsXY()) {
+            // get all XOR gates that have an XYinput XOR as input
+            List<Gate> xor = gates.stream()
+                    .filter(other -> other.hasInput(gate.output))
+                    .filter(other -> other.symbol().equals("XOR")).toList();
+            if (!xor.isEmpty() && !xor.getFirst().output.startsWith("z")) {
+                // this XOR should go into Z
+                System.out.println("in XOR connected to another XOR without Z output");
+                System.out.println(gate);
+                System.out.println(xor.getFirst());
+                System.out.println(STR."==================== WRONG GATE: \{xor.getFirst()}");
+
+                // the Z with the same number as the XY input must also be wrong
+                Gate wrong = gates.stream().filter(other -> other.output.substring(1).equals(gate.left.substring(1))).findFirst().orElse(null);
+                System.out.println(STR."==================== WRONG GATE: \{wrong}");
+                wrongGates.add(xor.getFirst());
+                wrongGates.add(wrong);
+                System.out.println();
+            }
+        }
     }
 
     private String parseGateOutput() {
@@ -207,6 +214,10 @@ public class Advent24 {
     record Gate(String left, String symbol, String right, String output) {
         public boolean hasInput(String input) {
             return input.equals(left) || input.equals(right);
+        }
+
+        public boolean hasInputsXY() {
+            return (left.startsWith("x") && right.startsWith("y")) || (left.startsWith("y") && right.startsWith("x"));
         }
     }
 }
