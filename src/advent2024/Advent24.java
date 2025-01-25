@@ -1,16 +1,26 @@
 package advent2024;
 
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.model.Node;
+import lombok.SneakyThrows;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import util.Extensions;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
+import static guru.nidi.graphviz.attribute.Color.RED;
+import static guru.nidi.graphviz.attribute.Style.lineWidth;
+import static guru.nidi.graphviz.engine.Graphviz.fromGraph;
+import static guru.nidi.graphviz.model.Factory.graph;
+import static guru.nidi.graphviz.model.Factory.node;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static java.lang.Long.toBinaryString;
@@ -29,42 +39,18 @@ public class Advent24 {
     public Long runP1(String file) {
         parseInput(file);
         runGates();
+
         return parseLong(parseGateOutput(), 2);
     }
 
     public String runP2(String file) {
         parseInput(file);
 
-//        seedBinaryNumberAndRun();
-//        printGateErrors();
-
-        // swap fph and z15
-        gates.remove(new Gate("ccp", "XOR", "hhw", "fph"));
-        gates.add(new Gate("ccp", "XOR", "hhw", "z15"));
-        gates.remove(new Gate("snp", "OR", "mnh", "z15"));
-        gates.add(new Gate("snp", "OR", "mnh", "fph"));
-
-        // swap z21 and gds
-        gates.remove(new Gate("x21", "AND", "y21", "z21"));
-        gates.add(new Gate("x21", "AND", "y21", "gds"));
-        gates.remove(new Gate("nsp", "XOR", "tqh", "gds"));
-        gates.add(new Gate("nsp", "XOR", "tqh", "z21"));
-
-        // swap cqk and z34
-        gates.remove(new Gate("ksm", "XOR", "fcv", "cqk"));
-        gates.add(new Gate("ksm", "XOR", "fcv", "z34"));
-        gates.remove(new Gate("ksm", "AND", "fcv", "z34"));
-        gates.add(new Gate("ksm", "AND", "fcv", "cqk"));
-
-        // swap wrk and jrs
-        gates.remove(new Gate("y30", "AND", "x30", "wrk"));
-        gates.add(new Gate("y30", "AND", "x30", "jrs"));
-        gates.remove(new Gate("y30", "XOR", "x30", "jrs"));
-        gates.add(new Gate("y30", "XOR", "x30", "wrk"));
-
+        swaps();
         seedBinaryNumberAndRun();
         printGateErrors();
 
+        displayGraph();
         return "";
     }
 
@@ -97,7 +83,7 @@ public class Advent24 {
         System.out.println();
     }
 
-    Set<Gate> wrongGates = newHashSet();
+    static Set<Gate> wrongGates = newHashSet();
 
     private void printGateErrors() {
         gates.forEach(gate -> {
@@ -169,6 +155,32 @@ public class Advent24 {
         }
     }
 
+    private void swaps() {
+//        // swap fph and z15
+//        gates.remove(new Gate("ccp", "XOR", "hhw", "fph"));
+//        gates.add(new Gate("ccp", "XOR", "hhw", "z15"));
+//        gates.remove(new Gate("snp", "OR", "mnh", "z15"));
+//        gates.add(new Gate("snp", "OR", "mnh", "fph"));
+//
+//        // swap z21 and gds
+//        gates.remove(new Gate("x21", "AND", "y21", "z21"));
+//        gates.add(new Gate("x21", "AND", "y21", "gds"));
+//        gates.remove(new Gate("nsp", "XOR", "tqh", "gds"));
+//        gates.add(new Gate("nsp", "XOR", "tqh", "z21"));
+//
+//        // swap cqk and z34
+//        gates.remove(new Gate("ksm", "XOR", "fcv", "cqk"));
+//        gates.add(new Gate("ksm", "XOR", "fcv", "z34"));
+//        gates.remove(new Gate("ksm", "AND", "fcv", "z34"));
+//        gates.add(new Gate("ksm", "AND", "fcv", "cqk"));
+//
+//        // swap wrk and jrs
+//        gates.remove(new Gate("y30", "AND", "x30", "wrk"));
+//        gates.add(new Gate("y30", "AND", "x30", "jrs"));
+//        gates.remove(new Gate("y30", "XOR", "x30", "jrs"));
+//        gates.add(new Gate("y30", "XOR", "x30", "wrk"));
+    }
+
     private String parseGateOutput() {
         return circuitMap.keySet().stream()
                 .filter(key1 -> key1.startsWith("z"))
@@ -211,6 +223,38 @@ public class Advent24 {
                 });
     }
 
+    @SneakyThrows
+    private void displayGraph() {
+        List<Node> nodes = gates.stream().flatMap(gate -> {
+            return Stream.of(
+                    colourIfWrong(gate.left).link(gate.gateSymbol()),
+                    colourIfWrong(gate.right).link(gate.gateSymbol()),
+                    colourSymbolIfWrong(gate).link(gate.output),
+                    colourIfWrong(gate.output)
+            );
+        }).toList();
+        fromGraph(graph("gateMap").directed().with(nodes))
+                .render(Format.PNG).toFile(new File("gateMap.png"));
+    }
+
+    private Node colourIfWrong(String label) {
+        List<String> wrongGatesStr = wrongGates.stream().map(gate -> gate.output).toList();
+        Node node = node(label);
+        if (wrongGatesStr.contains(label)) {
+            return node.with(RED).with(lineWidth(4));
+        }
+        return node;
+    }
+
+    private Node colourSymbolIfWrong(Gate gate) {
+        List<String> wrongGatesStr = wrongGates.stream().map(other -> other.output).toList();
+        Node node = node(gate.gateSymbol());
+        if (wrongGatesStr.contains(gate.output)) {
+            return node.with(RED).with(lineWidth(4));
+        }
+        return node;
+    }
+
     record Gate(String left, String symbol, String right, String output) {
         public boolean hasInput(String input) {
             return input.equals(left) || input.equals(right);
@@ -218,6 +262,10 @@ public class Advent24 {
 
         public boolean hasInputsXY() {
             return (left.startsWith("x") && right.startsWith("y")) || (left.startsWith("y") && right.startsWith("x"));
+        }
+
+        public String gateSymbol() {
+            return STR."\{left}\{symbol}\{right}";
         }
     }
 }

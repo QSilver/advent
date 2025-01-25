@@ -116,5 +116,11 @@
             <artifactId>metrics-core</artifactId>
             <version>4.2.29</version>
         </dependency>
+
+        <dependency>
+            <groupId>guru.nidi</groupId>
+            <artifactId>graphviz-java</artifactId>
+            <version>0.18.1</version>
+        </dependency>
     </dependencies>
 </project>
