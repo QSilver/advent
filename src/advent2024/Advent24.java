@@ -47,7 +47,7 @@ public class Advent24 {
     public String runP2(String file) {
         parseInput(file);
 
-        swaps();
+//        swaps();
         seedBinaryNumberAndRun();
         printGateErrors();
 
@@ -93,9 +93,9 @@ public class Advent24 {
             }
 
             // https://upload.wikimedia.org/wikipedia/commons/5/57/Fulladder.gif
-//            checkOR(gate);
-//            checkAND(gate);
-//            checkXOR(gate);
+            checkOR(gate);
+            checkAND(gate);
+            checkXOR(gate);
         });
         String output = wrongGates.stream().map(gate -> gate.output).sorted().collect(joining(","));
         System.out.println(output);
@@ -157,29 +157,29 @@ public class Advent24 {
     }
 
     private void swaps() {
-//        // swap fph and z15
-//        gates.remove(new Gate("ccp", "XOR", "hhw", "fph"));
-//        gates.add(new Gate("ccp", "XOR", "hhw", "z15"));
-//        gates.remove(new Gate("snp", "OR", "mnh", "z15"));
-//        gates.add(new Gate("snp", "OR", "mnh", "fph"));
-//
-//        // swap z21 and gds
-//        gates.remove(new Gate("x21", "AND", "y21", "z21"));
-//        gates.add(new Gate("x21", "AND", "y21", "gds"));
-//        gates.remove(new Gate("nsp", "XOR", "tqh", "gds"));
-//        gates.add(new Gate("nsp", "XOR", "tqh", "z21"));
-//
-//        // swap cqk and z34
-//        gates.remove(new Gate("ksm", "XOR", "fcv", "cqk"));
-//        gates.add(new Gate("ksm", "XOR", "fcv", "z34"));
-//        gates.remove(new Gate("ksm", "AND", "fcv", "z34"));
-//        gates.add(new Gate("ksm", "AND", "fcv", "cqk"));
-//
-//        // swap wrk and jrs
-//        gates.remove(new Gate("y30", "AND", "x30", "wrk"));
-//        gates.add(new Gate("y30", "AND", "x30", "jrs"));
-//        gates.remove(new Gate("y30", "XOR", "x30", "jrs"));
-//        gates.add(new Gate("y30", "XOR", "x30", "wrk"));
+        // swap fph and z15
+        gates.remove(new Gate("ccp", "XOR", "hhw", "fph"));
+        gates.add(new Gate("ccp", "XOR", "hhw", "z15"));
+        gates.remove(new Gate("snp", "OR", "mnh", "z15"));
+        gates.add(new Gate("snp", "OR", "mnh", "fph"));
+
+        // swap z21 and gds
+        gates.remove(new Gate("x21", "AND", "y21", "z21"));
+        gates.add(new Gate("x21", "AND", "y21", "gds"));
+        gates.remove(new Gate("nsp", "XOR", "tqh", "gds"));
+        gates.add(new Gate("nsp", "XOR", "tqh", "z21"));
+
+        // swap cqk and z34
+        gates.remove(new Gate("ksm", "XOR", "fcv", "cqk"));
+        gates.add(new Gate("ksm", "XOR", "fcv", "z34"));
+        gates.remove(new Gate("ksm", "AND", "fcv", "z34"));
+        gates.add(new Gate("ksm", "AND", "fcv", "cqk"));
+
+        // swap wrk and jrs
+        gates.remove(new Gate("y30", "AND", "x30", "wrk"));
+        gates.add(new Gate("y30", "AND", "x30", "jrs"));
+        gates.remove(new Gate("y30", "XOR", "x30", "jrs"));
+        gates.add(new Gate("y30", "XOR", "x30", "wrk"));
     }
 
     private String parseGateOutput() {
