@@ -9,7 +9,7 @@ class Advent24Test {
 
     @Test
     void testPart1() {
-//        assertEquals(4, underTest.runP1("advent2024/advent24_ex1.in"));
+        assertEquals(4, underTest.runP1("advent2024/advent24_ex1.in"));
         assertEquals(2024, underTest.runP1("advent2024/advent24_ex2.in"));
     }
 

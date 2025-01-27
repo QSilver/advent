@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -191,6 +192,11 @@ public class Advent24 {
     }
 
     private void runGates() {
+        Map<String, BiFunction<Boolean, Boolean, Boolean>> functionMap = Map.of(
+                "AND", (left, right) -> left & right,
+                "OR", (left, right) -> left | right,
+                "XOR", (left, right) -> left ^ right);
+
         List<Gate> toRun = newArrayList(gates);
         while (!toRun.isEmpty()) {
             Gate toProcess = toRun.removeFirst();
@@ -198,11 +204,8 @@ public class Advent24 {
             Boolean left = circuitMap.get(toProcess.left);
             Boolean right = circuitMap.get(toProcess.right);
             if (left != null && right != null) {
-                switch (toProcess.symbol) {
-                    case "AND" -> circuitMap.put(toProcess.output, left & right);
-                    case "OR" -> circuitMap.put(toProcess.output, left | right);
-                    case "XOR" -> circuitMap.put(toProcess.output, left ^ right);
-                }
+                Boolean result = functionMap.get(toProcess.symbol).apply(left, right);
+                circuitMap.put(toProcess.output, result);
             } else {
                 toRun.add(toProcess);
             }
