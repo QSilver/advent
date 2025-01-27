@@ -77,7 +77,7 @@ public class Advent24 {
         runGates();
 
         String output = parseGateOutput();
-        System.out.println(STR."\{output}   (\{Long.parseLong(output, 2)} result)");
+        System.out.println(STR."\{output}   (\{parseLong(output, 2)} result)");
         long sum = xl + yl;
         System.out.println(STR."\{toBinaryString(sum)}   (\{sum} expected)");
 
@@ -184,8 +184,8 @@ public class Advent24 {
 
     private String parseGateOutput() {
         return circuitMap.keySet().stream()
-                .filter(key1 -> key1.startsWith("z"))
-                .sorted(reverseOrder())
+                .filter(key -> key.startsWith("z"))
+                .sorted(reverseOrder()) // most significant bit is last Z
                 .map(key -> circuitMap.get(key))
                 .map(key -> key ? "1" : "0")
                 .collect(joining());
