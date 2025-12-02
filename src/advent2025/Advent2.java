@@ -14,7 +14,7 @@ import static util.Util.primeFactors;
 
 @Slf4j
 public class Advent2 {
-    // https://adventofcode.com/2025/day/1
+    // https://adventofcode.com/2025/day/2
 
     public Long runP1(String file) {
         return execute(file, false);
