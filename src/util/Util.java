@@ -38,6 +38,20 @@ public class Util {
         }
     }
 
+    public static List<Long> primeFactors(long number) {
+        List<Long> factors = newArrayList();
+        for (long i = 2; i <= Math.sqrt(number); i++) {
+            while (number % i == 0) {
+                factors.add(i);
+                number /= i;
+            }
+        }
+        if (number > 1) {
+            factors.add(number);
+        }
+        return factors;
+    }
+
     public static <T> List<List<T>> generateCombinations(int number, List<T> values, boolean withRepeats) {
         List<List<T>> combinations = values.stream()
                 .map(Lists::newArrayList)
