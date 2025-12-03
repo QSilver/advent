@@ -9,25 +9,25 @@ class Advent3Test {
 
     @Test
     void testPart1() {
-        Long run = underTest.runP1("advent3025/advent3_ex1.in");
-        assertEquals(1227775554, run);
+        Long run = underTest.runP1("advent2025/advent3_ex1.in");
+        assertEquals(357, run);
     }
 
     @Test
     void runPart1() {
-        Long run = underTest.runP1("advent3025/advent3.in");
+        Long run = underTest.runP1("advent2025/advent3.in");
         System.out.println(run);
     }
 
     @Test
     void testPart2() {
-        Long run = underTest.runP2("advent3025/advent3_ex1.in");
-        assertEquals(4174379265L, run);
+        Long run = underTest.runP2("advent2025/advent3_ex1.in");
+        assertEquals(3121910778619L, run);
     }
 
     @Test
     void runPart2() {
-        Long run = underTest.runP2("advent3025/advent3.in");
+        Long run = underTest.runP2("advent2025/advent3.in");
         System.out.println(run);
     }
 }
