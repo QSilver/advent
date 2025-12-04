@@ -13,32 +13,30 @@ public class Advent4 {
     // https://adventofcode.com/2025/day/4
 
     public Long runP1(String file) {
-        List<Point2D> points = get2DPoints(file, '@');
-        return points.stream()
-                .filter(lessThan4Neighbours(points))
+        List<Point2D> pointList = get2DPoints(file, '@');
+        return pointList.stream()
+                .filter(lessThan4Neighbours(pointList))
                 .count();
-
     }
 
     public Long runP2(String file) {
-        long count = 0;
+        List<Point2D> pointList = get2DPoints(file, '@');
 
-        List<Point2D> point2DS = get2DPoints(file, '@');
+        long count = 0;
         List<Point2D> toRemove;
         do {
-            toRemove = point2DS.stream()
-                    .filter(lessThan4Neighbours(point2DS))
+            toRemove = pointList.stream()
+                    .filter(lessThan4Neighbours(pointList))
                     .toList();
             count += toRemove.size();
-            point2DS.removeAll(toRemove);
-        } while (!toRemove.isEmpty());
+        } while (pointList.removeAll(toRemove));
 
         return count;
     }
 
-    private static Predicate<Point2D> lessThan4Neighbours(List<Point2D> point2DS) {
+    private static Predicate<Point2D> lessThan4Neighbours(List<Point2D> pointList) {
         return point -> point.neighbours8().stream()
-                .filter(point2DS::contains)
+                .filter(pointList::contains)
                 .count() < 4;
     }
 }
