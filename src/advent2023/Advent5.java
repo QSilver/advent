@@ -1,7 +1,7 @@
 package advent2023;
 
-import lombok.With;
 import lombok.extern.slf4j.Slf4j;
+import util.Interval;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,9 @@ public class Advent5 {
 
         List<Interval> intervals = newArrayList();
         for (int seed = 1; seed < seeds.length; seed += 2) {
-            intervals.add(new Interval(parseLong(seeds[seed]), parseLong(seeds[seed]) + parseLong(seeds[seed + 1]) - 1));
+            long start = parseLong(seeds[seed]);
+            long l = parseLong(seeds[seed + 1]);
+            intervals.add(new Interval(start, start + l - 1, false, false));
         }
 
         // apply each set of conversions in order
@@ -140,14 +142,18 @@ public class Advent5 {
         for (int b = 0; b < breakpoints.size(); b++) {
             Long breakpoint = breakpoints.get(b);
 
-            result.add(new Interval(prev, breakpoint - 1));
+            result.add(interval
+                    .withStart(prev)
+                    .withEnd(breakpoint - 1));
 
             Long tempBreak = interval.end;
             if (b != breakpoints.size() - 1) {
                 tempBreak = breakpoints.get(b + 1);
             }
             long end = min(interval.end, tempBreak);
-            result.add(new Interval(breakpoint, end));
+            result.add(interval
+                    .withStart(breakpoint)
+                    .withEnd(end));
 
             prev = breakpoint;
             requiresBreak = true;
@@ -158,13 +164,6 @@ public class Advent5 {
         }
 
         return result;
-    }
-
-    @With
-    record Interval(Long start, Long end) {
-        boolean contains(Long point) {
-            return point > start && point < end;
-        }
     }
 
     record Conversion(Long destination, Long start, Long end) {
