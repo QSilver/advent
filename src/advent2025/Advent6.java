@@ -75,14 +75,11 @@ public class Advent6 {
                 .sum();
     }
 
-    private static List<Integer> getSignPositions(List<String> list) {
-        List<Integer> signPositions = newArrayList();
-        for (int i = 0; i < list.getLast().length(); i++) {
-            if (list.getLast().charAt(i) == '+' || list.getLast().charAt(i) == '*') {
-                signPositions.add(i);
-            }
-        }
-        return signPositions;
+    private static List<Integer> getSignPositions(List<String> input) {
+        return range(0, input.getLast().length())
+                .filter(i -> input.getLast().charAt(i) != ' ')
+                .boxed()
+                .toList();
     }
 
     private static long calculateColumn(int startPos, int endPos, List<String> input) {
