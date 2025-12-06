@@ -4,10 +4,8 @@ import com.google.common.collect.Lists;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -16,6 +14,14 @@ import static java.util.stream.IntStream.range;
 
 @Slf4j
 public class Util {
+    public static <T> Optional<T> optionalTry(Supplier<T> callable) {
+        try {
+            return Optional.of(callable.get());
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
     public static Set<Integer> rangeToSet(int startInclusive, int endExclusive) {
         return range(startInclusive, endExclusive).boxed().collect(Collectors.toSet());
     }
