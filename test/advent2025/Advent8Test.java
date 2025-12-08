@@ -9,13 +9,13 @@ class Advent8Test {
 
     @Test
     void testPart1() {
-        Long run = underTest.runP1("advent2025/advent8_ex1.in");
+        Long run = underTest.runP1("advent2025/advent8_ex1.in", 10);
         assertEquals(40, run);
     }
 
     @Test
     void runPart1() {
-        Long run = underTest.runP1("advent2025/advent8.in");
+        Long run = underTest.runP1("advent2025/advent8.in", 1000);
         System.out.println(run);
     }
 

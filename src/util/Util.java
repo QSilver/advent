@@ -5,17 +5,27 @@ import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.Long.parseLong;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 import static java.util.stream.IntStream.range;
 
 @Slf4j
 public class Util {
+    public static <T> void forEachTwo(List<T> list, BiConsumer<T, T> consumer) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            for (int j = i + 1; j < list.size(); j++) {
+                consumer.accept(list.get(i), list.get(j));
+            }
+        }
+    }
+
     public static <T> Optional<T> optionalTry(Supplier<T> callable) {
         try {
             return Optional.of(callable.get());
@@ -34,6 +44,10 @@ public class Util {
 
     @With
     public record Point3D(long x, long y, long z) {
+        public Point3D(String[] split) {
+            this(parseLong(split[0]), parseLong(split[1]), parseLong(split[2]));
+        }
+
         @Override
         public boolean equals(Object o) {
             if (o == null || getClass() != o.getClass()) return false;
