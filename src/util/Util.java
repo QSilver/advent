@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 import static java.util.stream.IntStream.range;
 
 @Slf4j
@@ -32,11 +34,29 @@ public class Util {
 
     @With
     public record Point3D(long x, long y, long z) {
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            Point3D point3D = (Point3D) o;
+            return x == point3D.x && y == point3D.y && z == point3D.z;
+        }
+
+        @Override
+        public int hashCode() {
+            return com.google.common.base.Objects.hashCode(x, y, z);
+        }
+
         public Point3D cross(Point3D other) {
             return new Point3D(
                     this.y * other.z - other.y * this.z,
                     this.z * other.x - other.z * this.x,
                     this.x * other.y - other.x * this.y);
+        }
+
+        public double distance(Point3D other) {
+            return sqrt(pow(this.x - other.x, 2) +
+                    pow(this.y - other.y, 2) +
+                    pow(this.z - other.z, 2));
         }
 
         public Point3D minus(Point3D other) {
@@ -46,7 +66,7 @@ public class Util {
 
     public static List<Long> primeFactors(long number) {
         List<Long> factors = newArrayList();
-        for (long i = 2; i <= Math.sqrt(number); i++) {
+        for (long i = 2; i <= sqrt(number); i++) {
             while (number % i == 0) {
                 factors.add(i);
                 number /= i;
