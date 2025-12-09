@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
@@ -114,8 +115,14 @@ public class Util {
         return combinations;
     }
 
-    public static <T> Set<Set<T>> generateSubsets(int number, Collection<T> values) {
-        Set<Set<T>> combinations = values.stream()
+    public static <T> Set<Set<T>> generateSubsets(int size, Collection<T> values) {
+        return generateSubsets(size, values.stream());
+    }
+
+    public static <T> Set<Set<T>> generateSubsets(int size, Stream<T> values) {
+        Supplier<Stream<T>> valuesSupplier = () -> values;
+
+        Set<Set<T>> combinations = valuesSupplier.get()
                 .map(t -> {
                     Set<T> objects = newHashSet();
                     objects.add(t);
@@ -123,19 +130,21 @@ public class Util {
                 })
                 .collect(Collectors.toSet());
 
-        for (int i = 1; i < number; i++) {
+        for (int i = 1; i < size; i++) {
             Set<Set<T>> newValues = newHashSet();
             for (Set<T> combination : combinations) {
-                for (T value : values) {
+                valuesSupplier.get().forEach(value -> {
                     Set<T> temp = newHashSet(combination);
                     temp.add(value);
                     newValues.add(temp);
-                }
+                });
             }
             combinations = newValues;
         }
 
-        return combinations.stream().filter(set -> set.size() == number).collect(Collectors.toSet());
+        return combinations.stream()
+                .filter(set -> set.size() == size)
+                .collect(Collectors.toSet());
     }
 
     public static EQSystemResult solve2System(long ax, long ay, long bx, long by, long px, long py) {
