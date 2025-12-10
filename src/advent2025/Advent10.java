@@ -104,12 +104,21 @@ public class Advent10 {
 
     private static void addConstraints(Machine machine, LpSolve solver) throws LpSolveException {
         /* this makes my head hurt
+        lpsolve.sourceforge.net/5.5/Java/README.html
 
         [.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
         [0,0,0,0,1,1] -> buttonIndex 4,5 affect joltageIndex 0
         [0,1,0,0,0,1] -> buttonIndex 2,5 affect joltageIndex 1
         [0,0,1,1,1,0] -> buttonIndex 2,3,4 affect joltageIndex 2
         [1,1,0,1,0,0] -> buttonIndex 0,1,3 affect joltageIndex 3
+
+         this translates to:
+         b4 + b5 = 3
+         b1 + b5 = 5
+         b2 + b3 + b4 = 4
+         b0 + b1 + b2 = 7
+         find minimum of (b0 + b1 + b2 + b3 + b4 + b5)
+         where bx >= 0
          */
 
         for (int joltageIndex = 0; joltageIndex < machine.joltage.size(); joltageIndex++) {
