@@ -54,13 +54,13 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>32.0.0-android</version>
+            <version>33.5.0-jre</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
-            <version>3.4.0</version>
+            <version>3.5.6</version>
         </dependency>
 
         <dependency>
@@ -121,6 +121,20 @@
             <groupId>guru.nidi</groupId>
             <artifactId>graphviz-java</artifactId>
             <version>0.18.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>lpsolver55j</groupId>
+            <artifactId>lpsolve55j</artifactId>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/lp_solve_5.5_java/lib/lpsolve55j.jar</systemPath>
+            <version>55</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.datumbox</groupId>
+            <artifactId>lpsolve</artifactId>
+            <version>5.5.2.0</version>
         </dependency>
     </dependencies>
 </project>

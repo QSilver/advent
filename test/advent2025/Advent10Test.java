@@ -22,12 +22,14 @@ class Advent10Test {
     @Test
     void testPart2() {
         Long run = underTest.runP2("advent2025/advent10_ex1.in");
-        assertEquals(24, run);
+        assertEquals(33, run);
     }
 
     @Test
     void runPart2() {
         Long run = underTest.runP2("advent2025/advent10.in");
-        System.out.println(run);
+        // assert a fake value because LPSolve prints too much and I cba to fix it
+        // get the answer from the failing test xDD
+        assertEquals(0L, run);
     }
 }
