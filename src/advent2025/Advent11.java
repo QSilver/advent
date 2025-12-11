@@ -1,9 +1,13 @@
 package advent2025;
 
 import com.google.common.base.Objects;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import lombok.NonNull;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 import util.Extensions;
 
 import java.util.Comparator;
@@ -34,22 +38,32 @@ public class Advent11 {
         return (long) paths.size();
     }
 
+    Map<String, Node> nodes;
+
     public Long runP2(String file) {
-        Map<String, Node> nodes = getNodes(file);
-
-        List<Node> paths = getPaths(nodes.get("svr"),
-                node -> node.name().equals("out"),
-                Node::getNeighbours,
-                Comparator.comparingLong(Node::distance)
-        );
-
-        return (long) paths.stream()
-                .filter(path -> path.path().stream().anyMatch(n -> n.name().equals("dac")))
-                .filter(path -> path.path().stream().anyMatch(n -> n.name().equals("fft")))
-                .toList().size();
+        nodes = getNodes(file);
+        long svr_fft = recursive_bfs_iguess("svr", "fft");
+        long fft_dac = recursive_bfs_iguess("fft", "dac");
+        long dac_out = recursive_bfs_iguess("dac", "out");
+        return svr_fft * fft_dac * dac_out;
     }
 
-    private static Map<String, Node> getNodes(String file) {
+    LoadingCache<Pair<String, String>, Long> cache = CacheBuilder.newBuilder().
+            build(CacheLoader.from(pair -> recursive_bfs_iguess(pair.getFirst(), pair.getSecond())));
+
+    private long recursive_bfs_iguess(String from, String to) {
+        if (from.equals(to)) {
+            return 1L;
+        }
+
+        return nodes.get(from).neighbours.stream()
+                .map(neighbour -> cache.getUnchecked(Pair.of(nodes.get(neighbour.name).name, to)))
+                .mapToLong(Long::longValue)
+                .sum();
+
+    }
+
+    public static Map<String, Node> getNodes(String file) {
         Stream<String> stringStream = fileStream(file);
 
         Map<String, Node> nodes = newHashMap();
@@ -99,7 +113,7 @@ public class Advent11 {
         return paths;
     }
 
-    record Node(String name, List<Node> neighbours, long distance, List<Node> path) {
+    public record Node(String name, List<Node> neighbours, long distance, List<Node> path) {
         public List<Node> getNeighbours() {
             List<Node> currentPath = newArrayList(this.path);
             currentPath.add(this);
