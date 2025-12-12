@@ -10,7 +10,7 @@ class Advent12Test {
     @Test
     void testPart1() {
         Long run = underTest.runP1("advent2025/advent12_ex1.in");
-        assertEquals(5, run);
+        assertEquals(2, run);
     }
 
     @Test

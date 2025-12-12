@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -109,6 +111,29 @@ public class InputUtils {
             }
         }
         return matrix;
+    }
+
+    public static Pattern getBetween(String start, String end, String label) {
+        String pattern = STR."\{start}(?<\{label}>.*?)\{end}";
+        return Pattern.compile(pattern);
+    }
+
+    public static String extractSingle(String input, Pattern pattern, String label) {
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.find()) {
+            return matcher.group(label);
+        }
+        throw new RuntimeException("No match found");
+    }
+
+    public static List<String> extractList(String input, Pattern pattern, String label) {
+        Matcher matcher = pattern.matcher(input);
+
+        List<String> results = newArrayList();
+        if (matcher.find()) {
+            results.add(matcher.group(label));
+        }
+        return results;
     }
 
     @SneakyThrows
