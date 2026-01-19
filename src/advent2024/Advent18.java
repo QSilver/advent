@@ -38,17 +38,17 @@ public class Advent18 {
             int fallen = (min + max) / 2;
 
             if (min == max - 1) {
-                System.out.println(STR."\{max}th wall blocks any path");
+                System.out.printf("%sth wall blocks any path%n", max);
                 return bits.get(min).toString();
             }
 
             List<Node> paths = getPathsFromFile(file, size, fallen);
             if (paths.isEmpty()) {
                 max = fallen;
-                System.out.println(STR."After \{fallen} walls, found no path");
+                System.out.printf("After %s walls, found no path%n", fallen);
             } else {
                 min = fallen;
-                System.out.println(STR."After \{fallen} walls, found path of length \{paths.getFirst().distance()}");
+                System.out.printf("After %s walls, found path of length %s%n", fallen, paths.getFirst().distance());
             }
         }
     }

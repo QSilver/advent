@@ -70,16 +70,16 @@ public class Advent24 {
         });
 
         long xl = parseLong(x.reverse().toString(), 2);
-        System.out.println(STR." \{x} + (\{xl})");
+        System.out.printf(" %s + (%s)%n", x, xl);
         long yl = parseLong(y.reverse().toString(), 2);
-        System.out.println(STR." \{y}   (\{yl})");
+        System.out.printf(" %s   (%s)%n", y, yl);
 
         runGates();
 
         String output = parseGateOutput();
-        System.out.println(STR."\{output}   (\{parseLong(output, 2)} result)");
+        System.out.printf("%s   (%s result)%n", output, parseLong(output, 2));
         long sum = xl + yl;
-        System.out.println(STR."\{toBinaryString(sum)}   (\{sum} expected)");
+        System.out.printf("%s   (%s expected)%n", toBinaryString(sum), sum);
 
         System.out.println();
     }
@@ -109,8 +109,8 @@ public class Advent24 {
                     .filter(other -> !other.symbol.equals("AND")).toList();
 
             if (!inputGates.isEmpty()) {
-                System.out.println(STR."OR gate does not have 2 AND inputs: \{gate}");
-                System.out.println(STR."==================== WRONG GATE: \{inputGates.getFirst()}");
+                System.out.printf("OR gate does not have 2 AND inputs: %s%n", gate);
+                System.out.printf("==================== WRONG GATE: %s%n", inputGates.getFirst());
                 wrongGates.add(inputGates.getFirst());
                 System.out.println();
             }
@@ -122,10 +122,10 @@ public class Advent24 {
         if (gate.symbol.equals("AND") && gate.hasInputsXY()) {
             List<Gate> or = gates.stream().filter(other -> other.hasInput(gate.output) && other.symbol.equals("OR")).toList();
             if (or.isEmpty()) {
-                System.out.println(STR."in AND not connected to an OR: \{gate}");
+                System.out.printf("in AND not connected to an OR: %s%n", gate);
                 Gate downStream = gates.stream().filter(other -> other.hasInput(gate.output)).findFirst().orElse(null);
                 System.out.println(downStream);
-                System.out.println(STR."==================== WRONG GATE: \{gate}");
+                System.out.printf("==================== WRONG GATE: %s%n", gate);
                 wrongGates.add(gate);
                 System.out.println();
             }
@@ -144,11 +144,11 @@ public class Advent24 {
                 System.out.println("in XOR connected to another XOR without Z output");
                 System.out.println(gate);
                 System.out.println(xor.getFirst());
-                System.out.println(STR."==================== WRONG GATE: \{xor.getFirst()}");
+                System.out.printf("==================== WRONG GATE: %s%n", xor.getFirst());
 
                 // the Z with the same number as the XY input must also be wrong
                 Gate wrong = gates.stream().filter(other -> other.output.substring(1).equals(gate.left.substring(1))).findFirst().orElse(null);
-                System.out.println(STR."==================== WRONG GATE: \{wrong}");
+                System.out.printf("==================== WRONG GATE: %s%n", wrong);
                 wrongGates.add(xor.getFirst());
                 wrongGates.add(wrong);
                 System.out.println();
@@ -228,14 +228,12 @@ public class Advent24 {
 
     @SneakyThrows
     private void displayGraph() {
-        List<Node> nodes = gates.stream().flatMap(gate -> {
-            return Stream.of(
-                    colourIfWrong(gate.left).link(gate.gateSymbol()),
-                    colourIfWrong(gate.right).link(gate.gateSymbol()),
-                    colourSymbolIfWrong(gate).link(gate.output),
-                    colourIfWrong(gate.output)
-            );
-        }).toList();
+        List<Node> nodes = gates.stream().flatMap(gate -> Stream.of(
+                colourIfWrong(gate.left).link(gate.gateSymbol()),
+                colourIfWrong(gate.right).link(gate.gateSymbol()),
+                colourSymbolIfWrong(gate).link(gate.output),
+                colourIfWrong(gate.output)
+        )).toList();
         fromGraph(graph("gateMap").directed().with(nodes))
                 .render(Format.PNG).toFile(new File("gateMap.png"));
     }
@@ -268,7 +266,7 @@ public class Advent24 {
         }
 
         public String gateSymbol() {
-            return STR."\{left}\{symbol}\{right}";
+            return String.format("%s%s%s", left, symbol, right);
         }
     }
 }

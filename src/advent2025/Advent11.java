@@ -137,7 +137,7 @@ public class Advent11 {
 
         @Override
         public @NonNull String toString() {
-            return STR."Node{name='\{name}', neighbours=\{neighbours}}";
+            return String.format("Node{name='%s', neighbours=%s}", name, neighbours);
         }
     }
 }

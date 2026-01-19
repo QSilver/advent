@@ -30,7 +30,7 @@ public class Advent21 {
 
     public Advent21() {
         for (int button = 1; button <= 9; button++) {
-            numberPad.put(new Point2D(2 - (button - 1) / 3, (button - 1) % 3), STR."\{button}".charAt(0));
+            numberPad.put(new Point2D(2 - (button - 1) / 3, (button - 1) % 3), String.valueOf(button).charAt(0));
         }
         numberPad.put(new Point2D(3, 1), '0');
         numberPad.put(new Point2D(3, 2), 'A');
@@ -84,7 +84,7 @@ public class Advent21 {
                     shortest = path.length();
                 }
                 if (path.length() == shortest) {
-                    paths.add(STR."\{join("", path)}A");
+                    paths.add(String.format("%sA", join("", path)));
                 }
                 continue;
             }
@@ -108,19 +108,19 @@ public class Advent21 {
         List<TempNode> result = newArrayList();
         Character up = source.get(currentPoint.UP());
         if (up != null) {
-            result.add(new TempNode(up, STR."\{UP.toChar()}"));
+            result.add(new TempNode(up, String.valueOf(UP.toChar())));
         }
         Character down = source.get(currentPoint.DOWN());
         if (down != null) {
-            result.add(new TempNode(down, STR."\{DOWN.toChar()}"));
+            result.add(new TempNode(down, String.valueOf(DOWN.toChar())));
         }
         Character left = source.get(currentPoint.LEFT());
         if (left != null) {
-            result.add(new TempNode(left, STR."\{LEFT.toChar()}"));
+            result.add(new TempNode(left, String.valueOf(LEFT.toChar())));
         }
         Character right = source.get(currentPoint.RIGHT());
         if (right != null) {
-            result.add(new TempNode(right, STR."\{RIGHT.toChar()}"));
+            result.add(new TempNode(right, String.valueOf(RIGHT.toChar())));
         }
 
         return result;
@@ -161,7 +161,7 @@ public class Advent21 {
     private long executeSequence(String sequence, int layer, boolean isNumpad) {
         long shortest = 0;
 
-        sequence = STR."A\{sequence}";
+        sequence = String.format("A%s", sequence);
         for (int index = 1; index < sequence.length(); index++) {
             Point2D from = translate(sequence.charAt(index - 1), isNumpad);
             Point2D to = translate(sequence.charAt(index), isNumpad);

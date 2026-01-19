@@ -38,7 +38,7 @@ public class Advent2 {
 
     private static ToLongFunction<Interval> processInterval(boolean allFactors) {
         return interval -> rangeClosed(interval.start, interval.end)
-                .map(number -> check(STR."\{number}", allFactors) ? number : 0L)
+                .map(number -> check(String.valueOf(number), allFactors) ? number : 0L)
                 .sum();
     }
 

@@ -114,7 +114,7 @@ public class InputUtils {
     }
 
     public static Pattern getBetween(String start, String end, String label) {
-        String pattern = STR."\{start}(?<\{label}>.*?)\{end}";
+        String pattern = String.format("%s(?<%s>.*?)%s", start, label, end);
         return Pattern.compile(pattern);
     }
 

@@ -54,7 +54,7 @@ public class Advent7 {
         switch (operator) {
             case "+" -> runningTotal.addAndGet(operand);
             case "*" -> runningTotal.updateAndGet(v -> v * operand);
-            case "|" -> runningTotal.set(parseLong(STR."\{runningTotal}\{operand}"));
+            case "|" -> runningTotal.set(parseLong(String.format("%s%s", runningTotal, operand)));
         }
         return 0;
     }

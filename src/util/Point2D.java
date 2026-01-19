@@ -1,5 +1,7 @@
 package util;
 
+import lombok.NonNull;
+
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -77,7 +79,7 @@ public record Point2D(long row, long col) {
     }
 
     @Override
-    public String toString() {
-        return STR."\{row},\{col}";
+    public @NonNull String toString() {
+        return String.format("%s,%s", row, col);
     }
 }
