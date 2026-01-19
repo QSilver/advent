@@ -339,7 +339,7 @@ public class Advent15 {
         long rows = walls.stream().mapToLong(Point2D::row).max().getAsLong();
         long cols = walls.stream().mapToLong(Point2D::col).max().getAsLong();
 
-        System.out.println(STR."\{COUNTER++} \{move}");
+        System.out.printf("%s %s%n", COUNTER++, move);
         for (int row = 0; row <= rows; row++) {
             StringBuilder sb = new StringBuilder();
             for (int col = 0; col <= cols; col++) {

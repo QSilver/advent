@@ -38,7 +38,7 @@ public class Advent17 {
             long a1 = (long) (parseLong(join("", combination)) * 1e10);
             String output = executeP2(a1);
             if (output.endsWith("3,5,5,3,0")) {
-                System.out.println(STR."\{a1} = \{output}");
+                System.out.printf("%s = %s%n", a1, output);
                 valids.add(a1);
             }
         });
@@ -50,7 +50,7 @@ public class Advent17 {
 
             String output = executeP2(a2);
             if (output.endsWith("4,1,4,0,3,5,5,3,0")) {
-                System.out.println(STR."\{a2} = \{output}");
+                System.out.printf("%s = %s%n", a2, output);
                 valids2.add(a2);
             }
         }));
@@ -62,7 +62,7 @@ public class Advent17 {
 
             String output = executeP2(a3);
             if (output.endsWith("2,4,1,1,7,5,4,4,1,4,0,3,5,5,3,0")) {
-                System.out.println(STR."\{a3} = \{output}");
+                System.out.printf("%s = %s%n", a3, output);
                 valids3.add(a3);
             }
         }));
@@ -89,7 +89,7 @@ public class Advent17 {
             long B = (A % 8) ^ 1;
             B = (B ^ (long) (A / pow(2, B))) ^ 4;
             A = A / 8;
-            output.append(STR."\{B % 8},");
+            output.append(String.format("%s,", B % 8));
         }
         return output.substring(0, output.length() - 1);
     }
@@ -112,7 +112,7 @@ public class Advent17 {
                     }
                 }
                 case 4 -> B ^= C;
-                case 5 -> output.append(STR."\{getCombo(A, B, C, operand) % 8},");
+                case 5 -> output.append(String.format("%s,", getCombo(A, B, C, operand) % 8));
                 case 6 -> B = A / (long) pow(2, getCombo(A, B, C, operand));
                 case 7 -> C = A / (long) pow(2, getCombo(A, B, C, operand));
             }
